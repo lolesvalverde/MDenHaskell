@@ -556,6 +556,31 @@ isomorfismos g h =
               vs2 = vertices h
 \end{code}
 
+\begin{definicion}
+Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún
+isomorfismo entre ellos.
+\end{definicion}
+
+La función \texttt{isomorfos g h} se verifica si los grafos
+\texttt{g} y \texttt{h} son isomorfos. Por ejemplo,
+
+\begin{sesion}
+ghci> isomorfos (grafoRueda 4) (completo 4)
+True
+ghci> isomorfos (grafoRueda 5) (completo 5)
+False
+ghci> isomorfos (grafoEstrella 2) (bipartitoCompleto 1 2)
+True
+ghci> isomorfos (grafoCiclo 5) (bipartitoCompleto 2 3)
+False
+\end{sesion}
+
+\index{\texttt{isomorfos}}
+\begin{code}
+isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
+isomorfos g = not.null.isomorfismos g 
+\end{code}
+
 \subsection{Automorfismo}
 
 \begin{definicion}
@@ -616,3 +641,35 @@ posibles automorfismos en \texttt{g}. Por ejemplo,
 automorfismos :: Ord a => Grafo a -> [Funcion a a] 
 automorfismos g = isomorfismos g g 
 \end{code}
+
+\subsection{Invariantes por isomorfismos}
+
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo. Un \textbf{invariante por isomorfismos} 
+  de $G$ es una propiedad de $G$ que tiene el mismo valor para todos 
+  los grafos que son isomorfos a él.
+\end{definicion}
+
+\begin{teorema}
+  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
+  isomorfismo. Entonces, se verifica que $|V(G)|=|V(G')|$; es decir,
+  el orden de un grafo es un invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+
+\begin{sesion}
+
+\end{sesion}
+
+\begin{code}
+prop_gradoInvariante ::
+    (Ord a,Ord b) => Grafo a -> Grafo b -> Property
+prop_gradoInvariante g h =
+    isomorfos g h ==> orden g == orden h
+\end{code}
+
+\begin{comentario}
+La propiedad no está bien definida, me da error al comprobarla
+con QuickCheck. Continúo después.
+\end{comentario}
