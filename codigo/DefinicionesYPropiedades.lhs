@@ -17,7 +17,8 @@ de Matemática Discreta.
 
 \ignora{
 \begin{code}
-module DefinicionesYPropiedades ( sonIncidentes
+module DefinicionesYPropiedades (orden
+                                , sonIncidentes
                                 , esLazo
                                 , entorno
                                 , grado
