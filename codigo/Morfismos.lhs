@@ -446,7 +446,7 @@ conservaAdyacencia g1 g2 f =
   adyacencias.
 \end{definicion}
 
-La función \texttt{(esMorfismo vvs g h)} se verifica si la
+La función \texttt{(esMorfismo g h vvs)} se verifica si la
 función representada por \texttt{vvs} es un morfismo entre los 
 grafos \texttt{g} y \texttt{h}.
 
@@ -500,7 +500,7 @@ morfismos g h =
   cuyo inverso es morfismo entre $G'$ y $G$.
 \end{definicion}
 
-La función \texttt{(esIsomorfismo vvs g h)} se verifica si la
+La función \texttt{(esIsomorfismo g h vss)} se verifica si la
 aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
 grafos \texttt{g} y \texttt{h}.
 
@@ -547,11 +547,72 @@ ghci> isomorfismos (grafoCiclo 4)
  [(1,8),(2,5),(3,7),(4,6)],[(1,8),(2,6),(3,7),(4,5)]
 \end{sesion}
 
+\index{\texttt{isomorfismos}}
 \begin{code}
-isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
+isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos g h =
         [xs | xs <- funciones vs1 vs2 , esIsomorfismo g h xs]
         where vs1 = vertices g
               vs2 = vertices h
 \end{code}
 
+\subsection{Automorfismo}
+
+\begin{definicion}
+  Dados un grafo simples $G = (V,A)$, un \textbf{automorfismo}
+  de $G$ es un automorfismo de $G$ en sí mismo.
+\end{definicion}
+
+La función \texttt{(esAutomorfismo g vss)} se verifica si la
+aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
+grafos \texttt{g} y \texttt{h}.
+
+\begin{sesion}
+ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
+False
+ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,1),(2,3),(3,2)]
+True
+ghci> esAutomorfismo (grafoCiclo 4) [(1,2),(2,3),(3,4),(4,1)]
+True
+\end{sesion}
+
+\index{\texttt{esAutomorfismo}}
+\begin{code}
+esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
+esAutomorfismo g = esIsomorfismo g g 
+\end{code}
+
+La función \texttt{automorfismos g} devuelve la lista de todos los
+posibles automorfismos en \texttt{g}. Por ejemplo,
+
+\begin{sesion}
+λ> automorfismos (grafoCiclo 4)
+[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,4),(3,3),(4,2)],
+ [(1,2),(2,1),(3,4),(4,3)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,4),(3,1),(4,2)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,3),(3,2),(4,1)]]
+λ> automorfismos (completo 4)
+[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,2),(3,4),(4,3)],
+ [(1,1),(2,3),(3,2),(4,4)],[(1,1),(2,3),(3,4),(4,2)],
+ [(1,1),(2,4),(3,2),(4,3)],[(1,1),(2,4),(3,3),(4,2)],
+ [(1,2),(2,1),(3,3),(4,4)],[(1,2),(2,1),(3,4),(4,3)],
+ [(1,2),(2,3),(3,1),(4,4)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,4),(3,3),(4,1)],
+ [(1,3),(2,1),(3,2),(4,4)],[(1,3),(2,1),(3,4),(4,2)],
+ [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,2),(3,4),(4,1)],
+ [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,4),(3,2),(4,1)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,1),(3,3),(4,2)],
+ [(1,4),(2,2),(3,1),(4,3)],[(1,4),(2,2),(3,3),(4,1)],
+ [(1,4),(2,3),(3,1),(4,2)],[(1,4),(2,3),(3,2),(4,1)]]
+λ> automorfismos (grafoRueda 5)
+[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,2),(3,5),(4,4),(5,3)],
+ [(1,1),(2,3),(3,2),(4,5),(5,4)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
+ [(1,1),(2,4),(3,3),(4,2),(5,5)],[(1,1),(2,4),(3,5),(4,2),(5,3)],
+ [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,5),(3,4),(4,3),(5,2)]]
+\end{sesion}
+
+\index{\texttt{automorfismos}}
+\begin{code}
+automorfismos :: Ord a => Grafo a -> [Funcion a a] 
+automorfismos g = isomorfismos g g 
+\end{code}
