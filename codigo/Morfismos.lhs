@@ -529,3 +529,29 @@ esIsomorfismo g h vss =
         where vs1 = vertices g
               vs2 = vertices h      
 \end{code}
+
+La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos
+posibles entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
+
+\begin{sesion}
+ghci> isomorfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
+[]
+ghci> isomorfismos (bipartitoCompleto 1 2) 
+                   (creaGrafo "abc" [('a','b'),('b','c')])
+[[(1,'b'),(2,'a'),(3,'c')],[(1,'b'),(2,'c'),(3,'a')]]
+ghci> isomorfismos (grafoCiclo 4) 
+                   (creaGrafo [5..8] [(5,7),(5,8),(6,7),(6,8)])
+[[(1,5),(2,7),(3,6),(4,8)],[(1,5),(2,8),(3,6),(4,7)],
+ [(1,6),(2,7),(3,5),(4,8)],[(1,6),(2,8),(3,5),(4,7)],
+ [(1,7),(2,5),(3,8),(4,6)],[(1,7),(2,6),(3,8),(4,5)],
+ [(1,8),(2,5),(3,7),(4,6)],[(1,8),(2,6),(3,7),(4,5)]
+\end{sesion}
+
+\begin{code}
+isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
+isomorfismos g h =
+        [xs | xs <- funciones vs1 vs2 , esIsomorfismo g h xs]
+        where vs1 = vertices g
+              vs2 = vertices h
+\end{code}
+
