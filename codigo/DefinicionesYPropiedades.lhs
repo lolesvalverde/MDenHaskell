@@ -2,9 +2,11 @@ Una vez construida una pequeña fuente de ejemplos, estamos en condiciones de
 implementar las definiciones sobre grafos en Haskell y ver que funcionan
 correctamente. Además, comprobaremos que se cumplen las propiedades básicas
 que se han presentado en el tema
-\href{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html#Chapter2}
+\href{https://dl.dropboxusercontent.com/u/15420416/
+tiddly/emptyMD1314.html#Chapter2}
      {\textbf{Introducción a la teoría de grafos}}\
-     \footnote{\url{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}}
+     \footnote{\url{https://dl.dropboxusercontent.com
+/u/15420416/tiddly/emptyMD1314.html}}
 de Matemática Discreta.
 
 \begin{nota}
@@ -589,14 +591,15 @@ prop_completos n = n >= 2 ==>
 \subsubsection{Suma de grafos}
 
 \begin{definicion}
-  Sean $G = (V,A), G' = (V',A)$ dos grafos. Definimos el grafo suma de $G$ y $G'$
-  como el grafo
-  $G + G' = (V \cup V',\allowbreak 
+  Sean $G = (V,A), G' = (V',A)$ dos grafos. Definimos el grafo suma de
+  $G$ y $G'$ como el grafo $G + G' = (V \cup V',\allowbreak 
              A \cup A' \cup \{(u,v) | u \in V, v \in V'\})$.  
   Esta operación se denomina \textbf{suma de grafos}.
 \end{definicion}
 
-La función \texttt{(sumaGrafos g g')} suma los grafos \texttt{g} y \texttt{g'}.
+La función \texttt{(sumaGrafos g g')} suma los grafos \texttt{g} y   
+\texttt{g'}. Por ejemplo,
+
 
 \begin{sesion}
 ghci> sumaGrafos (grafoCiclo 3) (grafoCiclo 3)
@@ -622,12 +625,14 @@ sumaGrafos g1 g2 =
 \subsubsection{Unión de grafos}
 
 \begin{definicion}
-  Sean $G = (V,A), G' = (V',A)$ dos grafos. Definimos el grafo unión de $G$ y $G'$
-  como el grafo $G \cup H =(V \cup V',A \cup A')$.  
+  Sean $G = (V,A), G' = (V',A)$ dos grafos. Definimos el grafo unión de 
+  $G$ y $G'$ como el grafo $G \cup H =(V \cup V',A \cup A')$.  
   Esta operación se denomina \textbf{unión de grafos}.
 \end{definicion}
 
-La función \texttt{(unionGrafos g g')} une los grafos \texttt{g} y \texttt{g'}.
+La función \texttt{(unionGrafos g g')} une los grafos \texttt{g} y   
+\texttt{g'}. Por ejemplo,
+
 
 \begin{sesion}
 ghci> unionGrafos (grafoCiclo 3) (grafoCiclo 3)
@@ -673,6 +678,3 @@ complementario  g =
   where vs = vertices g
 \end{code}
 
-% \subsection{Morfismos de grafos y su implementación en Haskell} 
-
-% \entrada{Morfismos}
