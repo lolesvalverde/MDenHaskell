@@ -1,6 +1,0 @@
-
-
-+ Dimpl: An efficient and expressive DSL for discrete mathematics ~ R. Jha  http://bit.ly/1UrBtkj
-+ A domain-specific language for discrete mathematics. ~ R. Jha et als. http://bit.ly/IzwnRC
-+ The combinat package https://hackage.haskell.org/package/combinat
-+ Data.Graph https://downloads.haskell.org/~ghc/latest/docs/html/libraries/containers-0.5.7.1/Data-Graph.html
