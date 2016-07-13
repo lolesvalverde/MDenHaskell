@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: MD_en_Haskell.aux
+A level-1 auxiliary file: Introduccion.aux
+A level-1 auxiliary file: Introduccion_Teoria_Grafos.aux
+A level-1 auxiliary file: Apendices.aux
+The style file: abbrv.bst
+Database file #1: MD_en_Haskell.bib
+You've used 4 entries,
+            2118 wiz_defined-function locations,
+            523 strings with 4403 characters,
+and the built_in function-call counts, 871 in all, are:
+= -- 88
+> -- 34
+< -- 0
++ -- 14
+- -- 10
+* -- 38
+:= -- 175
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 20
+chr.to.int$ -- 0
+cite$ -- 4
+duplicate$ -- 36
+empty$ -- 68
+format.name$ -- 10
+if$ -- 174
+int.to.chr$ -- 0
+int.to.str$ -- 4
+missing$ -- 2
+newline$ -- 23
+num.names$ -- 8
+pop$ -- 16
+preamble$ -- 1
+purify$ -- 13
+quote$ -- 0
+skip$ -- 22
+stack$ -- 0
+substring$ -- 20
+swap$ -- 1
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 14
+warning$ -- 0
+while$ -- 8
+width$ -- 5
+write$ -- 47

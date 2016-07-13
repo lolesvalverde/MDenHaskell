@@ -1,0 +1,112 @@
+\section {Sistemas utilizados}
+
+El desarrollo de mi Trabajo de Fin de Grado requería de una infraestructura
+técnica que he tenido que trabajar antes de comenzar a desarrollar el contenido.
+A continuación, voy a nombrar y comentar los sistemas y paquetes que he utilizado 
+a lo largo del proyecto. 
+
+\begin{itemize}
+  \item \textbf{Ubuntu como sistema operativo.} El primer paso fue instalar
+    \textit{Ubuntu} en mi ordenador portátil personal. Para ello, seguí las 
+    recomendaciones de mi compañero Eduardo Paluzo, que ya lo había hecho antes. 
+
+    Primero, me descargué la imagen del sistema \textit{Ubuntu 16.04 LTS} (para 
+    procesador de 64 bits) desde la 
+    \href{http://www.ubuntu.com/download/desktop}
+    {página de descargas de Ubuntu}
+    \footnote{\url{http://www.ubuntu.com/download/desktop}} y también la herramienta 
+    \href{http://www.linuxliveusb.com/}
+    {LinuxLive USB Creator}
+    \footnote{\url{http://www.linuxliveusb.com/}} que transformaría mi Pendrive en 
+    una unidad USB Booteable cargada con la imagen de Ubuntu. Una vez tuve la unidad
+    USB preparada, procedí a instalar el nuevo sistema: apagué el dispositivo y al 
+    encenderlo entré en el  \texttt{Boot Menu} de la  \texttt{BIOS} del portátil 
+    para arrancar desde el Pendrive en vez de hacerlo desde el disco duro. 
+    Automáticamente, comenzó la instalación de  \textit{Ubuntu} y solo tuve que seguir 
+    las instrucciones del asistente para montar Ubuntu manteniendo además  
+    \textit{Windows 10}, que era el sistema operativo con el que había estado trabajando 
+    hasta ese momento.
+    
+    El resultado fue un poco agridulce, pues la instalación de Ubuntu se había realizado
+    con éxito, sin embargo, al intentar arrancar  \textit{Windows} desde la nueva 
+     \texttt{GRUB}, me daba un error al cargar la imagen del sistema. Después de buscar 
+    el error que me aparecía en varios foros, encontré una solución a mi problema: 
+    deshabilité el  \texttt{Security Boot} desde la  \texttt{BIOS} y pude volver a 
+    arrancar  \textit{Windows 10} con normalidad.
+
+  \item \textbf{\LaTeX{} como sistema de composición de textos.} La distribución de 
+    \LaTeX{},\textit{Tex Live}, como la mayoría de software que he utilizado, la 
+    descargué utilizando el \textit{Gestor de Paquetes Synaptic}. Anteriormente, sólo 
+    había utilizado  \textit{TexMaker} como editor de \LaTeX{} así que fue el primero
+    que descargué. Más tarde, mi tutor José Antonio me sugirió que mejor descargara  
+    el paquete \textit{AUCTex}, pues me  permitiría trabajar con archivos \TeX{} 
+    desde el editor \textit{Emacs}, así lo hice y es el que he utilizado para escribir
+    el trabajo. Además de los que me recomendaba el gestor, solo he tenido que 
+    descargarme el paquete \textit{spanish} de \textit{babel} para poder desarrollar el 
+    Trabajo, pues el paquete \textit{Tikz}, que he utilizado para representar los grafos,
+    venía incluido en las sugerencias de \textit{Synaptic}.
+
+  \item \textbf{Haskell como lenguaje de programación.} Ya había trabajado anteriormente
+    con este lenguaje en el Grado y sabía que sólo tenía que decargarme la plataforma
+    de  \textit{Haskell} y podría trabajar con el editor \textit{Emacs}. Seguí las
+    indicaciones que se dan a los estudiantes de primer curso en la 
+    \href{http://www.cs.us.es/~jalonso/cursos/i1m-15/sistemas.php}
+    {página del Dpto. de Ciencias de la Computación e Inteligencia Artificial}
+    \footnote{\url{http://www.cs.us.es/~jalonso/cursos/i1m-15/sistemas.php}}
+    y me descargué los paquetes \textit{haskell-platform} y \textit{haskell-mode} desde
+    el \textit{Gestor de Paquetes Synaptic}.
+
+    \comentario{Indicar la versión de la plataforma y de GHC que estás utilizando.}
+
+  \item \textbf{Dropbox como sistema de almacenamiento compartido.} Ya había trabajado
+    con \textit{Dropbox} en el pasado, así que crear una carpeta compartida con mis
+    tutores no fue ningún problema; sin embargo, al estar \textit{Dropbox} sujeto a 
+    software no libre, no me resultó tan sencillo instalarlo en mi nuevo sistema. En 
+    primer lugar, intenté hacerlo directamente desde \textit{Ubuntu Software}, que
+    intentó instalar \textit{Dropbox Nautilus} y abrió dos instalaciones en paralelo.
+    Se quedó colgado el ordenador, así que maté los procesos de instalación 
+    activos, reinicié el sistema y me descargué directamente el paquete de instalación
+    desde la 
+    \href{https://www.dropbox.com/es/install?os=lnx}
+    {página de descargas de Dropbox}
+    \footnote{\url{https://www.dropbox.com/es/install?os=lnx}} para ejecutarlo desde la 
+    terminal.
+\end{itemize}
+
+\begin{comentario}
+    Queda pendiente ampliar el apéndice conforme vayamos avanzando y surjan nuevos
+    sistemas.
+\end{comentario}
+
+\section{Mapa de decisiones de diseño}
+
+Al comienzo del proyecto, la idea era que las primeras representaciones con las que 
+trabajara fueran las de \textit{grafos como vectores de adyacencia} y 
+\textit{grafos como matrices de adyacencia} que se utilizan en Informática en el
+primer curso del Grado, con las que ya había trabajado y estaba familiarizada. 
+
+Las definiciones de Informática están pensadas para grafos ponderados (dirigidos 
+o no según se eligiera), mientras que en Matemática Discreta apenas se usan grafos 
+dirigidos o ponderados; por tanto, el primer cambio en la representación 
+utilizada fue simplificar las definiciones de modo que solo trabajáramos con grafos
+no dirigidos y no ponderados, pero manteniendo las estructuras vectorial y 
+matricial que mantenían la eficiencia. 
+
+Las representaciones que utilizan \textit{arrays} en \textit{Haskell} son muy
+restrictivas, pues solo admiten vectores y matrices que se puedan indexar, lo
+que hace muy complicados todos los algoritmos que impliquen algún cambio en los
+vértices de los grafos y, además, no permite trabajar con todos los tipos de
+vértices que pudiéramos desear. Decidimos volver a cambiar la representación, y
+esta vez nos decantamos por la representación de \textit{grafos como listas de
+aristas}, perdiendo en eficiencia pero ganando mucho en flexibilidad de
+escritura.
+
+\begin{comentario}
+  Queda pendiente ampliar el apéndice conforme vayamos avanzando y surjan
+  nuevas representaciones.
+\end{comentario}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "MD_en_Haskell"
+%%% End:
