@@ -60,6 +60,28 @@ import Data.List
 \subsection{Definiciones de grafos}
 
 \begin{definicion}
+  El \textbf{orden} de un grafo $G=(V,G)$ se define como su número de 
+  vértices. Lo denotaremos por $|V(G)|$.
+\end{definicion}
+
+La función \texttt{orden g} devuelve el orden del grafo \texttt{g}.
+Por ejemplo,
+
+\begin{sesion}
+orden (grafoCiclo 4)         == 4
+orden (grafoEstrella 4)      == 5
+orden (grafoPetersen)        == 10
+orden (grafoPetersenGen 2 5) == 4
+orden (completo 3)           == 3
+\end{sesion}
+
+\index{\texttt{orden}}
+\begin{code}
+orden :: Grafo a -> Int
+orden g = length (vertices g)
+\end{code}
+
+\begin{definicion}
   Diremos que dos aristas $a, a'$ son \textbf{incidentes} si tienen
   intersección no vacía; es decir, si tienen algún vértice en común.
 \end{definicion}
@@ -99,9 +121,9 @@ esLazo (u,v) = u == v
 \end{code}
 
 \begin{definicion}
-  Dado un grafo $G = (V,A)$, fijado un vértice $v \in V$, al conjunto de vértices
-  que son adyacentes a $v$ lo llamaremos \textbf{entorno} de $v$ y lo
-  denotaremos por $N(v) = \{u \in V | (u,v) \in A\}$. 
+  Dado un grafo $G = (V,A)$, fijado un vértice $v \in V$, al conjunto de
+  vértices que son adyacentes a $v$ lo llamaremos \textbf{entorno} de  
+  $v$ y lo denotaremos por $N(v) = \{u \in V | (u,v) \in A\}$. 
 \end{definicion}
 
 La función \texttt{(entorno g v)} devuelve el entorno del vértice \texttt{v} en
@@ -125,8 +147,8 @@ entorno = adyacentes
   $v \in V$ es $grad(v) = |N(v)|$.
 \end{definicion}
 
-La función \texttt{(grado g v)} devuelve el grado del vértice \texttt{v} en el grafo
-\texttt{g}. Por ejemplo,
+La función \texttt{(grado g v)} devuelve el grado del vértice \texttt{v} 
+en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 grado (grafoEstrella 5) 0   ==  5
@@ -145,8 +167,8 @@ grado g v = length (entorno g v)
   Un vértice $v$ de un grafo es \textbf{aislado} si su grado es 0.
 \end{definicion}
 
-La función \texttt{(esAislado g v)} se verifica si el vértice \texttt{v} es aislado
-en el grafo \texttt{g}. Por ejemplo,
+La función \texttt{(esAislado g v)} se verifica si el vértice \texttt{v} 
+es aislado en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 esAislado (grafoEstrella 5)                     0  ==  False
