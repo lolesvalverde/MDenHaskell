@@ -296,9 +296,9 @@ imagen f x = head (imagenRelacion f x)
 \end{code}
 
 \begin{definicion}
-  Diremos que una función $f$ entre dos conjuntos es una
+  Diremos que una función $f$ entre dos conjuntos es
     \href{https://en.wikipedia.org/wiki/Injective_function}
-    {\textbf{función inyectiva}}\
+    {\textbf{inyectiva}}\
     \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
   si a elementos distintos del dominio le corresponden elementos distintos de
   la imagen; es decir, si $\forall a,b \in \text{dominio}(f)$ tales que $a \not= b$,
