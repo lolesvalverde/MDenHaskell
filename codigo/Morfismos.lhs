@@ -437,9 +437,9 @@ inversa ((a,b):fs) = (b,a):inversa fs
 \end{code}
     
 \begin{definicion}
-  Si $F$ es una función entre dos grafos $G=(V,A)$ y $G'=(V',A')$,
-  diremos que conserva la adyacencia si $\forall u,v\in V$
-  tales que $(u,v)\in A$ entonces verifica que $(F(u),F(v)) \in A$.
+  Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
+  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ tales que
+  $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A$.
 \end{definicion}
 
 La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica
