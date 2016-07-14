@@ -370,8 +370,16 @@ False
 \index{\texttt{esSobreyectiva}}
 \begin{code}
 esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esSobreyectiva _ ys fs = all (`elem` vs) ys
-    where vs = map snd fs
+esSobreyectiva _ ys f = all (`elem` vs) ys
+  where vs = map snd f
+\end{code}
+
+\comentario{Una definicón alternativa es}
+
+\begin{code}
+esSobreyectiva2 :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esSobreyectiva2 _ ys f =
+  ys `esSubconjunto` rango f
 \end{code}
 
 \begin{definicion}
