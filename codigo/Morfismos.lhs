@@ -243,9 +243,8 @@ type Funcion a b = [(a,b)]
 \end{code}
 \end{nota}
 
-La función \texttt{(funcionesEntre xs ys)} devuelve todas las
-posibles funciones del conjunto \texttt{xs} en \texttt{ys}.
-Por ejemplo,
+La función \texttt{(funciones xs ys)} devuelve todas las posibles funciones del
+conjunto \texttt{xs} en \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 ghci> funciones [1,2,3] "ab"
@@ -265,14 +264,16 @@ ghci> funciones [(1,2),(1,5)] "abc"
 \begin{code}
 funciones :: [a] -> [b] -> [Funcion a b]
 funciones xs ys =
-    [zip xs zs | zs <- variacionesR (length xs) ys]
-       where variacionesR _ [] = [[]]
-             variacionesR 0 _  = [[]] 
-             variacionesR k xs =
-                 [z:ys | z <- xs, ys <- variacionesR (k-1) xs]
+  [zip xs zs | zs <- variacionesR (length xs) ys]
+  where variacionesR _ [] = [[]]
+        variacionesR 0 _  = [[]] 
+        variacionesR k us =
+          [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
-
+\comentario{La definición de \texttt{variacionesR} se debe de hacer de forma
+  global con su especificación y ejemplos. En realidad, debería de hacerse en
+  un capítulo sobre combinatoria (que también es parte de matemática discreta)}
 
 \begin{definicion}
   Si $R$ es una relación binaria entre $A$ y $B$ y $x$ es un elemento
@@ -295,52 +296,67 @@ imagen f x = head (imagenRelacion f x)
 \end{code}
 
 \begin{definicion}
-Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
-  \href{https://en.wikipedia.org/wiki/Injective_function}
-  {\textbf{función inyectiva}}\
-  \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
- si a elementos distintos del dominio le
-corresponden elementos distintos de la imagen; es decir,
-si $\forall a,b \in A$ tales que $a \not = b$,
-$F(a) \not = F(b)$.                 
+  Diremos que una función $f$ entre dos conjuntos es
+    \href{https://en.wikipedia.org/wiki/Injective_function}
+    {\textbf{inyectiva}}\
+    \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
+  si a elementos distintos del dominio le corresponden elementos distintos de
+  la imagen; es decir, si $\forall a,b \in \text{dominio}(f)$ tales que $a \not= b$,
+  $f(a) \not= f(b)$.
 \end{definicion}
 
-La función \texttt{(esInyectiva xs ys fs)} se verifica si la
-función \texttt{fs} es inyectiva. A la hora de definirla, estamos
-contando con que \texttt{fs} es una función entre \texttt{xs} y
-\texttt{ys}.
-Por ejemplo,
+La función \texttt{(esInyectiva fs)} se verifica si la función
+\texttt{fs} es inyectiva.
 
 \begin{sesion}
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
-True
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
-False
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
-True
+esInyectiva [(1,4),(2,5),(3,6)]        ==  True
+esInyectiva [(1,4),(2,5),(3,4)]        ==  False
+esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
 \end{sesion}
 
 \index{\texttt{esInyectiva}}
 \begin{code}
-esInyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esInyectiva xs ys fs = all p (map snd fs)
-       where p b = unitario [u | (u,v) <- fs, v==b]
-
+esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
+esInyectiva f = all p (map snd f)
+  where p b = unitario [u | (u,v) <- f, v == b]
 \end{code}
 
+\comentario{Usando las siguientes funciones auxiliares se obtiene una
+  definición alternativa de esInyectiva.}
+
+\begin{code}
+-- (rango r) es el rango de la relación binaria r. Por ejemplo,
+--    rango [(3,2),(5,2),(3,4)]  ==  [2,4]
+rango :: Eq b => [(a,b)] -> [b]
+rango r = nub (map snd r)
+
+-- (antiImagenRelacion r y) es la antiimagen del elemento y en la
+-- relación binaria r.
+--    antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
+antiImagenRelacion :: Eq b => [(a,b)] -> b -> [a]
+antiImagenRelacion r y =
+  [x | (x,z) <- r, z == y] 
+  
+esInyectiva2 :: (Eq a, Eq b) => Funcion a b -> Bool
+esInyectiva2 f =
+  and [unitario (antiImagenRelacion f y) | y <- rango f] 
+\end{code}
+
+\comentario{Se debería de escribir un capítulo sobre ``Conjuntos, relaciones y
+  funciones'' para incluir las correspondientes funciones que estamos usando
+  (como \texttt{esSubconjunto}, \texttt{esRelacion}, \texttt{esInyectiva}, \dots}
+
 \begin{definicion}
-Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
+  Diremos que una función $f$ entre dos conjuntos $A$ y $B$ es una
   \href{https://en.wikipedia.org/wiki/Surjective_function}
-  {\textbf{función sobreyectiva}}\
+  {\textbf{sobreyectiva}}\
   \footnote{\url{https://en.wikipedia.org/wiki/Surjective_function}}
- si todos los elementos de $B$ son imagen de algún elmento de $A$.              
+  si todos los elementos de $B$ son imagen de algún elmento de $A$.              
 \end{definicion}
 
-La función \texttt{(esSobreyectiva xs ys fs)} se verifica si la
-función \texttt{fs} es sobreyectiva. A la hora de definirla, estamos
-contando con que \texttt{fs} es una función entre \texttt{xs} y
-\texttt{ys}.
-Por ejemplo,
+La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
+\texttt{f} es sobreyectiva. A la hora de definirla, estamos contando con que
+\texttt{f} es una función entre \texttt{xs} y \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
 ghci> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
@@ -354,23 +370,29 @@ False
 \index{\texttt{esSobreyectiva}}
 \begin{code}
 esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esSobreyectiva _ ys fs = all (`elem` vs) ys
-    where vs = map snd fs
+esSobreyectiva _ ys f = all (`elem` vs) ys
+  where vs = map snd f
+\end{code}
+
+\comentario{Una definicón alternativa es}
+
+\begin{code}
+esSobreyectiva2 :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esSobreyectiva2 _ ys f =
+  ys `esSubconjunto` rango f
 \end{code}
 
 \begin{definicion}
-Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
+  Diremos que una función $f$ entre dos conjuntos $A$ y $B$ es 
   \href{https://en.wikipedia.org/wiki/Bijective_function}
-  {\textbf{función biyectiva}}\
+  {\textbf{biyectiva}}\
   \footnote{\url{https://en.wikipedia.org/wiki/Bijective_function}}
- si todos los elementos de $B$ son imagen de algún elmento de $A$.              
+  si todos los elementos de $B$ son imagen de algún elemento de $A$.              
 \end{definicion}
 
-La función \texttt{(esSobreyectiva xs ys fs)} se verifica si la
-función \texttt{fs} es sobreyectiva. A la hora de definirla, estamos
-contando con que \texttt{fs} es una función entre \texttt{xs} y
-\texttt{ys}.
-Por ejemplo,
+La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
+\texttt{f} es sobreyectiva. A la hora de definirla, estamos contando con que
+\texttt{f} es una función entre \texttt{xs} y \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 ghci> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
@@ -383,13 +405,13 @@ False
 
 \index{\texttt{esSobreyectiva}}
 \begin{code}
-esBiyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esBiyectiva xs ys fs =
-    esInyectiva xs ys fs && esSobreyectiva xs ys fs
+esBiyectiva :: (Eq a, Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esBiyectiva xs ys f =
+  esInyectiva f && esSobreyectiva xs ys f
 \end{code}
 
 \begin{definicion}
-  Si $F$ es una función sobreyectiva entre $A$ y $B$ conjuntos,
+  Si $f$ es una función sobreyectiva entre los conjuntos $A$ y $B$,
   definimos la
   \href{https://en.wikipedia.org/wiki/Inverse_function}
   {\textbf{función inversa}}\
@@ -398,23 +420,26 @@ esBiyectiva xs ys fs =
   el elemento de $A$ del que es imagen en $B$.
 \end{definicion}
 
-La función \texttt{(inversa f)} la función inversa de \texttt{f}.
-Por ejemplo,
+El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.  Por
+ejemplo,
+
 \begin{sesion}
 
 \end{sesion}
 
+\comentario{Falta ejemplo.}
+
 \index{\texttt{inversa}}
 \begin{code}
 inversa :: [(a,b)] -> [(b,a)]
-inversa [] = []
+inversa []         = []
 inversa ((a,b):fs) = (b,a):inversa fs 
 \end{code}
     
 \begin{definicion}
-  Si $F$ es una función entre dos grafos $G=(V,A)$ y $G'=(V',A')$,
-  diremos que conserva la adyacencia si $\forall u,v\in V$
-  tales que $(u,v)\in A$ entonces verifica que $(F(u),F(v)) \in A$.
+  Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
+  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ tales que
+  $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A$.
 \end{definicion}
 
 La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica
@@ -431,8 +456,8 @@ False
 
 \index{\texttt{conservaAdyacencia}}
 \begin{code}
-conservaAdyacencia :: (Eq a,Ord b) =>
-       Grafo a -> Grafo b -> Funcion a b -> Bool
+conservaAdyacencia :: (Eq a, Ord b) =>
+                      Grafo a -> Grafo b -> Funcion a b -> Bool
 conservaAdyacencia g1 g2 f =
   and [(imagen f x,imagen f y) `aristaEn` g2
       | (x,y) <- aristas g1]
@@ -492,6 +517,16 @@ morfismos g h =
               vs2 = vertices h
 \end{code}
 
+\comentario{Se puede simplificar, ya que las variables locales sólo se usan una
+  vez}
+
+\begin{code}
+morfismos2 :: (Eq a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
+morfismos2 g h =
+  [f | f <- funciones (vertices g) (vertices h)
+     , esMorfismo g h f]
+\end{code}
+
 \subsection{Isomorfismo}
 
 \begin{definicion}
@@ -500,8 +535,8 @@ morfismos g h =
   cuyo inverso es morfismo entre $G'$ y $G$.
 \end{definicion}
 
-La función \texttt{(esIsomorfismo g h vss)} se verifica si la
-aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
+La función \texttt{(esIsomorfismo g h f)} se verifica si la
+aplicación \texttt{f} es un isomorfismo entre los 
 grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
@@ -522,16 +557,19 @@ False
 \begin{code}
 esIsomorfismo :: (Ord a,Ord b) =>
                  Grafo a -> Grafo b -> Funcion a b -> Bool
-esIsomorfismo g h vss =
-    esMorfismo g h vss &&
-    esBiyectiva vs1 vs2 vss &&
-    esMorfismo h g (inversa vss)
-        where vs1 = vertices g
-              vs2 = vertices h      
+esIsomorfismo g h f =
+  esMorfismo g h f &&
+  esBiyectiva vs1 vs2 f &&
+  esMorfismo h g (inversa f)
+  where vs1 = vertices g
+        vs2 = vertices h      
 \end{code}
 
-La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos
-posibles entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
+\comentario{No es necesario usar las variables locales en la definición
+  anterior.}
+
+La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos posibles
+entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
 
 \begin{sesion}
 ghci> isomorfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
@@ -551,18 +589,21 @@ ghci> isomorfismos (grafoCiclo 4)
 \begin{code}
 isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos g h =
-        [xs | xs <- funciones vs1 vs2 , esIsomorfismo g h xs]
-        where vs1 = vertices g
-              vs2 = vertices h
+  [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
+  where vs1 = vertices g
+        vs2 = vertices h
 \end{code}
 
+\comentario{No es necesario usar las variables locales en la definición
+  anterior.}
+
 \begin{definicion}
-Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún
-isomorfismo entre ellos.
+  Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún isomorfismo
+  entre ellos.
 \end{definicion}
 
-La función \texttt{isomorfos g h} se verifica si los grafos
-\texttt{g} y \texttt{h} son isomorfos. Por ejemplo,
+La función \texttt{isomorfos g h} se verifica si los grafos \texttt{g} y
+\texttt{h} son isomorfos. Por ejemplo,
 
 \begin{sesion}
 ghci> isomorfos (grafoRueda 4) (completo 4)
@@ -578,19 +619,18 @@ False
 \index{\texttt{isomorfos}}
 \begin{code}
 isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos g = not.null.isomorfismos g 
+isomorfos g = not . null . isomorfismos g 
 \end{code}
 
 \subsection{Automorfismo}
 
 \begin{definicion}
-  Dados un grafo simples $G = (V,A)$, un \textbf{automorfismo}
-  de $G$ es un automorfismo de $G$ en sí mismo.
+  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
+  de $G$ es un isomorfismo de $G$ en sí mismo.
 \end{definicion}
 
-La función \texttt{(esAutomorfismo g vss)} se verifica si la
-aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
-grafos \texttt{g} y \texttt{h}.
+La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
+\texttt{f} es un automorfismo de \texttt{g}.
 
 \begin{sesion}
 ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
@@ -611,12 +651,12 @@ La función \texttt{automorfismos g} devuelve la lista de todos los
 posibles automorfismos en \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-λ> automorfismos (grafoCiclo 4)
+ghci> automorfismos (grafoCiclo 4)
 [[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,4),(3,3),(4,2)],
  [(1,2),(2,1),(3,4),(4,3)],[(1,2),(2,3),(3,4),(4,1)],
  [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,4),(3,1),(4,2)],
  [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,3),(3,2),(4,1)]]
-λ> automorfismos (completo 4)
+ghci> automorfismos (completo 4)
 [[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,2),(3,4),(4,3)],
  [(1,1),(2,3),(3,2),(4,4)],[(1,1),(2,3),(3,4),(4,2)],
  [(1,1),(2,4),(3,2),(4,3)],[(1,1),(2,4),(3,3),(4,2)],
@@ -629,7 +669,7 @@ posibles automorfismos en \texttt{g}. Por ejemplo,
  [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,1),(3,3),(4,2)],
  [(1,4),(2,2),(3,1),(4,3)],[(1,4),(2,2),(3,3),(4,1)],
  [(1,4),(2,3),(3,1),(4,2)],[(1,4),(2,3),(3,2),(4,1)]]
-λ> automorfismos (grafoRueda 5)
+ghci> automorfismos (grafoRueda 5)
 [[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,2),(3,5),(4,4),(5,3)],
  [(1,1),(2,3),(3,2),(4,5),(5,4)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
  [(1,1),(2,4),(3,3),(4,2),(5,5)],[(1,1),(2,4),(3,5),(4,2),(5,3)],
