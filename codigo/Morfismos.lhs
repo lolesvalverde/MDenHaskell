@@ -456,8 +456,8 @@ False
 
 \index{\texttt{conservaAdyacencia}}
 \begin{code}
-conservaAdyacencia :: (Eq a,Ord b) =>
-       Grafo a -> Grafo b -> Funcion a b -> Bool
+conservaAdyacencia :: (Eq a, Ord b) =>
+                      Grafo a -> Grafo b -> Funcion a b -> Bool
 conservaAdyacencia g1 g2 f =
   and [(imagen f x,imagen f y) `aristaEn` g2
       | (x,y) <- aristas g1]
