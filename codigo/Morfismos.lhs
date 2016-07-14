@@ -619,7 +619,7 @@ False
 \index{\texttt{isomorfos}}
 \begin{code}
 isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos g = not.null.isomorfismos g 
+isomorfos g = not . null . isomorfismos g 
 \end{code}
 
 \subsection{Automorfismo}
