@@ -535,8 +535,8 @@ morfismos2 g h =
   cuyo inverso es morfismo entre $G'$ y $G$.
 \end{definicion}
 
-La función \texttt{(esIsomorfismo g h vss)} se verifica si la
-aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
+La función \texttt{(esIsomorfismo g h f)} se verifica si la
+aplicación \texttt{f} es un isomorfismo entre los 
 grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
