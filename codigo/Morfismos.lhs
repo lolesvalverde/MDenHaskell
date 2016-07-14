@@ -383,18 +383,16 @@ esSobreyectiva2 _ ys f =
 \end{code}
 
 \begin{definicion}
-Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
+  Diremos que una función $f$ entre dos conjuntos $A$ y $B$ es 
   \href{https://en.wikipedia.org/wiki/Bijective_function}
-  {\textbf{función biyectiva}}\
+  {\textbf{biyectiva}}\
   \footnote{\url{https://en.wikipedia.org/wiki/Bijective_function}}
- si todos los elementos de $B$ son imagen de algún elmento de $A$.              
+  si todos los elementos de $B$ son imagen de algún elemento de $A$.              
 \end{definicion}
 
-La función \texttt{(esSobreyectiva xs ys fs)} se verifica si la
-función \texttt{fs} es sobreyectiva. A la hora de definirla, estamos
-contando con que \texttt{fs} es una función entre \texttt{xs} y
-\texttt{ys}.
-Por ejemplo,
+La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
+\texttt{f} es sobreyectiva. A la hora de definirla, estamos contando con que
+\texttt{f} es una función entre \texttt{xs} y \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 ghci> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
