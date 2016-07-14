@@ -565,10 +565,11 @@ esIsomorfismo g h f =
         vs2 = vertices h      
 \end{code}
 
-\comentario{No es necesario usar las variables locales en la definición anterior.}
+\comentario{No es necesario usar las variables locales en la definición
+  anterior.}
 
-La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos
-posibles entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
+La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos posibles
+entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
 
 \begin{sesion}
 ghci> isomorfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
@@ -588,10 +589,13 @@ ghci> isomorfismos (grafoCiclo 4)
 \begin{code}
 isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos g h =
-        [xs | xs <- funciones vs1 vs2 , esIsomorfismo g h xs]
-        where vs1 = vertices g
-              vs2 = vertices h
+  [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
+  where vs1 = vertices g
+        vs2 = vertices h
 \end{code}
+
+\comentario{No es necesario usar las variables locales en la definición
+  anterior.}
 
 \begin{definicion}
 Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún
