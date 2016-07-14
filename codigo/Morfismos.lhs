@@ -268,8 +268,8 @@ funciones xs ys =
     [zip xs zs | zs <- variacionesR (length xs) ys]
        where variacionesR _ [] = [[]]
              variacionesR 0 _  = [[]] 
-             variacionesR k xs =
-                 [z:ys | z <- xs, ys <- variacionesR (k-1) xs]
+             variacionesR k us =
+                 [z:ys | z <- us, ys <- variacionesR (k-1) us]
 \end{code}
 
 
