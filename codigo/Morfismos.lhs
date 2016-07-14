@@ -625,8 +625,8 @@ isomorfos g = not . null . isomorfismos g
 \subsection{Automorfismo}
 
 \begin{definicion}
-  Dados un grafo simples $G = (V,A)$, un \textbf{automorfismo}
-  de $G$ es un automorfismo de $G$ en sí mismo.
+  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
+  de $G$ es un isomorfismo de $G$ en sí mismo.
 \end{definicion}
 
 La función \texttt{(esAutomorfismo g vss)} se verifica si la
