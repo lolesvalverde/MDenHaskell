@@ -598,12 +598,12 @@ isomorfismos g h =
   anterior.}
 
 \begin{definicion}
-Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún
-isomorfismo entre ellos.
+  Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún isomorfismo
+  entre ellos.
 \end{definicion}
 
-La función \texttt{isomorfos g h} se verifica si los grafos
-\texttt{g} y \texttt{h} son isomorfos. Por ejemplo,
+La función \texttt{isomorfos g h} se verifica si los grafos \texttt{g} y
+\texttt{h} son isomorfos. Por ejemplo,
 
 \begin{sesion}
 ghci> isomorfos (grafoRueda 4) (completo 4)
