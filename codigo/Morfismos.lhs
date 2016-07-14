@@ -411,7 +411,7 @@ esBiyectiva xs ys f =
 \end{code}
 
 \begin{definicion}
-  Si $F$ es una función sobreyectiva entre $A$ y $B$ conjuntos,
+  Si $f$ es una función sobreyectiva entre los conjuntos $A$ y $B$,
   definimos la
   \href{https://en.wikipedia.org/wiki/Inverse_function}
   {\textbf{función inversa}}\
@@ -420,11 +420,14 @@ esBiyectiva xs ys f =
   el elemento de $A$ del que es imagen en $B$.
 \end{definicion}
 
-La función \texttt{(inversa f)} la función inversa de \texttt{f}.
-Por ejemplo,
+El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.  Por
+ejemplo,
+
 \begin{sesion}
 
 \end{sesion}
+
+\comentario{Falta ejemplo.}
 
 \index{\texttt{inversa}}
 \begin{code}
