@@ -269,7 +269,7 @@ funciones xs ys =
        where variacionesR _ [] = [[]]
              variacionesR 0 _  = [[]] 
              variacionesR k us =
-                 [z:ys | z <- us, ys <- variacionesR (k-1) us]
+                 [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
 
@@ -323,9 +323,8 @@ True
 \index{\texttt{esInyectiva}}
 \begin{code}
 esInyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esInyectiva xs ys fs = all p (map snd fs)
-       where p b = unitario [u | (u,v) <- fs, v==b]
-
+esInyectiva _ _ fs = all p (map snd fs)
+  where p b = unitario [u | (u,v) <- fs, v == b]
 \end{code}
 
 \begin{definicion}
