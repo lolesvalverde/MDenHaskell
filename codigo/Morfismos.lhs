@@ -557,13 +557,15 @@ False
 \begin{code}
 esIsomorfismo :: (Ord a,Ord b) =>
                  Grafo a -> Grafo b -> Funcion a b -> Bool
-esIsomorfismo g h vss =
-    esMorfismo g h vss &&
-    esBiyectiva vs1 vs2 vss &&
-    esMorfismo h g (inversa vss)
-        where vs1 = vertices g
-              vs2 = vertices h      
+esIsomorfismo g h f =
+  esMorfismo g h f &&
+  esBiyectiva vs1 vs2 f &&
+  esMorfismo h g (inversa f)
+  where vs1 = vertices g
+        vs2 = vertices h      
 \end{code}
+
+\comentario{No es necesario usar las variables locales en la definición anterior.}
 
 La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos
 posibles entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
