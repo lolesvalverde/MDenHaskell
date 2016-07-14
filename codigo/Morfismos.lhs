@@ -316,9 +316,9 @@ esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
 
 \index{\texttt{esInyectiva}}
 \begin{code}
-esInyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esInyectiva _ _ fs = all p (map snd fs)
-  where p b = unitario [u | (u,v) <- fs, v == b]
+esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
+esInyectiva f = all p (map snd f)
+  where p b = unitario [u | (u,v) <- f, v == b]
 \end{code}
 
 \begin{definicion}
@@ -378,7 +378,7 @@ False
 \begin{code}
 esBiyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
 esBiyectiva xs ys fs =
-    esInyectiva xs ys fs && esSobreyectiva xs ys fs
+    esInyectiva fs && esSobreyectiva xs ys fs
 \end{code}
 
 \begin{definicion}
