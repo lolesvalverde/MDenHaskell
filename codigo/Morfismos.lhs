@@ -321,6 +321,27 @@ esInyectiva f = all p (map snd f)
   where p b = unitario [u | (u,v) <- f, v == b]
 \end{code}
 
+\comentario{Usando las siguientes funciones auxiliares se obtiene una
+  definición alternativa de esInyectiva.}
+
+\begin{code}
+-- (rango r) es el rango de la relación binaria r. Por ejemplo,
+--    rango [(3,2),(5,2),(3,4)]  ==  [2,4]
+rango :: Eq b => [(a,b)] -> [b]
+rango r = nub (map snd r)
+
+-- (antiImagenRelacion r y) es la antiimagen del elemento y en la
+-- relación binaria r.
+--    antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
+antiImagenRelacion :: Eq b => [(a,b)] -> b -> [a]
+antiImagenRelacion r y =
+  [x | (x,z) <- r, z == y] 
+  
+esInyectiva2 :: (Eq a, Eq b) => Funcion a b -> Bool
+esInyectiva2 f =
+  and [unitario (antiImagenRelacion f y) | y <- rango f] 
+\end{code}
+
 \begin{definicion}
 Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
   \href{https://en.wikipedia.org/wiki/Surjective_function}
