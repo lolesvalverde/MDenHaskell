@@ -301,7 +301,7 @@ imagen f x = head (imagenRelacion f x)
     {\textbf{función inyectiva}}\
     \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
   si a elementos distintos del dominio le corresponden elementos distintos de
-  la imagen; es decir, si $\forall a,b \in \dom(f)$ tales que $a \not= b$,
+  la imagen; es decir, si $\forall a,b \in \text{dominio}(f)$ tales que $a \not= b$,
   $f(a) \not= f(b)$.
 \end{definicion}
 
