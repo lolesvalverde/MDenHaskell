@@ -342,6 +342,10 @@ esInyectiva2 f =
   and [unitario (antiImagenRelacion f y) | y <- rango f] 
 \end{code}
 
+\comentario{Se debería de escribir un capítulo sobre ``Conjuntos, relaciones y
+  funciones'' para incluir las correspondientes funciones que estamos usando
+  (como \texttt{esSubconjunto}, \texttt{esRelacion}, \texttt{esInyectiva}, \dots}
+
 \begin{definicion}
 Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
   \href{https://en.wikipedia.org/wiki/Surjective_function}
