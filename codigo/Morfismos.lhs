@@ -305,16 +305,13 @@ imagen f x = head (imagenRelacion f x)
   $f(a) \not= f(b)$.
 \end{definicion}
 
-La función \texttt{(esInyectiva xs ys fs)} se verifica si la función
+La función \texttt{(esInyectiva fs)} se verifica si la función
 \texttt{fs} es inyectiva.
 
 \begin{sesion}
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
-True
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
-False
-ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
-True
+esInyectiva [(1,4),(2,5),(3,6)]        ==  True
+esInyectiva [(1,4),(2,5),(3,4)]        ==  False
+esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
 \end{sesion}
 
 \index{\texttt{esInyectiva}}
