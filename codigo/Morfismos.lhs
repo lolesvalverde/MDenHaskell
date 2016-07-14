@@ -517,6 +517,16 @@ morfismos g h =
               vs2 = vertices h
 \end{code}
 
+\comentario{Se puede simplificar, ya que las variables locales sólo se usan una
+  vez}
+
+\begin{code}
+morfismos2 :: (Eq a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
+morfismos2 g h =
+  [f | f <- funciones (vertices g) (vertices h)
+     , esMorfismo g h f]
+\end{code}
+
 \subsection{Isomorfismo}
 
 \begin{definicion}
