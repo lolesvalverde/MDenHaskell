@@ -376,9 +376,9 @@ False
 
 \index{\texttt{esSobreyectiva}}
 \begin{code}
-esBiyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esBiyectiva xs ys fs =
-    esInyectiva fs && esSobreyectiva xs ys fs
+esBiyectiva :: (Eq a, Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esBiyectiva xs ys f =
+  esInyectiva f && esSobreyectiva xs ys f
 \end{code}
 
 \begin{definicion}
