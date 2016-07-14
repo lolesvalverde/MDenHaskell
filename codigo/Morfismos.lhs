@@ -629,9 +629,8 @@ isomorfos g = not . null . isomorfismos g
   de $G$ es un isomorfismo de $G$ en sí mismo.
 \end{definicion}
 
-La función \texttt{(esAutomorfismo g vss)} se verifica si la
-aplicación cuyo grafo es \texttt{vvs} es un isomorfismo entre los 
-grafos \texttt{g} y \texttt{h}.
+La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
+\texttt{f} es un automorfismo de \texttt{g}.
 
 \begin{sesion}
 ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
