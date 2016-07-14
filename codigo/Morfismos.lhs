@@ -243,9 +243,8 @@ type Funcion a b = [(a,b)]
 \end{code}
 \end{nota}
 
-La función \texttt{(funcionesEntre xs ys)} devuelve todas las
-posibles funciones del conjunto \texttt{xs} en \texttt{ys}.
-Por ejemplo,
+La función \texttt{(funciones xs ys)} devuelve todas las posibles funciones del
+conjunto \texttt{xs} en \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 ghci> funciones [1,2,3] "ab"
@@ -265,13 +264,16 @@ ghci> funciones [(1,2),(1,5)] "abc"
 \begin{code}
 funciones :: [a] -> [b] -> [Funcion a b]
 funciones xs ys =
-    [zip xs zs | zs <- variacionesR (length xs) ys]
-       where variacionesR _ [] = [[]]
-             variacionesR 0 _  = [[]] 
-             variacionesR k us =
-                 [u:vs | u <- us, vs <- variacionesR (k-1) us]
+  [zip xs zs | zs <- variacionesR (length xs) ys]
+  where variacionesR _ [] = [[]]
+        variacionesR 0 _  = [[]] 
+        variacionesR k us =
+          [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
+\comentario{La definición de \texttt{variacionesR} se debe de hacer de forma
+  global con su especificación y ejemplos. En realidad, debería de hacerse en
+  un capítulo sobre combinatoria (que también es parte de matemática discreta)}
 
 
 \begin{definicion}
