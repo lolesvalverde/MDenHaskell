@@ -432,7 +432,7 @@ ejemplo,
 \index{\texttt{inversa}}
 \begin{code}
 inversa :: [(a,b)] -> [(b,a)]
-inversa [] = []
+inversa []         = []
 inversa ((a,b):fs) = (b,a):inversa fs 
 \end{code}
     
