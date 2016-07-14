@@ -275,7 +275,6 @@ funciones xs ys =
   global con su especificación y ejemplos. En realidad, debería de hacerse en
   un capítulo sobre combinatoria (que también es parte de matemática discreta)}
 
-
 \begin{definicion}
   Si $R$ es una relación binaria entre $A$ y $B$ y $x$ es un elemento
   del conjunto $A$, la \textbf{imagen del elemento} $x$ en la relación
@@ -297,21 +296,18 @@ imagen f x = head (imagenRelacion f x)
 \end{code}
 
 \begin{definicion}
-Diremos que una función $F$ entre dos conjuntos $A$ y $B$ es una
-  \href{https://en.wikipedia.org/wiki/Injective_function}
-  {\textbf{función inyectiva}}\
-  \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
- si a elementos distintos del dominio le
-corresponden elementos distintos de la imagen; es decir,
-si $\forall a,b \in A$ tales que $a \not = b$,
-$F(a) \not = F(b)$.                 
+  Diremos que una función $f$ entre dos conjuntos es una
+    \href{https://en.wikipedia.org/wiki/Injective_function}
+    {\textbf{función inyectiva}}\
+    \footnote{\url{https://en.wikipedia.org/wiki/Injective_function}}
+  si a elementos distintos del dominio le corresponden elementos distintos de
+  la imagen; es decir, si $\forall a,b \in \dom(f)$ tales que $a \not= b$,
+  $f(a) \not= f(b)$.
 \end{definicion}
 
-La función \texttt{(esInyectiva xs ys fs)} se verifica si la
-función \texttt{fs} es inyectiva. A la hora de definirla, estamos
-contando con que \texttt{fs} es una función entre \texttt{xs} y
-\texttt{ys}.
-Por ejemplo,
+La función \texttt{(esInyectiva xs ys fs)} se verifica si la función
+\texttt{fs} es inyectiva. A la hora de definirla, estamos contando con que
+\texttt{fs} es una función entre \texttt{xs} y \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 ghci> esInyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
