@@ -12,12 +12,11 @@
 *.maf
 *.mtc*
 *.pdf
-*.png
 *.toc
 *_region_.tex
 *~
-/.gitignore
 /codigo/TAGS
+/codigo/auto/
 comentarios/
 
 !/texto/MD_en_Haskell.pdf
