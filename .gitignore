@@ -4,6 +4,7 @@
 *.bib
 *.blg
 *.el
+*.gz
 *.idx
 *.ilg
 *.ind
@@ -17,5 +18,8 @@
 *~
 /.gitignore
 /codigo/TAGS
+comentarios/
 /texto/licencia*
-*.gz
+
+!/texto/MD_en_Haskell.pdf
+
