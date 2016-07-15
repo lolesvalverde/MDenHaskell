@@ -1,4 +1,4 @@
 En este directorio se incluyen materiales que se usarán para la elaboración del
 trabajo.
 
-Enlaces a referencias bibliográficas.
+[[https://github.com/lolesvalverde/MDenHaskell/blob/master/auxiliares/Bibliografia.org][Bibliografía]]: Enlaces a referencias bibliográficas.
