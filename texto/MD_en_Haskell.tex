@@ -20,12 +20,16 @@
 \usepackage{amsmath}               % AMS LaTeX
 \usepackage{amsthm} 
 \usepackage{latexsym}
+
+% Fuentes
 \usepackage{mathpazo}              % Fuentes semejante a palatino
 \usepackage[scaled=.90]{helvet}
 \usepackage{cmtt}
 \renewcommand{\ttdefault}{cmtt}
 \usepackage{a4wide}
 % \usepackage{xmpincl}               % Incluye metadato de licencia CC.
+
+% Tikz
 \usepackage{tkz-berge}
 % Desactivar <,> cuando se hacen dibujos con tikz.
 \tikzset{
@@ -35,9 +39,8 @@ every picture/.append style={
   }
 }
 
-% Doble espacio entre líneas
-\usepackage{setspace}
-\onehalfspacing
+% Márgenes
+\usepackage[margin=1in]{geometry}
 
 % Control de espacios en la tabla de contenidos:
 \usepackage[titles]{tocloft}
@@ -46,10 +49,19 @@ every picture/.append style={
 \setlength{\cftsecnumwidth}{12mm}
 \setlength{\cftsubsecindent}{18mm}
 
+% Control de listas
+% Elimina espacio entre item y párrafo y coloca item en el margen izquierdo
+\usepackage{enumitem}
+\setlist[enumerate,itemize]{noitemsep, nolistsep, leftmargin=*}
+
 \usepackage{minitoc}
 
-% \linespread{1.05}                  % Distancia entre líneas
-\setlength{\parindent}{1cm}        % Indentación de comienzo de párrafo
+% Doble espacio entre líneas
+\usepackage{setspace}
+\onehalfspacing
+
+% \linespread{1.05}                % Distancia entre líneas
+\setlength{\parindent}{5mm}        % Indentación de comienzo de párrafo
 \deactivatetilden                  % Elima uso de ~ para la eñe
 \raggedbottom                      % No ajusta los espacios verticales.
 
