@@ -1,0 +1,8 @@
+Este directorio contiene el código LaTeX del proyecto. Su contenido es
+
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/texto/MD_en_Haskell.tex][MD_en_Haskell.tex]] :: Fichero principal del proyecto. 
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/texto/Introduccion.tex][Introduccion.tex]] :: Introducción.
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]] :: Introducción a la teoría de grafos. 
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/texto/Apendices.tex][Apendices.tex]] :: Apéndices.
+
+
