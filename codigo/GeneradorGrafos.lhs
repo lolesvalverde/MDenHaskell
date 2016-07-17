@@ -5,14 +5,14 @@ ejemplos o para comprobar propiedades.
 Para aprender a controlar el tamaño de los grafos generados, he     
 consultado las siguientes fuentes:
 
-\itemize{
+\begin{itemize}
 \item \href{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}
   {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
   \footnote{\url{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}}
 
-\item \href{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html#31.0}
+\item \href{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}
   {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
-  \footnote{\url{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html#31.0}}
+  \footnote{\url{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}}
 \end{itemize}
 
 \ignora{
