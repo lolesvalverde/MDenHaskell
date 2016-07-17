@@ -204,7 +204,7 @@ binaria \texttt{r}. Por ejemplo,
 rango [(3,2),(5,2),(3,4)]  ==  [2,4]
 \end{sesion}
 
-\index{texttt{rango}}
+\index{\texttt{rango}}
 \begin{code}
 rango :: Eq b => [(a,b)] -> [b]
 rango r = nub (map snd r)  
@@ -224,7 +224,7 @@ relación binaria \texttt{r}.
 antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
 \end{sesion}
 
-\index{texttt{antiImagenRelacion}}
+\index{\texttt{antiImagenRelacion}}
 \begin{code}
 antiImagenRelacion :: Eq b => [(a,b)] -> b -> [a]
 antiImagenRelacion r y =
