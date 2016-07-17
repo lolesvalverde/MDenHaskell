@@ -2,7 +2,8 @@
 \ignora{
 \begin{code}
 module ConjuntosRelacionesYFunciones ( productoCartesiano
-                                     , unitario  
+                                     , unitario
+                                     , variacionesR
                                      , esRelacion
                                      , imagenRelacion
                                      , dominio
@@ -80,6 +81,35 @@ unitario [5,5]  ==  True
 \begin{code}
 unitario :: Eq a => [a] -> Bool
 unitario xs = length (nub xs) == 1
+\end{code}
+
+\subsubsection{Variaciones con repetición}
+
+\begin{definicion}
+  Las \textbf{variaciones con repetición} de $m$ elementos tomados
+  en grupos de $n$ es el número de diferentes $n-$tuplas de un 
+  conjunto de $m$ elementos.
+\end{definicion}
+
+La función \texttt{(variacionesR n xs)} devuelve las variaciones con
+con repetición de los elementos de texttt{xs} en listas de \texttt{n}
+elementos. Por ejemplo, 
+
+\begin{sesion}
+ghci> variacionesR 3 ['a','b']
+["aaa","aab","aba","abb","baa","bab","bba","bbb"]
+ghci> variacionesR 2 [2,4..8]
+[[2,2],[2,4],[2,6],[2,8],[4,2],[4,4],[4,6],[4,8],
+ [6,2],[6,4],[6,6],[6,8],[8,2],[8,4],[8,6],[8,8]]
+\end{sesion}
+
+\index{\texttt{variaciones}}
+\begin{code}
+variacionesR :: Int -> [a] -> [[a]]
+variacionesR _ [] = [[]]
+variacionesR 0 _  = [[]] 
+variacionesR k us =
+    [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
 \subsection{Relaciones}
@@ -281,10 +311,6 @@ ghci> funciones [(1,2),(1,5)] "abc"
 funciones :: [a] -> [b] -> [Funcion a b]
 funciones xs ys =
   [zip xs zs | zs <- variacionesR (length xs) ys]
-  where variacionesR _ [] = [[]]
-        variacionesR 0 _  = [[]] 
-        variacionesR k us =
-          [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
 \comentario{La definición de \texttt{variacionesR} se debe de hacer de forma
