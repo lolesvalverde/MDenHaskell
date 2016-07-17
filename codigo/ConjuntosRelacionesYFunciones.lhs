@@ -314,10 +314,6 @@ funciones xs ys =
   [zip xs zs | zs <- variacionesR (length xs) ys]
 \end{code}
 
-\comentario{La definición de \texttt{variacionesR} se debe de hacer de forma
-  global con su especificación y ejemplos. En realidad, debería de hacerse en
-  un capítulo sobre combinatoria (que también es parte de matemática discreta)}
-
 \subsubsection{Imagen por una función}
 
 \begin{definicion}
@@ -339,8 +335,6 @@ imagen [(1,7),(3,2)] 3  ==  2
 imagen :: Eq a => Funcion a b -> a -> b
 imagen f x = head (imagenRelacion f x)
 \end{code}
-
-
 
 \subsubsection{Función inyectiva}
 
@@ -440,16 +434,18 @@ El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.  Por
 ejemplo,
 
 \begin{sesion}
-
+ghci> inversa [(1,4),(2,5),(3,6)]
+[(4,1),(5,2),(6,3)]
+ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
+[(4,1),(4,2),(6,3)]
 \end{sesion}
-
-\comentario{Falta ejemplo.}
 
 \index{\texttt{inversa}}
 \begin{code}
-inversa :: [(a,b)] -> [(b,a)]
-inversa []         = []
-inversa ((a,b):fs) = (b,a):inversa fs 
+inversa :: (Eq a, Eq b) => [(a,b)] -> [(b,a)]
+inversa xs@((a,b):fs) = nub (inversaAux xs)
+      where inversaAux []         = []            
+            inversaAux ((x,y):ys) = (y,x):inversaAux ys 
 \end{code}
     
 \begin{definicion}
