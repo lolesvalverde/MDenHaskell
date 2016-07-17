@@ -312,7 +312,7 @@ ghci> quickCheckWith (stdArgs {maxSize=6}) prop_ordenInvariante
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{texttt{prop\_ordenInvariante}}
+\index{texttt{prop$\_$ordenInvariante}}
 \begin{code}
 prop_ordenInvariante
   :: Grafo Int -> Grafo Int -> Bool
