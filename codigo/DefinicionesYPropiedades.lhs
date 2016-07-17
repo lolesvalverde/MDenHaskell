@@ -79,7 +79,7 @@ orden (completo 3)           == 3
 \index{\texttt{orden}}
 \begin{code}
 orden :: Grafo a -> Int
-orden g = length (vertices g)
+orden = length . vertices 
 \end{code}
 
 \begin{definicion}
