@@ -2,9 +2,18 @@ En esta sección, presentaremos el generador de grafos que nos permitirá
 generar grafos como listas de aristas arbitrariamente y usarlos como 
 ejemplos o para comprobar propiedades.
 
-\begin{comentario}
-Falta referencia al generador de grafos
-\end{comentario}
+Para aprender a controlar el tamaño de los grafos generados, he     
+consultado las siguientes fuentes:
+
+\itemize{
+\item \href{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}
+  {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
+  \footnote{\url{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}}
+
+\item \href{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html#31.0}
+  {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
+  \footnote{\url{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html#31.0}}
+\end{itemize}
 
 \ignora{
 \begin{code}
