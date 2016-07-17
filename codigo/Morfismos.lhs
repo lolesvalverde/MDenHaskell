@@ -203,9 +203,6 @@ isomorfismos g h =
         vs2 = vertices h
 \end{code}
 
-\comentario{No es necesario usar las variables locales en la definición
-  anterior.}
-
 \begin{definicion}
   Dos grafos $G$ y $H$ se dicen \textbf{isomorfos} si existe algún isomorfismo
   entre ellos.
