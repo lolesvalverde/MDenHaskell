@@ -44,18 +44,21 @@ G [1,2,3,4,5,6] [(1,3),(1,4),(1,6),(2,2),(2,4),(2,6),(3,4),
 
 \index{\texttt{generaGrafo}}
 \begin{code}
-generaGrafo :: Gen (Grafo Int)
-generaGrafo = do
+generaGrafo :: Int -> Gen (Grafo Int)
+generaGrafo 0 = return (creaGrafo [] [])
+generaGrafo s = do
   n <- choose (1,10)
-  as <- sublistOf [(x,y) | x <- [1..n], y <- [x..n]]
-  return (creaGrafo [1..n] as)
+  as <- sublistOf
+        [(x,y) | x <- [1..(min s n)], y <- [x..(min s n)]] 
+  return (creaGrafo [1..(min s n)] as)
 \end{code}
 
 \begin{nota}
-Los grafos están contenido en la clase de los objetos generables aleatoriamente. 
+Los grafos están contenido en la clase de los objetos 
+generables aleatoriamente. 
 
 \begin{code}
 instance Arbitrary (Grafo Int) where
-    arbitrary = generaGrafo
+    arbitrary = sized generaGrafo 
 \end{code}
 \end{nota}

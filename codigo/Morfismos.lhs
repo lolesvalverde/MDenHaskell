@@ -1,3 +1,4 @@
+
 \ignora{
 \begin{code}
 module Morfismos where
@@ -439,7 +440,7 @@ inversa ((a,b):fs) = (b,a):inversa fs
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
   que \textbf{conserva la adyacencia} si $\forall u,v \in V$ tales que
-  $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A$.
+  $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A'$.
 \end{definicion}
 
 La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica
@@ -699,17 +700,14 @@ automorfismos g = isomorfismos g g
 Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
 
 \begin{sesion}
-
+ghci> quickCheckWith (stdArgs {maxSize=1}) prop_ordenInvariante
 \end{sesion}
 
+\index{texttt{prop\_ordenInvariante}
 \begin{code}
-prop_gradoInvariante ::
-    (Ord a,Ord b) => Grafo a -> Grafo b -> Property
-prop_gradoInvariante g h =
-    isomorfos g h ==> orden g == orden h
+prop_ordenInvariante
+  :: Grafo Int -> Grafo Int -> Bool
+prop_ordenInvariante g h =
+    not (isomorfos g h) || orden g == orden h
 \end{code}
 
-\begin{comentario}
-La propiedad no está bien definida, me da error al comprobarla
-con QuickCheck. Continúo después.
-\end{comentario}
