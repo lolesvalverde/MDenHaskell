@@ -1,7 +1,28 @@
 
 \ignora{
 \begin{code}
-module Morfismos where
+module Morfismos ( productoCartesiano
+                  , esRelacion
+                  , imagenRelacion
+                  , dominio
+                  , esFuncional
+                  , esFuncion
+                  , funciones
+                  , imagen
+                  , esInyectiva
+                  , esSobreyectiva
+                  , esBiyectiva
+                  , inversa
+                  , conservaAdyacencia
+                  , esMorfismo
+                  , morfismos
+                  , esIsomorfismo
+                  , isomorfismos
+                  , isomorfos
+                  , esAutomorfismo
+                  , automorfismos
+                  , prop_ordenInvariante
+                  ) where
   
 import GrafoConListaDeAristas
 import EjemplosGrafos
@@ -371,15 +392,7 @@ False
 \index{\texttt{esSobreyectiva}}
 \begin{code}
 esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esSobreyectiva _ ys f = all (`elem` vs) ys
-  where vs = map snd f
-\end{code}
-
-\comentario{Una definicón alternativa es}
-
-\begin{code}
-esSobreyectiva2 :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esSobreyectiva2 _ ys f =
+esSobreyectiva _ ys f =
   ys `esSubconjunto` rango f
 \end{code}
 
@@ -513,17 +526,6 @@ ghci> morfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
 \begin{code}
 morfismos :: (Eq a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
 morfismos g h =
-    [xs | xs <- funciones vs1 vs2 , esMorfismo g h xs]
-        where vs1 = vertices g
-              vs2 = vertices h
-\end{code}
-
-\comentario{Se puede simplificar, ya que las variables locales sólo se usan una
-  vez}
-
-\begin{code}
-morfismos2 :: (Eq a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
-morfismos2 g h =
   [f | f <- funciones (vertices g) (vertices h)
      , esMorfismo g h f]
 \end{code}
