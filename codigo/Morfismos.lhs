@@ -700,7 +700,8 @@ automorfismos g = isomorfismos g g
 Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=1}) prop_ordenInvariante
+ghci> quickCheckWith (stdArgs {maxSize=6}) prop_ordenInvariante
++++ OK, passed 100 tests.
 \end{sesion}
 
 \index{texttt{prop\_ordenInvariante}
