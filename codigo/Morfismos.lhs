@@ -174,9 +174,6 @@ esIsomorfismo g h f =
         vs2 = vertices h      
 \end{code}
 
-\comentario{No es necesario usar las variables locales en la definición
-  anterior.}
-
 La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos posibles
 entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
 
