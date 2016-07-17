@@ -11,6 +11,7 @@ module ConjuntosRelacionesYFunciones ( productoCartesiano
                                      , antiImagenRelacion
                                      , esFuncional
                                      , esFuncion
+                                     , Funcion
                                      , funciones
                                      , imagen
                                      , esInyectiva
@@ -166,7 +167,7 @@ imagenRelacion r x =
   [y | (z,y) <- r, z == x] 
 \end{code}
 
-\subsection{Dominio de una relación}
+\subsubsection{Dominio de una relación}
 
 \begin{definicion}
   Dada una relación $R$ entre $A$ y $B$, su \textbf{dominio} es el 
