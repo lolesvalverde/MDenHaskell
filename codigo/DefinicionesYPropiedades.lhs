@@ -43,11 +43,6 @@ module DefinicionesYPropiedades (orden
                                 , sumaGrafos
                                 , unionGrafos
                                 , complementario
-                                -- , esMorfismo
-                                -- , esFuncion
-                                -- , conservaAdyacencia
-                                -- , morfismos
-                                -- , esIsomorfismo
                                 ) where
 
 import GrafoConListaDeAristas
