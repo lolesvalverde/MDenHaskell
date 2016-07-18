@@ -443,6 +443,7 @@ ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
 \index{\texttt{inversa}}
 \begin{code}
 inversa :: (Eq a, Eq b) => [(a,b)] -> [(b,a)]
+inversa [] = []           
 inversa xs@((a,b):fs) = nub (inversaAux xs)
       where inversaAux []         = []            
             inversaAux ((x,y):ys) = (y,x):inversaAux ys 
