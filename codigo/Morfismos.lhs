@@ -9,6 +9,8 @@ module Morfismos ( esMorfismo
                   , esAutomorfismo
                   , automorfismos
                   , prop_ordenInvariante
+                  , prop_tamañoInvariante
+                  , prop_secuenciaGradosInvariante
                   ) where
   
 import GrafoConListaDeAristas
