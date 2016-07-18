@@ -83,7 +83,7 @@ presentaremos algoritmos que nos permitan identificar cuándo dos grafos se
 pueden relacionar mediante aplicaciones entre sus vértices cumpliendo ciertas
 caracterísicas.
 
-\subsection{Morfismo}
+\subsection{Morfismos}
 
 \begin{definicion}
   Dados dos grafos simples $G = (V,A)$ y $G' = (V',A')$, un \textbf{morfismo}
@@ -136,7 +136,7 @@ morfismos g h =
      , esMorfismo g h f]
 \end{code}
 
-\subsection{Isomorfismo}
+\subsection{Isomorfismos}
 
 \begin{definicion}
   Dados dos grafos simples $G = (V,A)$ y $G' = (V',A')$, un
@@ -225,7 +225,7 @@ isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos g = not . null . isomorfismos g 
 \end{code}
 
-\subsection{Automorfismo}
+\subsection{Automorfismos}
 
 \begin{definicion}
   Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
