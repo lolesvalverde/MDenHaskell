@@ -22,6 +22,7 @@ module DefinicionesYPropiedades (orden
                                 , esLazo
                                 , entorno
                                 , grado
+                                , tamaño 
                                 , esAislado
                                 , esRegular
                                 , valenciaMin
