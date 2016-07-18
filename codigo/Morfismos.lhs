@@ -302,7 +302,7 @@ automorfismos g = isomorfismos g g
 Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=6}) prop_ordenInvariante
+ghci> quickCheckWith (stdArgs {maxSize=7}) prop_ordenInvariante
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -312,5 +312,48 @@ prop_ordenInvariante
   :: Grafo Int -> Grafo Int -> Bool
 prop_ordenInvariante g h =
     not (isomorfos g h) || orden g == orden h
+\end{code}
+
+\begin{teorema}
+  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
+  isomorfismo. Entonces, se verifica que $|A(G)|=|A(G')|$; es decir,
+  el tamaño de un grafo es un invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+
+\begin{sesion}
+ghci> quickCheckWith (stdArgs {maxSize=7}) prop_tamañoInvariante
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop\_tamañoInvariante}}
+\begin{code}
+prop_tamañoInvariante
+  :: Grafo Int -> Grafo Int -> Bool
+prop_tamañoInvariante g h =
+    not (isomorfos g h) || tamaño g == tamaño h
+\end{code}
+
+\begin{teorema}
+  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
+  isomorfismo. Entonces, tienen la misma secuencia de grados; es decir,
+  la secuencia de grados de un grafo es un invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+
+\begin{sesion}
+ghci> quickCheckWith (stdArgs {maxSize=7}) prop_secuenciaGradosInvariante
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop\_secuenciaGradosInvariante}}
+\begin{code}
+prop_secuenciaGradosInvariante
+  :: Grafo Int -> Grafo Int -> Bool
+prop_secuenciaGradosInvariante g h =
+    not (isomorfos g h) ||
+    secuenciaGrados g == secuenciaGrados h
 \end{code}
 
