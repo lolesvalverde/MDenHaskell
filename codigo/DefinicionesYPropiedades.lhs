@@ -56,17 +56,17 @@ import Data.List
 \subsection{Definiciones de grafos}
 
 \begin{definicion}
-  El \textbf{orden} de un grafo $G=(V,G)$ se define como su número de 
+  El \textbf{orden} de un grafo $G=(V,A)$ se define como su número de 
   vértices. Lo denotaremos por $|V(G)|$.
 \end{definicion}
 
-La función \texttt{orden g} devuelve el orden del grafo \texttt{g}.
+La función \texttt{(orden g)} devuelve el orden del grafo \texttt{g}.
 Por ejemplo,
 
 \begin{sesion}
 orden (grafoCiclo 4)         == 4
 orden (grafoEstrella 4)      == 5
-orden (grafoPetersen)        == 10
+orden grafoPetersen          == 10
 orden (grafoPetersenGen 2 5) == 4
 orden (completo 3)           == 3
 \end{sesion}
@@ -75,6 +75,29 @@ orden (completo 3)           == 3
 \begin{code}
 orden :: Grafo a -> Int
 orden = length . vertices 
+\end{code}
+
+\begin{definicion}
+  El \textbf{tamaño} de un grafo $G=(V,A)$ se define como su número de 
+  aristas. Lo denotaremos por $|A(G)|$.
+\end{definicion}
+
+La función \texttt{(tamaño g)} devuelve el orden del grafo \texttt{g}.
+Por ejemplo,
+
+\begin{sesion}
+tamaño (grafoCiclo 4)         == 4
+tamaño (grafoEstrella 4)      == 4
+tamaño grafoPetersen          == 15
+tamaño (grafoPetersenGen 2 5) == 4
+tamaño (completo 3)           == 3
+
+\end{sesion}
+
+\index{\texttt{tamaño}}
+\begin{code}
+tamaño :: Grafo a -> Int
+tamaño = length . aristas 
 \end{code}
 
 \begin{definicion}
