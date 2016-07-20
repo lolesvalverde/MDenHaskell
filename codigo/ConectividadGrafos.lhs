@@ -206,30 +206,79 @@ esCerrado g vs =
 \end{code}
 
 \begin{teorema}
-Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
-es una relación de equivalencia.
+  Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
+  es una relación de equivalencia.
 \end{teorema}
 
 A continuación, comprobaremos el resultado con \texttt{quickCheck}.
   
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=3}) prop_ConectadosRelEqui
+ghci> quickCheck prop_ConectadosRelEqui
++++ OK, passed 100 tests.
 \end{sesion}
 
 \index{\texttt{prop\_ConectadosRelEqui}}   
 \begin{code}
-prop_ConectadosRelEqui ::
-    Ord a => Grafo a -> a -> a -> a -> Bool
+prop_ConectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
 prop_ConectadosRelEqui g u v w =
     reflexiva && simetrica && transitiva
     where reflexiva = estanConectados g u u
           simetrica =
-              not(estanConectados g u v) || estanConectados g v u
+              not (estanConectados g u v) || estanConectados g v u
           transitiva =
               not(estanConectados g u v && estanConectados g v w)
                  || estanConectados g u w
 \end{code}                                    
 
-\begin{comentario}
-Falta corregir la propiedad
-\end{comentario}
+\begin{definicion}
+  Las clases de equivalencia obtenidas por la relación $∼$, 
+  estar conectados por un camino en un grafo $G$,  inducen subgrafos 
+  en $G$, los vértices y todas las aristas de los caminos que los conectan, 
+  que reciben el nombre de \textbf{componentes conexas por caminos} de $G$. 
+  Cuando sólo hay una clase de equivalencia; es decir, cuando el grafo solo
+  tiene una componente conexa, se dice que el grafo es \textbf{conexo}.
+\end{definicion}
+
+La función \texttt{(componentesConexas g)} devuelve las componentes 
+conexas por caminos del grafo \texttt{g}.
+
+\begin{sesion}
+ghci> componentesConexas grafoPetersen
+[[1,2,3,4,5,6,7,8,9,10]]
+ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
+[[1,2,3],[4],[5]]
+ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+[[1,2,3],[4,5]]
+\end{sesion}
+      
+\index{\texttt{componentesConexas}}
+\begin{code}
+componentesConexas :: Eq a => Grafo a -> [[a]]
+componentesConexas g = aux (vertices g)
+      where aux []     = []
+            aux (v:vs) = c: aux (vs \\ c)
+                 where c = filter (estanConectados g v) (v:vs)
+\end{code}
+
+\begin{definicion}
+  Dado un grafo, diremos que es \textbf{conexo} si la relación $~$
+  tiene una única clase de equivalencia en él; es decir, si el grafo
+  tiene una única componente conexa.
+\end{definicion}
+
+La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
+es conexo.
+
+\begin{sesion}
+esConexo (completo 5)                           == True
+esConexo (creaGrafo [1..5] [(1,2),(2,3)])       == False
+esConexo (creaGrafo [1..3] [(1,2),(2,3)])       == True
+esConexo (creaGrafo [] [])                      == False    
+\end{sesion}
+
+\index{\texttt{esConexo}}
+\begin{code}
+esConexo :: Eq a => Grafo a -> Bool
+esConexo g = length (componentesConexas g) == 1
+\end{code}             
+
