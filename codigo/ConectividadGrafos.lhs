@@ -2,9 +2,12 @@
 \ignora{
 \begin{code}
 module ConectividadGrafos (esCamino
-                          , esCerrado
+                          , todosCaminos
+                          , estanConectados
                           , longitudCamino
-                           
+                          , distancia
+                          , esGeodesica
+                          , esCerrado                           
                           ) where
   
 import GrafoConListaDeAristas
@@ -49,6 +52,7 @@ ghci> esCamino grafoThomson [1,4,2,5,3,6]
 True
 \end{sesion}
 
+\index{\texttt{esCamino}}
 \begin{code}
 esCamino :: (Ord a) => Grafo a -> [a] -> Bool
 esCamino g vs = all (`elem` (vertices g)) vs &&
@@ -87,9 +91,9 @@ todosCaminos g inicio final = bp [inicio] []
 \end{code}
 
 \begin{definicion}
-  Dado un grafo $G=(V,A)$, sean $u,v \in V$. Diremos que $u$ y $v$
-  están \textbf{conectados} si existe algun camino entre ellos en 
-  el grafo $G$.
+  Dado un grafo $G=(V,A)$, sean $u,v \in V$. Si existe algún
+  camino entre $u$ y $v$ en el grafo $G$ diremos que están
+  \textbf{conectados} y lo denotamos por $u\~v$.
 \end{definicion}
 
 La función \texttt{(estanConectados g u v)} se verifica si los 
@@ -125,31 +129,59 @@ longitudCamino [2,4..10]   == 4
 
 \index{\texttt{longitudCamino}}
 \begin{code}
-longitudCamino :: [a] -> Int
-longitudCamino vs = (length vs) - 1
+longitudCamino :: Num b => [a] -> b
+longitudCamino vs = (genericLength vs) - 1
 \end{code}
 
 \begin{definicion}
-  Se dice \textbf{distancia} entre $u$ y $v$ a la longitud del camino más
-  corto que une $u$ y $v$.
+  Se define la \textbf{distancia} entre $u$ y $v$ en el grafo $G$
+  como la longitud del camino más corto que los une. Si $u$ y $v$
+  no están conectados, decimos que la distancia es infinita.
 \end{definicion}
 
 La función \texttt{(distancia g u v)} devuelve la distancia entre los
 vértices \texttt{u} y \texttt{v} en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-distancia (grafoCiclo 7) 1 4     ==  3
-distancia (grafoRueda 7) 2 5     ==  2
-distancia (grafoEstrella 4) 1 6  ==  1
+distancia (grafoCiclo 7) 1 4                    ==  3.0
+distancia (grafoRueda 7) 2 5                    ==  2.0
+distancia (grafoEstrella 4) 1 6                 ==  1.0
+distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Infinity
 \end{sesion}
 
 \index{\texttt{distancia}}
 \begin{code}
-distancia :: Ord a => Grafo a -> a -> a -> Int  
-distancia g u v =
-    minimum (map longitudCamino (todosCaminos g u v))
+distancia :: Ord a => Grafo a -> a -> a -> Double     
+distancia g u v | estanConectados g u v =
+                    minimum (map longitudCamino (todosCaminos g u v))
+                | otherwise = 1/0
 \end{code}
 
+\begin{definicion}
+  Dado $G=(V,A)$ un grafo, sean $u,v \in V$. Un camino entre
+  $u$ y $v$ cuya longitud coincide con la distancia entre los
+  vértices se llama \textbf{geodésica} entre $u$ y $v$.
+\end{definicion}
+
+La función \texttt{(esGeodesica g vs u v)} se verifica si el camino
+\texttt{vs} es una geodesica entre \texttt{u} y \texttt{v} en
+el grafo \texttt{g}.
+
+\begin{sesion}
+esGeodesica (grafoCiclo 7) [1,2,3,4,5,6] 1 6           == False
+esGeodesica (grafoCiclo 7) [1,7,6] 1 6                 == True            
+esGeodesica (grafoRueda 7) [2,1,5] 2 5                 == True
+esGeodesica (grafoRueda 7) [2,1,4,5] 2 5               == False
+esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4] 1 4 == False
+\end{sesion}
+
+\index{\texttt{esGeodesica}}    
+\begin{code}
+esGeodesica :: Ord a => Grafo a -> [a] -> a -> a -> Bool
+esGeodesica g vs u v = esCamino g vs &&
+    longitudCamino vs == distancia g u v
+\end{code}
+  
 \begin{definicion}
   Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos
   son iguales.
@@ -160,14 +192,10 @@ vértices \texttt{vs} es un camino cerrado en el grafo \texttt{g}.
 Por ejemplo,
 
 \begin{sesion}
-ghci> esCerrado (grafoCiclo 5) [1,2,3,4,5,1]
-True
-ghci> esCerrado (grafoCiclo 5) [1,2,4,5,3,1]
-False
-ghci> esCerrado grafoThomson [1,4,2,5,3,6]
-False
-ghci> esCerrado grafoThomson [1,4,2,5,3,6,1]
-True
+esCerrado (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
+esCerrado (grafoCiclo 5) [1,2,4,5,3,1]  ==  False
+esCerrado grafoThomson [1,4,2,5,3,6]    ==  False
+esCerrado grafoThomson [1,4,2,5,3,6,1]  ==  True
 \end{sesion}
 
 \index{\texttt{esCerrado}}
@@ -177,3 +205,31 @@ esCerrado g vs =
     esCamino g vs && head vs == last vs
 \end{code}
 
+\begin{teorema}
+Dado un grafo $G$, la relación $u\∼v$ (estar conectados por un camino)
+es una relación de equivalencia.
+\end{teorema}
+
+A continuación, comprobaremos el resultado con \texttt{quickCheck}.
+  
+\begin{sesion}
+ghci> quickCheckWith (stdArgs {maxSize=3}) prop_ConectadosRelEqui
+\end{sesion}
+
+\index{\texttt{prop\_ConectadosRelEqui}}   
+\begin{code}
+prop_ConectadosRelEqui ::
+    Ord a => Grafo a -> a -> a -> a -> Bool
+prop_ConectadosRelEqui g u v w =
+    reflexiva && simetrica && transitiva
+    where reflexiva = estanConectados g u u
+          simetrica =
+              not(estanConectados g u v) || estanConectados g v u
+          transitiva =
+              not(estanConectados g u v && estanConectados g v w)
+                 || estanConectados g u w
+\end{code}                                    
+
+\begin{comentario}
+Falta corregir la propiedad
+\end{comentario}

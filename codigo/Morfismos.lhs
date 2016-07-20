@@ -17,10 +17,10 @@ import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
 import ConjuntosRelacionesYFunciones
+import DefinicionesYPropiedades 
     
 import Test.QuickCheck
 import Data.List
-import DefinicionesYPropiedades 
 \end{code}
 }
 
