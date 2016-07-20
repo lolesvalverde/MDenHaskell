@@ -2,12 +2,18 @@
 \ignora{
 \begin{code}
 module ConectividadGrafos (esCamino
+                          , aristasCamino 
                           , todosCaminos
                           , estanConectados
                           , longitudCamino
                           , distancia
                           , esGeodesica
-                          , esCerrado                           
+                          , esCerrado
+                          , prop_conectadosRelEqui
+                          , componentesConexas
+                          , esConexo
+                          , prop_caracterizaGrafoConexo
+                          , esRecorrido 
                           ) where
   
 import GrafoConListaDeAristas
@@ -60,6 +66,27 @@ esCamino g vs = all (`elem` (vertices g)) vs &&
       where p (u,v) = elem (u,v) (aristas g)||
                       elem (v,u) (aristas g)
 \end{code}
+
+La función \texttt{(aristasCamino vs)} devuelve la lista de las 
+aristas recorridas el camino \texttt{vs}.
+
+\begin{sesion}
+ghci> aristasCamino [1,2,3,4,5,1]
+[(1,2),(2,3),(3,4),(4,5),(5,1)]
+ghci> aristasCamino [1,2,4,5,3,1]
+[(1,2),(2,4),(4,5),(5,3),(3,1)]
+ghci> aristasCamino [1,2,3]
+[(1,2),(2,3)]
+ghci> aristasCamino [1,4,2,5,3,6]
+[(1,4),(4,2),(2,5),(5,3),(3,6)]
+\end{sesion}
+
+\index{\texttt{aristasCamino}}
+\begin{code}
+aristasCamino :: Eq a => [a] -> [(a,a)]
+aristasCamino vs = zip vs (tail vs)
+\end{code}
+ 
 
 La función \texttt{(todosCaminos g inicio final)} devuelve una   
 lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
@@ -213,30 +240,28 @@ esCerrado g vs =
 A continuación, comprobaremos el resultado con \texttt{quickCheck}.
   
 \begin{sesion}
-ghci> quickCheck prop_ConectadosRelEqui
+ghci> quickCheck prop_conectadosRelEqui
 +++ OK, passed 100 tests.
 \end{sesion}
 
 \index{\texttt{prop\_ConectadosRelEqui}}   
 \begin{code}
-prop_ConectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
-prop_ConectadosRelEqui g u v w =
+prop_conectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
+prop_conectadosRelEqui g u v w =
     reflexiva && simetrica && transitiva
     where reflexiva = estanConectados g u u
           simetrica =
               not (estanConectados g u v) || estanConectados g v u
           transitiva =
-              not(estanConectados g u v && estanConectados g v w)
-                 || estanConectados g u w
-\end{code}                                    
+              not (estanConectados g u v && estanConectados g v w)
+                 || estanConectados g u w           
+\end{code}
 
 \begin{definicion}
   Las clases de equivalencia obtenidas por la relación $∼$, 
   estar conectados por un camino en un grafo $G$,  inducen subgrafos 
   en $G$, los vértices y todas las aristas de los caminos que los conectan, 
-  que reciben el nombre de \textbf{componentes conexas por caminos} de $G$. 
-  Cuando sólo hay una clase de equivalencia; es decir, cuando el grafo solo
-  tiene una componente conexa, se dice que el grafo es \textbf{conexo}.
+  que reciben el nombre de \textbf{componentes conexas por caminos} de $G$.
 \end{definicion}
 
 La función \texttt{(componentesConexas g)} devuelve las componentes 
@@ -282,3 +307,44 @@ esConexo :: Eq a => Grafo a -> Bool
 esConexo g = length (componentesConexas g) == 1
 \end{code}             
 
+\begin{teorema}
+  Sea $G$ un grafo, $G=(V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
+  existe un camino entre $u$ y $v$.
+\end{teorema}
+
+Vamos a comprobar el resultado con \texttt{quickCheck}
+
+\begin{sesion}
+ghci>  quickCheck prop_caracterizaGrafoConexo
++++ OK, passed 100 tests.
+\end{sesion}      
+    
+\begin{code}
+prop_caracterizaGrafoConexo :: Grafo Int -> Property
+prop_caracterizaGrafoConexo g =
+    esConexo g ==> and [estanConectados g u v | 
+                        u <- vertices g, v <- vertices g]
+    && and [estanConectados g u v |
+         u <- vertices g, v <- vertices g] ==> esConexo g
+\end{code}
+
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo y sean $u,v \in V$. Un camino entre
+  $u$ y $v$ que no repite aristas (quizás vértices) se llama 
+  \textbf{recorrido}.
+\end{definicion}
+
+La función \texttt{(esRecorrido c)} se verifica si el camino
+\texttt{c} es un recorrido.
+
+\begin{sesion}
+esRecorrido [1,2,3,4,1,2,6]  ==  False
+esRecorrido ['a'..'z']       ==  True
+esRecorrido [1,2,4,6,4]      ==  True
+\end{sesion}
+       
+\begin{code}
+esRecorrido :: Eq a => [a] -> Bool      
+esRecorrido c =
+    aristasCamino c == nub (aristasCamino c)
+\end{code}      
