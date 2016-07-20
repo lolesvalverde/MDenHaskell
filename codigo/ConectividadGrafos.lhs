@@ -57,31 +57,56 @@ esCamino g vs = all (`elem` (vertices g)) vs &&
                       elem (v,u) (aristas g)
 \end{code}
 
-\begin{definicion}
-  Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos
-  son iguales.
-\end{definicion}
-
-La función \texttt{(esCerrado g vs)} se verifica si la sucesión de 
-vértices \texttt{vs} es un camino cerrado en el grafo \texttt{g}.
-Por ejemplo,
+La función \texttt{(todosCaminos g inicio final)} devuelve una   
+lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
+\texttt{final}, encontrados usando un algoritmo de búsqueda en                
+profundidad sobre el grafo \texttt{g}.
 
 \begin{sesion}
-ghci> esCerrado (grafoCiclo 5) [1,2,3,4,5,1]
-True
-ghci> esCerrado (grafoCiclo 5) [1,2,4,5,3,1]
-False
-ghci> esCerrado grafoThomson [1,4,2,5,3,6]
-False
-ghci> esCerrado grafoThomson [1,4,2,5,3,6,1]
-True
+ghci> todosCaminos (grafoCiclo 7) 1 6
+[[1,2,3,4,5,6],[1,7,6]]
+ghci> todosCaminos (grafoRueda 7) 2 5
+[[2,1,3,4,5],[2,1,4,5],[2,1,5],[2,3,1,4,5],[2,3,1,5],
+ [2,3,4,1,5],[2,3,4,5],[2,7,1,3,4,5],[2,7,1,4,5],[2,7,1,5],
+ [2,7,6,1,3,4,5],[2,7,6,1,4,5],[2,7,6,1,5],[2,7,6,5]]
+ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+[]
 \end{sesion}
 
-\index{\texttt{esCerrado}}
+\index{\texttt{todosCaminos}}          
 \begin{code}
-esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
-esCerrado g vs =
-    esCerrado g vs && head vs == last vs
+todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
+todosCaminos g inicio final = bp [inicio] []            
+    where bp [] [] = []
+          bp [] vis = if (last vis == final) then [vis] else []      
+          bp (v:vs) vis 
+              | v == final = [vis ++ [v]]
+              | elem v vis = bp vs vis
+              | otherwise = bp (adyacentes g v) (vis ++ [v]) ++
+                            bp vs vis 
+\end{code}
+
+\begin{definicion}
+  Dado un grafo $G=(V,A)$, sean $u,v \in V$. Diremos que $u$ y $v$
+  están \textbf{conectados} si existe algun camino entre ellos en 
+  el grafo $G$.
+\end{definicion}
+
+La función \texttt{(estanConectados g u v)} se verifica si los 
+vértices \texttt{u} y \texttt{v} están conectados en el grafo 
+\texttt{g}.
+
+\begin{sesion}
+ghci> estanConectados (grafoCiclo 7) 1 6
+True
+ghci> estanConectados (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+False
+\end{sesion}
+
+\index{\texttt{estanConectados}}
+\begin{code}
+estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
+estanConectados g u = not.null.todosCaminos g u
 \end{code}
 
 \begin{definicion}
@@ -110,17 +135,45 @@ longitudCamino vs = (length vs) - 1
 \end{definicion}
 
 La función \texttt{(distancia g u v)} devuelve la distancia entre los
-   vértices \texttt{u} y \texttt{v} en el grafo \texttt{g}. Por ejemplo,
+vértices \texttt{u} y \texttt{v} en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-        
+distancia (grafoCiclo 7) 1 4     ==  3
+distancia (grafoRueda 7) 2 5     ==  2
+distancia (grafoEstrella 4) 1 6  ==  1
 \end{sesion}
 
-\index{\texttt{longitudCamino}}
+\index{\texttt{distancia}}
 \begin{code}
-
+distancia :: Ord a => Grafo a -> a -> a -> Int  
+distancia g u v =
+    minimum (map longitudCamino (todosCaminos g u v))
 \end{code}
 
-\begin{comentario}
-Ver algoritmos de recorridos en grafos
-\end{comentario}
+\begin{definicion}
+  Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos
+  son iguales.
+\end{definicion}
+
+La función \texttt{(esCerrado g vs)} se verifica si la sucesión de 
+vértices \texttt{vs} es un camino cerrado en el grafo \texttt{g}.
+Por ejemplo,
+
+\begin{sesion}
+ghci> esCerrado (grafoCiclo 5) [1,2,3,4,5,1]
+True
+ghci> esCerrado (grafoCiclo 5) [1,2,4,5,3,1]
+False
+ghci> esCerrado grafoThomson [1,4,2,5,3,6]
+False
+ghci> esCerrado grafoThomson [1,4,2,5,3,6,1]
+True
+\end{sesion}
+
+\index{\texttt{esCerrado}}
+\begin{code}
+esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
+esCerrado g vs =
+    esCamino g vs && head vs == last vs
+\end{code}
+
