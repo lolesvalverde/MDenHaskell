@@ -93,7 +93,7 @@ todosCaminos g inicio final = bp [inicio] []
 \begin{definicion}
   Dado un grafo $G=(V,A)$, sean $u,v \in V$. Si existe algún
   camino entre $u$ y $v$ en el grafo $G$ diremos que están
-  \textbf{conectados} y lo denotamos por $u\~v$.
+  \textbf{conectados} y lo denotamos por $u~v$.
 \end{definicion}
 
 La función \texttt{(estanConectados g u v)} se verifica si los 
@@ -206,7 +206,7 @@ esCerrado g vs =
 \end{code}
 
 \begin{teorema}
-Dado un grafo $G$, la relación $u\∼v$ (estar conectados por un camino)
+Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
 es una relación de equivalencia.
 \end{teorema}
 
