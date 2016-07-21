@@ -26,8 +26,8 @@ import GrafoConListaDeAristas
 \end{code}
 }
 
-\texttt{(generaGrafos)} es un generador de grafos de hasta 10 vértices. 
-Por ejemplo,
+\texttt{(generaGrafos n)} es un generador de grafos de hasta \texttt{n}
+vértices. Por ejemplo,
 
 \begin{sesion}
 ghci> sample (generaGrafo 5)
@@ -46,18 +46,33 @@ G [1,2,3,4,5] [(1,3),(2,5),(3,3),(3,5),(5,5)]
 G [1,2,3,4,5] [(1,1),(1,3),(1,5),(2,3),(2,5),(3,4)]
 G [1,2,3,4,5] 
   [(1,1),(1,3),(1,4),(1,5),(2,5),(3,4),(3,5),(4,4),(4,5),(5,5)]
+
+λ> sample (generaGrafo 2)
+G [1] []
+G [1] []
+G [1] [(1,1)]
+G [1] []
+G [1] [(1,1)]
+G [1,2] [(1,1),(2,2)]
+G [1] [(1,1)]
+G [1] []
+G [1,2] [(1,1)]
+G [1] []
+G [] []
 \end{sesion}
+
+\comentario{Ver el 1 del 21-jul}
 
 \index{\texttt{generaGrafo}}
 \begin{code}
 generaGrafo :: Int -> Gen (Grafo Int)
-generaGrafo 0 = return (creaGrafo [] [])
 generaGrafo s = do
-  n <- choose (1,10)
-  as <- sublistOf
-        [(x,y) | x <- [1..(min s n)], y <- [x..(min s n)]] 
-  return (creaGrafo [1..(min s n)] as)
+  n  <- choose (0,s)
+  as <- sublistOf [(x,y) | x <- [1..n], y <- [x..n]] 
+  return (creaGrafo [1..n] as)
 \end{code}
+
+\comentario{Ver 2 y 3 de 21-jul}
 
 \begin{nota}
 Los grafos están contenido en la clase de los objetos 
@@ -68,3 +83,16 @@ instance Arbitrary (Grafo Int) where
     arbitrary = sized generaGrafo 
 \end{code}
 \end{nota}
+
+En el siguiente ejemplo se pueden observar algunos grafos generados
+
+\begin{sesion}
+λ> sample (arbitrary :: Gen (Grafo Int))
+G [] []
+G [1,2] [(1,2)]
+G [] []
+G [1,2,3,4,5] [(1,3),(1,5),(2,3),(2,4),(3,4),(4,5),(5,5)]
+G [1,2,3,4,5,6] [(1,2),(1,5),(3,3),(4,5),(4,6),(5,5),(5,6)]
+G [1,2,3,4] [(1,1),(1,2),(1,3),(1,4),(2,3),(3,3)]
+G [1,2,3,4,5,6,7,8,9,10,11,12,13,14] [(1,1),(1,3),(2,5),(3,4),(9,11)]
+\end{sesion}
