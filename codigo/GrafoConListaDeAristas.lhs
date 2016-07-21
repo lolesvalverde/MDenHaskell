@@ -6,7 +6,7 @@ los vértices y la segunda la de las aristas.
 \begin{nota}
   Una diferencia entre vectores y listas es que en los vectores se
   tiene en tiempo constante el valor de índice $n$ pero en las listas para
-  encontrar el elemento $n$--ésimo hay que recorrerla. Los vectores tiene
+  encontrar el elemento $n$--ésimo hay que recorrerla. Los vectores tienen
   acceso constante ($O(1)$) y las listas lineal ($O(n)$).
 \end{nota}
 
@@ -76,13 +76,16 @@ ghci> ejGrafo
  G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
 \end{sesion}
 
-\index{\texttt{ejGrafo}}
 \begin{code}
 ejGrafo :: Grafo Int
 ejGrafo = creaGrafo [1..5]
                     [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
 \end{code}
 \end{ejemplo}
+
+\begin{nota}
+  Con la función \texttt{generaGrafo} podemos crear el grafo nulo.
+\end{nota}
 
 \item \texttt{(vertices g)} es la lista de los vértices del grafo \texttt{g}.
   Por ejemplo,
