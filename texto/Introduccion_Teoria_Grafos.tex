@@ -72,12 +72,13 @@ resolver a mano.
 
 \section{Definición de grafo}
 
-En primer lugar, vamos a introducir terminología básica en el desarrollo de la Teoría de 
-Grafos.
+En primer lugar, vamos a introducir terminología básica en el 
+desarrollo de la Teoría de Grafos.
 
 \begin{definicion}
-  Un \textbf{grafo} $G$ es un par $(V,A)$, donde $V$ es el conjunto de los
-  \textbf{vértices} (o \textbf{nodos}) y $A$ el de las \textbf{aristas}. 
+  Un \textbf{grafo} $G$ es un par $(V,A)$, donde $V$ es el conjunto 
+  cuyos elementos llamamos \textbf{vértices} (o \textbf{nodos}) y 
+  $A$ es un conjunto cuyos elementos llamamos \textbf{aristas}. 
 \end{definicion}
 
 \begin{definicion}
@@ -87,13 +88,14 @@ Grafos.
 \end{definicion}
 
 \begin{definicion}
-  Dado un grafo $G = (V,A)$, diremos que un vértice $v \in V$ es \textbf{adyacente}
-  a $v' \in V$ si $(v',v) \in A$. 
+  Dado un grafo $G = (V,A)$, diremos que un vértice $v \in V$ es 
+  \textbf{adyacente} a $v' \in V$ si $(v',v) \in A$. 
 \end{definicion}
 
 \begin{definicion}
   Si en un grafo dirigido se permiten aristas repetidas, lo llamaremos 
-  \textbf{multigrafo}. Si no se permiten, lo llamaremos \textbf{grafo regular}.
+  \textbf{multigrafo}. Si no se permiten, lo llamaremos 
+  \textbf{grafo regular}.
 \end{definicion}
 
 \begin{nota}
@@ -103,7 +105,8 @@ Grafos.
 
 \begin{ejemplo}
   Sea $G = (V,A)$ un grafo con $V = \{a,b,c,d\}$ y
-  $A = \{\allowbreak(a,b), \allowbreak (a,c), \allowbreak (b,d), \allowbreak (d,d)\}$.
+  $A = \{\allowbreak(a,b), \allowbreak (a,c), \allowbreak (b,d), 
+  \allowbreak (d,d)\}$.
   En este grafo, los vértices $a,d$ son adyacentes a $b$.
 
   \begin{center},
@@ -140,9 +143,10 @@ Si consideramos un grafo finito cualquiera $G = (V,A)$, podemos ordenar el
 conjunto de los vértices y representarlo como $V = \{v_1, \dots, v_n\}$ con
 $n = |V|$.
 
-En primer lugar, necesitaremos crear un tipo \texttt{(Grafo)} cuya definición sea compatible
-con la entidad matemática que representa y que nos permita definir las operaciones que 
-necesitamos para trabajar con los grafos. Estas operaciones son:
+En primer lugar, necesitaremos crear un tipo \texttt{(Grafo)} cuya definición
+sea compatible con la entidad matemática que representa y que nos permita 
+definir las operaciones que necesitamos para trabajar con los grafos. 
+Estas operaciones son:
 
 \begin{code}
 creaGrafo  -- [a] -> [(a,a)] -> Grafo a
@@ -156,8 +160,10 @@ donde:
 \begin{itemize}
 \item \texttt{(creaGrafo vs as)} es un grafo tal que el conjunto de sus
   vértices  es \texttt{vs} y el de sus aristas es \texttt{as}.
-\item \texttt{(vertices g)} es la lista de todos los vértices del grafo \texttt{g}.
-\item \texttt{(adyacentes g v)} es la lista de los vértices adyacentes al vértice
+\item \texttt{(vertices g)} es la lista de todos los vértices del 
+  grafo \texttt{g}.
+\item \texttt{(adyacentes g v)} es la lista de los vértices adyacentes
+  al vértice
   \texttt{v} en el grafo \texttt{g}.
 \item \texttt{(aristaEn a g)} se verifica si \texttt{a} es una arista del grafo
   \texttt{g}.
