@@ -47,7 +47,7 @@ G [1,2,3,4,5] [(1,1),(1,3),(1,5),(2,3),(2,5),(3,4)]
 G [1,2,3,4,5] 
   [(1,1),(1,3),(1,4),(1,5),(2,5),(3,4),(3,5),(4,4),(4,5),(5,5)]
 
-λ> sample (generaGrafo 2)
+ghci> sample (generaGrafo 2)
 G [1] []
 G [1] []
 G [1] [(1,1)]
@@ -61,8 +61,6 @@ G [1] []
 G [] []
 \end{sesion}
 
-\comentario{Ver el 1 del 21-jul}
-
 \index{\texttt{generaGrafo}}
 \begin{code}
 generaGrafo :: Int -> Gen (Grafo Int)
@@ -71,8 +69,6 @@ generaGrafo s = do
   as <- sublistOf [(x,y) | x <- [1..n], y <- [x..n]] 
   return (creaGrafo [1..n] as)
 \end{code}
-
-\comentario{Ver 2 y 3 de 21-jul}
 
 \begin{nota}
 Los grafos están contenido en la clase de los objetos 
@@ -87,7 +83,7 @@ instance Arbitrary (Grafo Int) where
 En el siguiente ejemplo se pueden observar algunos grafos generados
 
 \begin{sesion}
-λ> sample (arbitrary :: Gen (Grafo Int))
+ghci> sample (arbitrary :: Gen (Grafo Int))
 G [] []
 G [1,2] [(1,2)]
 G [] []
