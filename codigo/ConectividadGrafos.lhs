@@ -4,7 +4,8 @@
 module ConectividadGrafos (esCamino
                           , aristasCamino
                           , esRecorrido
-                          , todosRecorridos
+                          , esArco
+                          , todosArcos
                           , estanConectados
                           , longitudCamino
                           , distancia
@@ -93,13 +94,14 @@ aristasCamino vs = zip vs (tail vs)
   \textbf{recorrido}.
 \end{definicion}
 
-La función \texttt{(esRecorrido c)} se verifica si el camino
+La función \texttt{(esRecorrido g c)} se verifica si el camino
 \texttt{c} es un recorrido.
 
 \begin{sesion}
-esRecorrido [1,2,3,4,1,2,6]  ==  False
+esRecorrido (grafoRueda 5) [1,2,3,4,1,2,5]  ==  False
 esRecorrido ['a'..'z']       ==  True
 esRecorrido [1,2,4,6,4]      ==  True
+esRecorrido [1,2,1,3,4]      ==  True       
 \end{sesion}
        
 \begin{code}
@@ -108,26 +110,47 @@ esRecorrido c =
     aristasCamino c == nub (aristasCamino c)
 \end{code}      
 
+\begin{definicion}
+  Un camino que no repite vértices (y, por tanto, tampoco aristas)
+  se llama \textbf{arco}.
+\end{definicion}
+
+La función \texttt{(esArco c)} se verifica si el camino
+\texttt{vs} es un arco}.
+
+\begin{sesion}
+esArco [1..4]              == True
+esArco ([1..5] ++ [1..4])  ==  False
+esArco [1,2,1,3,4]         ==  False
+esArco ['a'..'f']          == True
+\end{sesion}
+
+\begin{code}
+esArco :: Ord a => [a] -> Bool
+esArco vs = nub vas == vas
+    where vas = map fst (aristasCamino vs)
+\end{code}
+    
 La función \texttt{(todosRecorridos g inicio final)} devuelve una   
 lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
 \texttt{final}, encontrados usando un algoritmo de búsqueda en                
 profundidad sobre el grafo \texttt{g}.
 
 \begin{sesion}
-ghci> todosRecorridos (grafoCiclo 7) 1 6
+ghci> todosArcos (grafoCiclo 7) 1 6
 [[1,2,3,4,5,6],[1,7,6]]
-ghci> todosRecorridos (grafoRueda 7) 2 5
+ghci> todosArcos (grafoRueda 7) 2 5
 [[2,1,3,4,5],[2,1,4,5],[2,1,5],[2,3,1,4,5],[2,3,1,5],
  [2,3,4,1,5],[2,3,4,5],[2,7,1,3,4,5],[2,7,1,4,5],[2,7,1,5],
  [2,7,6,1,3,4,5],[2,7,6,1,4,5],[2,7,6,1,5],[2,7,6,5]]
-ghci> todosRecorridos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+ghci> todosArcos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
-\index{\texttt{todosRecorridos}}          
+\index{\texttt{todosArcos}}          
 \begin{code}
-todosRecorridos :: Eq a => Grafo a -> a -> a -> [[a]]
-todosRecorridos g inicio final = bp [inicio] []            
+todosArcos :: Eq a => Grafo a -> a -> a -> [[a]]
+todosArcos g inicio final = bp [inicio] []            
     where bp [] [] = []
           bp [] vis = if (last vis == final) then [vis] else []      
           bp (v:vs) vis 
@@ -157,7 +180,7 @@ False
 \index{\texttt{estanConectados}}
 \begin{code}
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
-estanConectados g u = not.null.todosRecorridos g u
+estanConectados g u = not.null.todosArcos g u
 \end{code}
 
 \begin{definicion}
@@ -200,7 +223,7 @@ distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Infinity
 \begin{code}
 distancia :: Ord a => Grafo a -> a -> a -> Double     
 distancia g u v | estanConectados g u v =
-                    minimum (map longitudCamino (todosRecorridos g u v))
+                    minimum (map longitudCamino (todosArcos g u v))
                 | otherwise = 1/0
 \end{code}
 
@@ -215,11 +238,11 @@ La función \texttt{(esGeodesica g vs u v)} se verifica si el camino
 el grafo \texttt{g}.
 
 \begin{sesion}
-esGeodesica (grafoCiclo 7) [1,2,3,4,5,6] 1 6           == False
-esGeodesica (grafoCiclo 7) [1,7,6] 1 6                 == True            
-esGeodesica (grafoRueda 7) [2,1,5] 2 5                 == True
-esGeodesica (grafoRueda 7) [2,1,4,5] 2 5               == False
-esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4] 1 4 == False
+esGeodesica (grafoCiclo 7) [1,2,3,4,5,6] 1 6            == False
+esGeodesica (grafoCiclo 7) [1,7,6] 1 6                  == True            
+esGeodesica (grafoRueda 7) [2,1,5] 2 5                  == True
+esGeodesica (grafoRueda 7) [2,1,4,5] 2 5                == False
+esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4] 1 4  == False
 \end{sesion}
 
 \index{\texttt{esGeodesica}}    
@@ -251,7 +274,53 @@ esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
 esCerrado g vs =
     esCamino g vs && head vs == last vs
 \end{code}
+  
+\begin{definicion}
+  Un recorrido en un grafo $G$ se dice \textbf{circuito} si sus extremos
+  son iguales.
+\end{definicion}
 
+La función \texttt{(esCircuito g vs)} se verifica si la sucesión de 
+vértices \texttt{vs} es un circuito en el grafo \texttt{g}.
+Por ejemplo,
+
+\begin{sesion}
+esCircuito (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
+esCircuito (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
+esCircuito grafoThomson [1,4,2,5,3,6]      ==  False
+esCircuito grafoThomson [1,4,2,5,3,6,1]    ==  True
+\end{sesion}
+
+\index{\texttt{esCircuito}}
+\begin{code}
+esCircuito :: (Ord a) => Grafo a -> [a] -> Bool
+esCircuito g vs =
+    esRecorrido vs && esCerrado g vs
+\end{code}
+
+\begin{definicion}
+  Un arco en un grafo $G$ se dice \textbf{circuito} si sus extremos
+  son iguales.
+\end{definicion}
+
+La función \texttt{(esCiclo g vs)} se verifica si la sucesión de 
+vértices \texttt{vs} es un ciclo en el grafo \texttt{g}.
+Por ejemplo,
+
+\begin{sesion}
+esCiclo (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
+esCiclo (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
+esCiclo grafoThomson [1,4,2,5,3,6]      ==  False
+esCiclo grafoThomson [1,4,2,5,3,6,1]    ==  True
+\end{sesion}
+
+\index{\texttt{esCircuito}}
+\begin{code}
+esCiclo :: (Ord a) => Grafo a -> [a] -> Bool
+esCiclo g vs =
+    esArco vs && esCerrado g vs
+\end{code}
+    
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
   es una relación de equivalencia.
