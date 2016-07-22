@@ -11,6 +11,8 @@ module ConectividadGrafos (esCamino
                           , distancia
                           , esGeodesica
                           , esCerrado
+                          , esCircuito
+                          , esCiclo 
                           , prop_conectadosRelEqui
                           , componentesConexas
                           , esConexo
