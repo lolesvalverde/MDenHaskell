@@ -2,8 +2,9 @@
 \ignora{
 \begin{code}
 module ConectividadGrafos (esCamino
-                          , aristasCamino 
-                          , todosCaminos
+                          , aristasCamino
+                          , esRecorrido
+                          , todosRecorridos
                           , estanConectados
                           , longitudCamino
                           , distancia
@@ -12,8 +13,7 @@ module ConectividadGrafos (esCamino
                           , prop_conectadosRelEqui
                           , componentesConexas
                           , esConexo
-                          , prop_caracterizaGrafoConexo
-                          , esRecorrido 
+                          , prop_caracterizaGrafoConexo 
                           ) where
   
 import GrafoConListaDeAristas
@@ -68,7 +68,7 @@ esCamino g vs = all (`elem` (vertices g)) vs &&
 \end{code}
 
 La función \texttt{(aristasCamino vs)} devuelve la lista de las 
-aristas recorridas el camino \texttt{vs}.
+aristas recorridas en el camino \texttt{vs}.
 
 \begin{sesion}
 ghci> aristasCamino [1,2,3,4,5,1]
@@ -87,27 +87,47 @@ aristasCamino :: Eq a => [a] -> [(a,a)]
 aristasCamino vs = zip vs (tail vs)
 \end{code}
  
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo y sean $u,v \in V$. Un camino entre
+  $u$ y $v$ que no repite aristas (quizás vértices) se llama 
+  \textbf{recorrido}.
+\end{definicion}
 
-La función \texttt{(todosCaminos g inicio final)} devuelve una   
+La función \texttt{(esRecorrido c)} se verifica si el camino
+\texttt{c} es un recorrido.
+
+\begin{sesion}
+esRecorrido [1,2,3,4,1,2,6]  ==  False
+esRecorrido ['a'..'z']       ==  True
+esRecorrido [1,2,4,6,4]      ==  True
+\end{sesion}
+       
+\begin{code}
+esRecorrido :: Eq a => [a] -> Bool      
+esRecorrido c =
+    aristasCamino c == nub (aristasCamino c)
+\end{code}      
+
+La función \texttt{(todosRecorridos g inicio final)} devuelve una   
 lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
 \texttt{final}, encontrados usando un algoritmo de búsqueda en                
 profundidad sobre el grafo \texttt{g}.
 
 \begin{sesion}
-ghci> todosCaminos (grafoCiclo 7) 1 6
+ghci> todosRecorridos (grafoCiclo 7) 1 6
 [[1,2,3,4,5,6],[1,7,6]]
-ghci> todosCaminos (grafoRueda 7) 2 5
+ghci> todosRecorridos (grafoRueda 7) 2 5
 [[2,1,3,4,5],[2,1,4,5],[2,1,5],[2,3,1,4,5],[2,3,1,5],
  [2,3,4,1,5],[2,3,4,5],[2,7,1,3,4,5],[2,7,1,4,5],[2,7,1,5],
  [2,7,6,1,3,4,5],[2,7,6,1,4,5],[2,7,6,1,5],[2,7,6,5]]
-ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+ghci> todosRecorridos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
-\index{\texttt{todosCaminos}}          
+\index{\texttt{todosRecorridos}}          
 \begin{code}
-todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
-todosCaminos g inicio final = bp [inicio] []            
+todosRecorridos :: Eq a => Grafo a -> a -> a -> [[a]]
+todosRecorridos g inicio final = bp [inicio] []            
     where bp [] [] = []
           bp [] vis = if (last vis == final) then [vis] else []      
           bp (v:vs) vis 
@@ -137,7 +157,7 @@ False
 \index{\texttt{estanConectados}}
 \begin{code}
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
-estanConectados g u = not.null.todosCaminos g u
+estanConectados g u = not.null.todosRecorridos g u
 \end{code}
 
 \begin{definicion}
@@ -180,7 +200,7 @@ distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Infinity
 \begin{code}
 distancia :: Ord a => Grafo a -> a -> a -> Double     
 distancia g u v | estanConectados g u v =
-                    minimum (map longitudCamino (todosCaminos g u v))
+                    minimum (map longitudCamino (todosRecorridos g u v))
                 | otherwise = 1/0
 \end{code}
 
@@ -328,23 +348,3 @@ prop_caracterizaGrafoConexo g =
          u <- vertices g, v <- vertices g] ==> esConexo g
 \end{code}
 
-\begin{definicion}
-  Sea $G=(V,A)$ un grafo y sean $u,v \in V$. Un camino entre
-  $u$ y $v$ que no repite aristas (quizás vértices) se llama 
-  \textbf{recorrido}.
-\end{definicion}
-
-La función \texttt{(esRecorrido c)} se verifica si el camino
-\texttt{c} es un recorrido.
-
-\begin{sesion}
-esRecorrido [1,2,3,4,1,2,6]  ==  False
-esRecorrido ['a'..'z']       ==  True
-esRecorrido [1,2,4,6,4]      ==  True
-\end{sesion}
-       
-\begin{code}
-esRecorrido :: Eq a => [a] -> Bool      
-esRecorrido c =
-    aristasCamino c == nub (aristasCamino c)
-\end{code}      
