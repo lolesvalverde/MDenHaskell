@@ -72,6 +72,25 @@ g12 = creaGrafo [1..4] [(1,1),(1,2),(3,3)]
 \end{code}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO NULO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{definicion}
+  Un \textbf{grafo nulo} es un grafo que no tiene ni 
+  vértices ni aristas.
+\end{definicion}
+
+La función \texttt{grafoNulo} devuelve un grafo nulo.
+
+\begin{sesion}
+grafoNulo == G [] []
+\end{sesion}
+
+\index{\texttt{grafoNulo}}
+\begin{code}
+grafoNulo :: Ord a => Grafo a
+grafoNulo = creaGrafo [] []
+\end{code}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO CICLO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Grafo ciclo}
@@ -106,9 +125,10 @@ G (array (1,5) [(1,[5,2]),(2,[1,3]),(3,[2,4]),(4,[3,5]),(5,[4,1])])
 \index{\texttt{grafoCiclo}}
 \begin{code}
 grafoCiclo :: Int -> Grafo Int
-grafoCiclo n =
-    creaGrafo [1..n]
-              ([(x,x+1) | x <- [1..n-1]] ++ [(n,1)])
+grafoCiclo 0 = grafoNulo
+grafoCiclo 1 = creaGrafo [1] []              
+grafoCiclo n = creaGrafo [1..n]
+              ([(u,u+1) | u <- [1..n-1]] ++ [(n,1)])
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE LA AMISTAD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
