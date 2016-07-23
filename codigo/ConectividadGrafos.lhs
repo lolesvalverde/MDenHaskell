@@ -124,8 +124,8 @@ esRecorrido c =
   se llama \textbf{camino simple}.
 \end{definicion}
 
-La función \texttt{(esCaminoSimple c)} se verifica si el camino \texttt{vs} es un
-arco. Por ejemplo,
+La función \texttt{(esCaminoSimple vs)} se verifica si el camino \texttt{vs} es
+un arco. Por ejemplo,
 
 \begin{sesion}
 esCaminoSimple [1..4]              == True
@@ -139,6 +139,8 @@ esCaminoSimple :: Ord a => [a] -> Bool
 esCaminoSimple vs = nub vas == vas
     where vas = map fst (aristasCamino vs)
 \end{code}
+
+\comentario{Ver ``Comentarios a esCaminoSimple''}
     
 La función \texttt{(todosRecorridos g inicio final)} devuelve una   
 lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
