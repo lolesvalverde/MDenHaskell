@@ -122,7 +122,7 @@ esRecorrido c =
 \end{definicion}
 
 La función \texttt{(esArco c)} se verifica si el camino
-\texttt{vs} es un arco}.
+\texttt{vs} es un arco.
 
 \begin{sesion}
 esArco [1..4]              == True
