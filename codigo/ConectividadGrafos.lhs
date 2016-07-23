@@ -16,7 +16,11 @@ module ConectividadGrafos (esCamino
                           , prop_conectadosRelEqui
                           , componentesConexas
                           , esConexo
-                          , prop_caracterizaGrafoConexo 
+                          , prop_caracterizaGrafoConexo
+                          , diametro
+                          , excentricidad
+                          , radio
+                          , centro 
                           ) where
   
 import GrafoConListaDeAristas
@@ -177,12 +181,15 @@ ghci> estanConectados (grafoCiclo 7) 1 6
 True
 ghci> estanConectados (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 False
+ghci> estanConectados grafoNulo 1 4
+False
 \end{sesion}
 
 \index{\texttt{estanConectados}}
 \begin{code}
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
-estanConectados g u = not.null.todosArcos g u
+estanConectados g u | null (vertices g) = False
+                    | otherwise = not.null.todosArcos g u
 \end{code}
 
 \begin{definicion}
@@ -219,6 +226,7 @@ distancia (grafoCiclo 7) 1 4                    ==  3.0
 distancia (grafoRueda 7) 2 5                    ==  2.0
 distancia (grafoEstrella 4) 1 6                 ==  1.0
 distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Infinity
+distancia grafoNulo 2 3                         ==  Infinity
 \end{sesion}
 
 \index{\texttt{distancia}}
@@ -245,6 +253,7 @@ esGeodesica (grafoCiclo 7) [1,7,6] 1 6                  == True
 esGeodesica (grafoRueda 7) [2,1,5] 2 5                  == True
 esGeodesica (grafoRueda 7) [2,1,4,5] 2 5                == False
 esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4] 1 4  == False
+esGeodesica grafoNulo [1,4] 1 4                         == False
 \end{sesion}
 
 \index{\texttt{esGeodesica}}    
@@ -268,6 +277,7 @@ esCerrado (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
 esCerrado (grafoCiclo 5) [1,2,4,5,3,1]  ==  False
 esCerrado grafoThomson [1,4,2,5,3,6]    ==  False
 esCerrado grafoThomson [1,4,2,5,3,6,1]  ==  True
+esCerrado grafoNulo [1,2,1]             ==  False
 \end{sesion}
 
 \index{\texttt{esCerrado}}
@@ -291,6 +301,7 @@ esCircuito (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
 esCircuito (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
 esCircuito grafoThomson [1,4,2,5,3,6]      ==  False
 esCircuito grafoThomson [1,4,2,5,3,6,1]    ==  True
+esCircuito grafoNulo [1,2,1]               ==  False     
 \end{sesion}
 
 \index{\texttt{esCircuito}}
@@ -314,6 +325,7 @@ esCiclo (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
 esCiclo (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
 esCiclo grafoThomson [1,4,2,5,3,6]      ==  False
 esCiclo grafoThomson [1,4,2,5,3,6,1]    ==  True
+esCiclo grafoNulo [1,2,1]               ==  False
 \end{sesion}
 
 \index{\texttt{esCircuito}}
@@ -356,7 +368,7 @@ prop_conectadosRelEqui g u v w =
 \end{definicion}
 
 La función \texttt{(componentesConexas g)} devuelve las componentes 
-conexas por caminos del grafo \texttt{g}.
+conexas por caminos del grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 ghci> componentesConexas grafoPetersen
@@ -365,6 +377,8 @@ ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
 [[1,2,3],[4],[5]]
 ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
 [[1,2,3],[4,5]]
+ghci> componentesConexas grafoNulo
+[]
 \end{sesion}
       
 \index{\texttt{componentesConexas}}
@@ -383,13 +397,13 @@ componentesConexas g = aux (vertices g)
 \end{definicion}
 
 La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
-es conexo.
+es conexo. Por ejemplo,
 
 \begin{sesion}
-esConexo (completo 5)                           == True
-esConexo (creaGrafo [1..5] [(1,2),(2,3)])       == False
-esConexo (creaGrafo [1..3] [(1,2),(2,3)])       == True
-esConexo (creaGrafo [] [])                      == False    
+esConexo (completo 5)                      == True
+esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
+esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
+esConexo grafoNulo                         == False    
 \end{sesion}
 
 \index{\texttt{esConexo}}
@@ -419,3 +433,111 @@ prop_caracterizaGrafoConexo g =
          u <- vertices g, v <- vertices g] ==> esConexo g
 \end{code}
 
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo. Se define el \textbf{diámetro} de $G$
+  como el máximo de las distancias entre los vértices en $V$. Lo 
+  denotaremos por $d(G)$.
+\end{definicion}
+
+La función \texttt{(diametro g)} devuelve el diámetro del 
+grafo \texttt{g}. Por ejemplo,
+
+\begin{sesion}
+diametro (grafoCiclo 8)      ==  4.0
+diametro (grafoRueda 7)      ==  2.0
+diametro grafoPetersen       ==  2.0
+diametro grafoMoebiusCantor  ==  4.0
+diametro grafoNulo           ==  0.0        
+\end{sesion}
+
+\index{\texttt{diametro}}
+\begin{code}
+diametro :: Ord a => Grafo a -> Double
+diametro g
+    | null (vertices g) = 0     
+    | otherwise =
+        maximum (map f (combinaciones 2 (vertices g)))
+            where f ([u,v]) = distancia g u v
+\end{code}
+
+\begin{definicion}
+  Sean $G=(V,A)$ un grafo y $v \in V$. Se define la \textbf{excentricidad}
+  de $v$ como el máximo de las distancias entre $v$ y el resto de
+  vértices de $G$. La denotaremos por $e(G)$.
+\end{definicion}
+
+La función \texttt{(excentricidad g v)} devuelve la excentricidad del 
+vértice \texttt{v} en el grafo \texttt{g}. Por ejemplo,
+
+\begin{sesion}
+excentricidad (grafoCiclo 8) 5      ==  4.0
+excentricidad (grafoRueda 7) 4      ==  2.0
+excentricidad (grafoRueda 7) 1      ==  1.0
+excentricidad grafoPetersen  6      ==  2.0
+excentricidad grafoMoebiusCantor 7  ==  4.0
+excentricidad grafoNulo 3           ==  0.0              
+\end{sesion}
+
+\index{\texttt{excentricidad}}
+\begin{code}
+excentricidad :: Ord a => Grafo a -> a -> Double
+excentricidad g u
+    | null (vertices g) = 0
+    | otherwise = maximum (map f [(u,v) | v <- vertices g])
+         where f (a,b) = distancia g a b
+\end{code}
+
+\begin{definicion}
+  Sean $G=(V,A)$ un grafo y $v \in V$. Se define el \textbf{radio} de
+  $G$ como el mínimo de las excentricidades de sus vértices. Lo
+  denotaremos por $r(G)$.
+\end{definicion}
+
+La función \texttt{(radio g)} devuelve el radio del
+grafo \texttt{g}. Por ejemplo,
+
+\begin{sesion}
+radio (grafoCiclo 8)      ==  4.0
+radio (grafoRueda 7)      ==  1.0
+radio (grafoRueda 7)      ==  1.0
+radio grafoPetersen       ==  2.0
+radio grafoMoebiusCantor  ==  4.0
+radio grafoNulo           ==  0.0
+\end{sesion}
+
+\index{\texttt{radio}}
+\begin{code}
+radio :: Ord a => Grafo a -> Double        
+radio g | null (vertices g) = 0
+        | otherwise =
+            minimum (map (excentricidad g) (vertices g))
+\end{code}
+    
+\begin{definicion}
+  Sean $G=(V,A)$ un grafo. Llamamos \textbf{centro} del grafo $G$ al
+  conjunto de vértices de excentricidad mínima. A estos vértices se 
+  les denomina \textbf{vértices centrales}.
+\end{definicion}
+
+La función \texttt{(centro g)} devuelve el centro del grafo
+\texttt{g}. Por ejemplo, 
+
+\begin{sesion}
+centro (grafoEstrella 5)  ==  [1]
+centro (grafoCiclo 4)     ==  [1,2,3,4]
+centro grafoPetersen      ==  [1,2,3,4,5,6,7,8,9,10]
+centro (grafoRueda 5)     ==  [1]
+centro grafoNulo          ==  []
+\end{sesion}      
+
+\index{\texttt{centro}}
+\begin{code}
+centro :: Ord a => Grafo a -> [a]
+centro g = [v | v <- vertices g , r == excentricidad g v]
+    where r = radio g
+\end{code}
+      
+\begin{definicion}
+  Sean $G=(V,A)$ un grafo. Se llama \textbf{grosor} o \textbf{cintura}
+  del grafo $G$ como el máximo de las longitudes de los ciclos de $G$.
+\end{definicion}
