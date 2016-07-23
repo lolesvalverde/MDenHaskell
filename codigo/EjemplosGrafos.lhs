@@ -26,7 +26,8 @@ Se utilizará la representación de los grafos como listas de aristas.
 
 \ignora{
 \begin{code}
-module EjemplosGrafos ( grafoCiclo
+module EjemplosGrafos (grafoNulo
+                      , grafoCiclo
                       , grafoAmistad
                       , completo
                       , bipartitoCompleto
