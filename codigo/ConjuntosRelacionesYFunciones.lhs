@@ -3,6 +3,7 @@
 \begin{code}
 module ConjuntosRelacionesYFunciones ( productoCartesiano
                                      , unitario
+                                     , combinaciones  
                                      , variacionesR
                                      , esRelacion
                                      , imagenRelacion
@@ -83,6 +84,33 @@ unitario [5,5]  ==  True
 unitario :: Eq a => [a] -> Bool
 unitario xs = length (nub xs) == 1
 \end{code}
+
+\subsubsection{Combinaciones}
+
+\begin{definicion}
+  Las \textbf{combinaciones} de un conjunto $S$ tomados en grupos 
+  de $n$ son todos los subconjuntos de $S$ con $n$ elementos.
+\end{definicion}
+
+La función \texttt{(combinaciones n xs)} devuelve las combinaciones
+de los elementos de texttt{xs} en listas de \texttt{n}
+elementos. Por ejemplo, 
+
+\begin{sesion}
+ghci> combinaciones 3 ['a'..'d']
+["abc","abd","acd","bcd"]
+ghci> combinaciones 2 [2,4..8]
+[[2,4],[2,6],[2,8],[4,6],[4,8],[6,8]]
+\end{sesion}
+
+\index{\texttt{combinaciones}}
+\begin{code}
+combinaciones :: Integer -> [a] -> [[a]]
+combinaciones 0 _          = [[]]
+combinaciones _ []         = []
+combinaciones k (x:xs) = 
+    [x:ys | ys <- combinaciones (k-1) xs] ++ combinaciones k xs
+\end{code}                                       
 
 \subsubsection{Variaciones con repetición}
 
