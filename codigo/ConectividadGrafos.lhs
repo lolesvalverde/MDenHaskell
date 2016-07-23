@@ -97,13 +97,12 @@ aristasCamino vs = zip vs (tail vs)
 \comentario{Ver el correo sobre ``Aristas del camino''}
   
 \begin{definicion}
-  Sea $G=(V,A)$ un grafo y sean $u,v \in V$. Un camino entre
-  $u$ y $v$ que no repite aristas (quizás vértices) se llama 
-  \textbf{recorrido}.
+  Sea $G = (V,A)$ un grafo y sean $u,v \in V$. Un camino entre $u$ y $v$ que no
+  repite aristas (quizás vértices) se llama \textbf{recorrido}.
 \end{definicion}
 
-La función \texttt{(esRecorrido g c)} se verifica si el camino
-\texttt{c} es un recorrido.
+La función \texttt{(esRecorrido g c)} se verifica si el camino \texttt{c} es un
+recorrido en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 esRecorrido (grafoRueda 5) [1,2,3,4,1,2,5]  ==  False
