@@ -6,11 +6,13 @@ module Morfismos ( esMorfismo
                   , esIsomorfismo
                   , isomorfismos
                   , isomorfos
-                  , esAutomorfismo
-                  , automorfismos
+                  , isomorfismos'
+                  , isomorfos'
                   , prop_ordenInvariante
                   , prop_tamañoInvariante
                   , prop_secuenciaGradosInvariante
+                  , esAutomorfismo
+                  , automorfismos                  
                   ) where
   
 import GrafoConListaDeAristas
@@ -227,68 +229,6 @@ isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos g = not . null . isomorfismos g 
 \end{code}
 
-\subsection{Automorfismos}
-
-\begin{definicion}
-  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
-  de $G$ es un isomorfismo de $G$ en sí mismo.
-\end{definicion}
-
-La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
-\texttt{f} es un automorfismo de \texttt{g}.
-
-\begin{sesion}
-ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
-False
-ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,1),(2,3),(3,2)]
-True
-ghci> esAutomorfismo (grafoCiclo 4) [(1,2),(2,3),(3,4),(4,1)]
-True
-\end{sesion}
-
-\index{\texttt{esAutomorfismo}}
-\begin{code}
-esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
-esAutomorfismo g = esIsomorfismo g g 
-\end{code}
-
-La función \texttt{automorfismos g} devuelve la lista de todos los
-posibles automorfismos en \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-ghci> automorfismos (grafoCiclo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,4),(3,3),(4,2)],
- [(1,2),(2,1),(3,4),(4,3)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,4),(3,1),(4,2)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,3),(3,2),(4,1)]]
-ghci> automorfismos (completo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,2),(3,4),(4,3)],
- [(1,1),(2,3),(3,2),(4,4)],[(1,1),(2,3),(3,4),(4,2)],
- [(1,1),(2,4),(3,2),(4,3)],[(1,1),(2,4),(3,3),(4,2)],
- [(1,2),(2,1),(3,3),(4,4)],[(1,2),(2,1),(3,4),(4,3)],
- [(1,2),(2,3),(3,1),(4,4)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,4),(3,3),(4,1)],
- [(1,3),(2,1),(3,2),(4,4)],[(1,3),(2,1),(3,4),(4,2)],
- [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,2),(3,4),(4,1)],
- [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,4),(3,2),(4,1)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,1),(3,3),(4,2)],
- [(1,4),(2,2),(3,1),(4,3)],[(1,4),(2,2),(3,3),(4,1)],
- [(1,4),(2,3),(3,1),(4,2)],[(1,4),(2,3),(3,2),(4,1)]]
-ghci> automorfismos (grafoRueda 5)
-[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,2),(3,5),(4,4),(5,3)],
- [(1,1),(2,3),(3,2),(4,5),(5,4)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
- [(1,1),(2,4),(3,3),(4,2),(5,5)],[(1,1),(2,4),(3,5),(4,2),(5,3)],
- [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,5),(3,4),(4,3),(5,2)]]
-\end{sesion}
-
-\index{\texttt{automorfismos}}
-\begin{code}
-automorfismos :: Ord a => Grafo a -> [Funcion a a] 
-automorfismos g = isomorfismos g g 
-\end{code}
-
-\subsection{Invariantes por isomorfismos}
-
 \begin{definicion}
   Sea $G=(V,A)$ un grafo. Un \textbf{invariante por isomorfismos} 
   de $G$ es una propiedad de $G$ que tiene el mismo valor para todos 
@@ -359,3 +299,170 @@ prop_secuenciaGradosInvariante g h =
     secuenciaGrados g == secuenciaGrados h
 \end{code}
 
+A partir de las propiedades que hemos demostrado de los isomorfismos,  
+vamos a dar una definición "mejorada" de las funciones 
+\texttt{(isomorfismos g h)} y \texttt{(isomorfos g h)}.
+
+\begin{code}
+isomorfismos' ::
+    (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
+isomorfismos' g h
+     | orden g /= orden h = []
+     | tamaño g /= tamaño h = []
+     | secuenciaGrados g /= secuenciaGrados h = []
+     | otherwise = [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
+     where vs1 = vertices g
+           vs2 = vertices h   
+\end{code}
+
+\begin{code}
+isomorfos' ::
+    (Ord a, Ord b) => Grafo a -> Grafo b -> Bool
+isomorfos' g =
+    not. null . isomorfismos' g
+\end{code}
+
+Vamos a comparar la eficiencia entre las primeras definiciones y 
+sus versiones "mejoradas".
+
+\begin{sesion}
+ghci> let n = 5 in (length (isomorfismos (completo n) (completo n)))
+120
+(0.42 secs, 55,201,224 bytes)
+ghci> let n = 5 in (length (isomorfismos' (completo n) (completo n)))
+120
+(0.41 secs, 57,073,816 bytes)
+ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
+720
+(6.98 secs, 1,312,537,008 bytes)
+ghci> let n = 46 in (length (isomorfismos' (completo n) (completo n)))
+Interrupted.
+ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
+720
+(6.97 secs, 1,352,108,184 bytes)
+ghci> let n = 5 in (length (isomorfismos (grafoCiclo n) (grafoCiclo n)))
+10
+(0.31 secs, 57,126,784 bytes)
+ghci> let n = 5 in (length (isomorfismos' (grafoCiclo n) (grafoCiclo n)))
+10
+(0.31 secs, 57,085,416 bytes)
+ghci> let n = 6 in (length (isomorfismos' (grafoCiclo n) (grafoCiclo n)))
+12
+(4.92 secs, 970,762,480 bytes)
+ghci> let n = 6 in (length (isomorfismos (grafoCiclo n) (grafoCiclo n)))
+12
+(4.95 secs, 971,181,600 bytes)
+ghci> length (isomorfismos (grafoCiclo 6) (grafoCiclo 7))
+0
+(12.58 secs, 2,512,853,528 bytes)
+ghci> length (isomorfismos' (grafoCiclo 6) (grafoCiclo 7))
+0
+(0.00 secs, 0 bytes)
+ghci> length (isomorfismos (grafoCiclo 6) (completo 7))
+0
+(17.45 secs, 3,312,824,240 bytes)
+ghci> length (isomorfismos' (grafoCiclo 6) (completo 7))
+0
+(0.01 secs, 0 bytes)
+ghci> let n = 5 in (isomorfos (completo n) (completo n))
+True
+(0.04 secs, 0 bytes)
+ghci> let n = 5 in (isomorfos' (completo n) (completo n))
+True
+(0.04 secs, 0 bytes)
+ghci> let n = 6 in (isomorfos (completo n) (completo n))
+True
+(0.24 secs, 28,662,496 bytes)
+ghci> let n = 6 in (isomorfos' (completo n) (completo n))
+True
+(0.24 secs, 28,666,528 bytes)
+ghci> isomorfos (grafoCiclo 6) (grafoCiclo 7)
+False
+(12.46 secs, 2,517,549,144 bytes)
+ghci> isomorfos' (grafoCiclo 6) (grafoCiclo 7)
+False
+(0.01 secs, 0 bytes)
+ghci> isomorfos (grafoCiclo 6) (completo 7)
+False
+(17.25 secs, 3,319,442,424 bytes)
+ghci> isomorfos (grafoCiclo 6) (completo 7)
+False
+(17.32 secs, 3,313,229,064 bytes)
+ghci> isomorfos' (grafoCiclo 6) (completo 7)
+False
+(0.01 secs, 0 bytes)
+\end{sesion}
+
+Cuando los grafos son isomorfos, comprobar que tienen el mismo número
+de vértices, el mismo número de aristas y la misma secuencia gráfica
+no requiere mucho tiempo ni espacio, dando lugar a sesiones muy 
+similares entre los dos pares de definiciones. Sin embargo, cuando 
+los grafos no son isomorfos y fallan en alguna de las propiedades, 
+el resultado es inmediato.
+
+\subsection{Automorfismos}
+
+\begin{definicion}
+  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
+  de $G$ es un isomorfismo de $G$ en sí mismo.
+\end{definicion}
+
+La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
+\texttt{f} es un automorfismo de \texttt{g}.
+
+\begin{sesion}
+ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
+False
+ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,1),(2,3),(3,2)]
+True
+ghci> esAutomorfismo (grafoCiclo 4) [(1,2),(2,3),(3,4),(4,1)]
+True
+\end{sesion}
+
+\index{\texttt{esAutomorfismo}}
+\begin{code}
+esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
+esAutomorfismo g = esIsomorfismo g g 
+\end{code}
+
+La función \texttt{automorfismos g} devuelve la lista de todos los
+posibles automorfismos en \texttt{g}. Por ejemplo,
+
+\begin{sesion}
+ghci> automorfismos (grafoCiclo 4)
+[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,4),(3,3),(4,2)],
+ [(1,2),(2,1),(3,4),(4,3)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,4),(3,1),(4,2)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,3),(3,2),(4,1)]]
+ghci> automorfismos (completo 4)
+[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,2),(3,4),(4,3)],
+ [(1,1),(2,3),(3,2),(4,4)],[(1,1),(2,3),(3,4),(4,2)],
+ [(1,1),(2,4),(3,2),(4,3)],[(1,1),(2,4),(3,3),(4,2)],
+ [(1,2),(2,1),(3,3),(4,4)],[(1,2),(2,1),(3,4),(4,3)],
+ [(1,2),(2,3),(3,1),(4,4)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,4),(3,3),(4,1)],
+ [(1,3),(2,1),(3,2),(4,4)],[(1,3),(2,1),(3,4),(4,2)],
+ [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,2),(3,4),(4,1)],
+ [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,4),(3,2),(4,1)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,1),(3,3),(4,2)],
+ [(1,4),(2,2),(3,1),(4,3)],[(1,4),(2,2),(3,3),(4,1)],
+ [(1,4),(2,3),(3,1),(4,2)],[(1,4),(2,3),(3,2),(4,1)]]
+ghci> automorfismos (grafoRueda 5)
+[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,2),(3,5),(4,4),(5,3)],
+ [(1,1),(2,3),(3,2),(4,5),(5,4)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
+ [(1,1),(2,4),(3,3),(4,2),(5,5)],[(1,1),(2,4),(3,5),(4,2),(5,3)],
+ [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,5),(3,4),(4,3),(5,2)]]
+\end{sesion}
+
+\index{\texttt{automorfismos}}
+\begin{code}
+automorfismos :: Ord a => Grafo a -> [Funcion a a] 
+automorfismos g = isomorfismos g g 
+\end{code}
+
+\begin{nota}
+Cuando trabajamos con automorfismos, es mejor utilizar en su
+definición la función \texttt{isomorfismos} en vez de su versión
+"mejorada", pues ser isomorfos es una relación reflexiva, es decir,
+un grafo siempre es isomorfo a sí mismo.
+\end{nota}
