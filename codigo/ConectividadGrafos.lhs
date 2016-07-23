@@ -65,12 +65,14 @@ True
 
 \index{\texttt{esCamino}}
 \begin{code}
-esCamino :: (Ord a) => Grafo a -> [a] -> Bool
+esCamino :: Ord a => Grafo a -> [a] -> Bool
 esCamino g vs = all (`elem` (vertices g)) vs &&
                 all p (zip vs (tail vs))
       where p (u,v) = elem (u,v) (aristas g)||
                       elem (v,u) (aristas g)
 \end{code}
+
+\comentario{Se puede simplificar esCamino usando aristaEn.}
 
 La función \texttt{(aristasCamino vs)} devuelve la lista de las 
 aristas recorridas en el camino \texttt{vs}.
