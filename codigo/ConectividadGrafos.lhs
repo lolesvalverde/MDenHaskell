@@ -93,7 +93,9 @@ ghci> aristasCamino [1,4,2,5,3,6]
 aristasCamino :: Eq a => [a] -> [(a,a)]
 aristasCamino vs = zip vs (tail vs)
 \end{code}
- 
+
+\comentario{Ver el correo sobre ``Aristas del camino''}
+  
 \begin{definicion}
   Sea $G=(V,A)$ un grafo y sean $u,v \in V$. Un camino entre
   $u$ y $v$ que no repite aristas (quizás vértices) se llama 
