@@ -1,4 +1,3 @@
-
 \ignora{
 \begin{code}
 module ConectividadGrafos (esCamino
@@ -35,24 +34,23 @@ import Data.List
 \end{code}
 }
 
-Una de las aplicaciones de la Teoría de Grafos es la determinación
-de trayectos o recorridos en una red de transporte o de distribución 
-de productos. Así, si cada vértice representa un punto de interés y
-cada arista representa una conexión entre dos puntos, usando grafos 
-como modelos, podemos simplificar el problema de encontrar la ruta más
-ventajosa en cada caso.
+Una de las aplicaciones de la teoría de grafos es la determinación de trayectos
+o recorridos en una red de transporte o de distribución de productos. Así, si
+cada vértice representa un punto de interés y cada arista representa una
+conexión entre dos puntos, usando grafos como modelos, podemos simplificar el
+problema de encontrar la ruta más ventajosa en cada caso.
 
 \subsection{Caminos}
 
 \begin{definicion}
-  Sea $G=(V,A)$ un grafo simple y sean $u,v \in V$ dos vértices. Un 
+  Sea $G = (V,A)$ un grafo simple y sean $u,v \in V$ dos vértices. Un 
   \textbf{camino} entre $u$ y $v$ es una sucesión de vértices de $G$: 
-  $u=v_0,v_1,v_2,\dots,v_{k−1},v_k=v$ donde $\forall i \in \{0,\dots,k-1\},
-  \allowbreak v_i\in V y (v_i,v_{i+1})\in A$.
+  $u = v_0, v_1, v_2, \dots, v_{k−1}, v_k = v$ donde
+  $\forall i \in \{0,\dots,k-1\}, (v_i,v_{i+1}) \in A$.
 \end{definicion}
 
-La función \texttt{(esCamino g vs)} se verifica si la sucesión de 
-vértices \texttt{vs} es un camino en el grafo \texttt{g}. Por ejemplo,
+La función \texttt{(esCamino g vs)} se verifica si la sucesión de vértices
+\texttt{vs} es un camino en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 ghci> esCamino (grafoCiclo 5) [1,2,3,4,5,1]
@@ -188,8 +186,8 @@ False
 \index{\texttt{estanConectados}}
 \begin{code}
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
-estanConectados g u | null (vertices g) = False
-                    | otherwise = not.null.todosArcos g u
+estanConectados g u v | null (vertices g) = False
+                      | otherwise = not (null (todosArcos g u v))
 \end{code}
 
 \begin{definicion}
