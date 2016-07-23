@@ -230,14 +230,14 @@ isomorfos g = not . null . isomorfismos g
 \end{code}
 
 \begin{definicion}
-  Sea $G=(V,A)$ un grafo. Un \textbf{invariante por isomorfismos} 
+  Sea $G = (V,A)$ un grafo. Un \textbf{invariante por isomorfismos} 
   de $G$ es una propiedad de $G$ que tiene el mismo valor para todos 
   los grafos que son isomorfos a él.
 \end{definicion}
 
 \begin{teorema}
-  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
-  isomorfismo. Entonces, se verifica que $|V(G)|=|V(G')|$; es decir,
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V\to V'$ un 
+  isomorfismo. Entonces, se verifica que $|V(G)| = |V(G')|$; es decir,
   el orden de un grafo es un invariante por isomorfismos.
 \end{teorema}
 
@@ -366,12 +366,12 @@ False
 (0.01 secs, 0 bytes)
 \end{sesion}
 
-Cuando los grafos son isomorfos, comprobar que tienen el mismo número
-de vértices, el mismo número de aristas y la misma secuencia gráfica
-no requiere mucho tiempo ni espacio, dando lugar a costes muy 
-similares entre los dos pares de definiciones. Sin embargo, cuando 
-los grafos no son isomorfos y fallan en alguna de las propiedades, 
-el resultado es inmediato con las segundas definiciones.
+Cuando los grafos son isomorfos, comprobar que tienen el mismo número de
+vértices, el mismo número de aristas y la misma secuencia gráfica no requiere
+mucho tiempo ni espacio, dando lugar a costes muy similares entre los dos pares
+de definiciones. Sin embargo, cuando los grafos no son isomorfos y fallan en
+alguna de las propiedades, el resultado es inmediato con las segundas
+definiciones.
 
 \subsection{Automorfismos}
 
