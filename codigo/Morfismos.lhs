@@ -5,9 +5,9 @@ module Morfismos ( esMorfismo
                   , morfismos
                   , esIsomorfismo
                   , isomorfismos
+                  , isomorfismos2
                   , isomorfos
-                  , isomorfismos'
-                  , isomorfos'
+                  , isomorfos2
                   , prop_ordenInvariante
                   , prop_tamañoInvariante
                   , prop_secuenciaGradosInvariante
@@ -299,106 +299,79 @@ prop_secuenciaGradosInvariante g h =
     secuenciaGrados g == secuenciaGrados h
 \end{code}
 
-A partir de las propiedades que hemos demostrado de los isomorfismos,  
-vamos a dar una definición "mejorada" de las funciones 
-\texttt{(isomorfismos g h)} y \texttt{(isomorfos g h)}.
+A partir de las propiedades que hemos demostrado de los isomorfismos,
+vamos a dar otra definición de las funciones \texttt{(isomorfismos g h)}
+y \texttt{(isomorfos g h)}.
 
 \begin{code}
-isomorfismos' ::
+isomorfismos2 ::
     (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
-isomorfismos' g h
-     | orden g /= orden h = []
+isomorfismos2 g h
+     | orden g  /= orden h  = []
      | tamaño g /= tamaño h = []
      | secuenciaGrados g /= secuenciaGrados h = []
      | otherwise = [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
      where vs1 = vertices g
            vs2 = vertices h   
-\end{code}
 
-\begin{code}
-isomorfos' ::
+isomorfos2 ::
     (Ord a, Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos' g =
-    not. null . isomorfismos' g
+isomorfos2 g =
+    not. null . isomorfismos2 g
 \end{code}
 
-Vamos a comparar la eficiencia entre las primeras definiciones y 
-sus versiones "mejoradas".
+Vamos a comparar la eficiencia entre ambas definiciones
 
 \begin{sesion}
-ghci> let n = 5 in (length (isomorfismos (completo n) (completo n)))
-120
-(0.42 secs, 55,201,224 bytes)
-ghci> let n = 5 in (length (isomorfismos' (completo n) (completo n)))
-120
-(0.41 secs, 57,073,816 bytes)
-ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
-720
-(6.98 secs, 1,312,537,008 bytes)
-ghci> let n = 46 in (length (isomorfismos' (completo n) (completo n)))
-Interrupted.
 ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
 720
 (6.97 secs, 1,352,108,184 bytes)
-ghci> let n = 5 in (length (isomorfismos (grafoCiclo n) (grafoCiclo n)))
-10
-(0.31 secs, 57,126,784 bytes)
-ghci> let n = 5 in (length (isomorfismos' (grafoCiclo n) (grafoCiclo n)))
-10
-(0.31 secs, 57,085,416 bytes)
-ghci> let n = 6 in (length (isomorfismos' (grafoCiclo n) (grafoCiclo n)))
+ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
+720
+(6.98 secs, 1,312,537,008 bytes)
+
+ghci> let n = 6 in (length (isomorfismos2 (grafoCiclo n) (grafoCiclo n)))
 12
 (4.92 secs, 970,762,480 bytes)
 ghci> let n = 6 in (length (isomorfismos (grafoCiclo n) (grafoCiclo n)))
 12
 (4.95 secs, 971,181,600 bytes)
-ghci> length (isomorfismos (grafoCiclo 6) (grafoCiclo 7))
-0
-(12.58 secs, 2,512,853,528 bytes)
-ghci> length (isomorfismos' (grafoCiclo 6) (grafoCiclo 7))
-0
-(0.00 secs, 0 bytes)
+
 ghci> length (isomorfismos (grafoCiclo 6) (completo 7))
 0
 (17.45 secs, 3,312,824,240 bytes)
-ghci> length (isomorfismos' (grafoCiclo 6) (completo 7))
+ghci> length (isomorfismos2 (grafoCiclo 6) (completo 7))
 0
 (0.01 secs, 0 bytes)
-ghci> let n = 5 in (isomorfos (completo n) (completo n))
-True
-(0.04 secs, 0 bytes)
-ghci> let n = 5 in (isomorfos' (completo n) (completo n))
-True
-(0.04 secs, 0 bytes)
+
 ghci> let n = 6 in (isomorfos (completo n) (completo n))
 True
 (0.24 secs, 28,662,496 bytes)
-ghci> let n = 6 in (isomorfos' (completo n) (completo n))
+ghci> let n = 6 in (isomorfos2 (completo n) (completo n))
 True
 (0.24 secs, 28,666,528 bytes)
+
 ghci> isomorfos (grafoCiclo 6) (grafoCiclo 7)
 False
 (12.46 secs, 2,517,549,144 bytes)
-ghci> isomorfos' (grafoCiclo 6) (grafoCiclo 7)
+ghci> isomorfos2 (grafoCiclo 6) (grafoCiclo 7)
 False
 (0.01 secs, 0 bytes)
+
 ghci> isomorfos (grafoCiclo 6) (completo 7)
 False
 (17.25 secs, 3,319,442,424 bytes)
-ghci> isomorfos (grafoCiclo 6) (completo 7)
-False
-(17.32 secs, 3,313,229,064 bytes)
-ghci> isomorfos' (grafoCiclo 6) (completo 7)
+ghci> isomorfos2 (grafoCiclo 6) (completo 7)
 False
 (0.01 secs, 0 bytes)
 \end{sesion}
 
 Cuando los grafos son isomorfos, comprobar que tienen el mismo número
 de vértices, el mismo número de aristas y la misma secuencia gráfica
-no requiere mucho tiempo ni espacio, dando lugar a sesiones muy 
+no requiere mucho tiempo ni espacio, dando lugar a costes muy 
 similares entre los dos pares de definiciones. Sin embargo, cuando 
 los grafos no son isomorfos y fallan en alguna de las propiedades, 
-el resultado es inmediato.
+el resultado es inmediato con las segundas definiciones.
 
 \subsection{Automorfismos}
 
@@ -461,8 +434,8 @@ automorfismos g = isomorfismos g g
 \end{code}
 
 \begin{nota}
-Cuando trabajamos con automorfismos, es mejor utilizar en su
-definición la función \texttt{isomorfismos} en vez de su versión
-"mejorada", pues ser isomorfos es una relación reflexiva, es decir,
-un grafo siempre es isomorfo a sí mismo.
+  Cuando trabajamos con automorfismos, es mejor utilizar en su definición la
+  función \texttt{isomorfismos} en vez de \texttt{isomorfismos2}, pues ser
+  isomorfos es una relación reflexiva, es decir, un grafo siempre es isomorfo a
+  sí mismo.
 \end{nota}
