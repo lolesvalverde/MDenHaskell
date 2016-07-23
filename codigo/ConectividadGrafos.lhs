@@ -114,8 +114,10 @@ esRecorrido [1,2,1,3,4]      ==  True
 \begin{code}
 esRecorrido :: Eq a => [a] -> Bool      
 esRecorrido c =
-    aristasCamino c == nub (aristasCamino c)
+  aristasCamino c == nub (aristasCamino c)
 \end{code}      
+
+\comentario{Ver ``Comentarios a esRecorrido''}
 
 \begin{definicion}
   Un camino que no repite vértices (y, por tanto, tampoco aristas)
