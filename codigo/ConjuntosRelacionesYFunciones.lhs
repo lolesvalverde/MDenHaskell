@@ -1,4 +1,3 @@
-
 \ignora{
 \begin{code}
 module ConjuntosRelacionesYFunciones ( productoCartesiano
@@ -30,6 +29,7 @@ import Data.List
 import DefinicionesYPropiedades 
 \end{code}
 }
+
 En esta sección introduciremos algunos conceptos relacionados con conjuntos y
 aplicaciones entre ellos que nos ayudarán posteriormente a definir relaciones
 especiales entre grafos.
@@ -49,8 +49,8 @@ tales que la primera componente pertenece a $A$ y la segunda pertenece
 a $B$; es decir, $A \times B = \{(a,b) | a \in A, b \in B \}$.
 \end{definicion}
 
-La función \texttt{(productoCartesiano xs ys)} devuelve el producto
-cartesiano de xs e ys. Por ejemplo,
+La función \texttt{(productoCartesiano xs ys)} devuelve el producto cartesiano
+de xs e ys. Por ejemplo,
 
 \begin{sesion}
 ghci> productoCartesiano [3,1] [2,4,7]
@@ -92,9 +92,8 @@ unitario xs = length (nub xs) == 1
   de $n$ son todos los subconjuntos de $S$ con $n$ elementos.
 \end{definicion}
 
-La función \texttt{(combinaciones n xs)} devuelve las combinaciones
-de los elementos de texttt{xs} en listas de \texttt{n}
-elementos. Por ejemplo, 
+La función \texttt{(combinaciones n xs)} devuelve las combinaciones de los
+elementos de \texttt{xs} en listas de \texttt{n} elementos. Por ejemplo,
 
 \begin{sesion}
 ghci> combinaciones 3 ['a'..'d']
@@ -115,14 +114,13 @@ combinaciones k (x:xs) =
 \subsubsection{Variaciones con repetición}
 
 \begin{definicion}
-  Las \textbf{variaciones con repetición} de $m$ elementos tomados
-  en grupos de $n$ es el número de diferentes $n-$tuplas de un 
-  conjunto de $m$ elementos.
+  Las \textbf{variaciones con repetición} de $m$ elementos tomados en grupos de
+  $n$ es el número de diferentes $n$--tuplas de un conjunto de $m$ elementos.
 \end{definicion}
 
-La función \texttt{(variacionesR n xs)} devuelve las variaciones con
-con repetición de los elementos de texttt{xs} en listas de \texttt{n}
-elementos. Por ejemplo, 
+La función \texttt{(variacionesR n xs)} devuelve las variaciones con con
+repetición de los elementos de \texttt{xs} en listas de \texttt{n}
+elementos. Por ejemplo,
 
 \begin{sesion}
 ghci> variacionesR 3 ['a','b']
@@ -154,9 +152,8 @@ variacionesR k us =
   un subconjunto del producto cartesiano $A \times B$.
 \end{definicion}
 
-La función \texttt{(esRelacion xs ys r)}se verifica si 
-\texttt{r} es una relación binaria de \texttt{xs} en \texttt{ys}. 
-Por ejemplo,
+La función \texttt{(esRelacion xs ys r)} se verifica si \texttt{r} es una
+relación binaria de \texttt{xs} en \texttt{ys}.  Por ejemplo,
 
 \begin{sesion}
 esRelacion [3,1] [2,4,7] [(3,4),(1,2)]  ==  True
@@ -173,14 +170,12 @@ esRelacion xs ys r =
 \subsubsection{Imagen por una relación}
 
 \begin{definicion}
-  Si $x$ es un elemento del conjunto $A$ y $R$ es una relación 
-  binaria entre $A$ y $B$, la \textbf{imagen del elemento} $x$ 
-  en la relación $R$ es el valor o los valores correspondientes 
-  a $x$ en $B$ dado o dados por la relación $R$.
+  Si $R$ es una relación binaria, la \textbf{imagen del elemento} $x$ en la
+  relación $R$ es el conjunto de los valores correspondientes a $x$ en $R$.
 \end{definicion}
 
 La función \texttt{(imagenRelacion r x)} es la imagen de \texttt{x} 
-en la relación texttt{r}. Por ejemplo, 
+en la relación \texttt{r}. Por ejemplo, 
 
 \begin{sesion}
 imagenRelacion [(1,3),(2,5),(1,4)] 1  ==  [3,4]
@@ -198,13 +193,12 @@ imagenRelacion r x =
 \subsubsection{Dominio de una relación}
 
 \begin{definicion}
-  Dada una relación $R$ entre $A$ y $B$, su \textbf{dominio} es el 
-  subconjunto de $A$ que contiene a todos los valores que se toman 
-  en la relación $R$.
+  Dada una relación binaria $R$, su \textbf{dominio} es el conjunto que
+  contiene a todos los valores que se toman en la relación $R$.
 \end{definicion}
 
-La función \texttt{(dominio r)} devuelve el dominio de la relación r. 
-Por ejemplo,
+La función \texttt{(dominio r)} devuelve el dominio de la relación r.  Por
+ejemplo,
 
 \begin{sesion}
 dominio [(3,2),(5,1),(3,4)]  ==  [3,5]
@@ -219,14 +213,12 @@ dominio r = nub (map fst r)
 \subsubsection{Rango de una relación}
 
 \begin{definicion}
-  El \textbf{rango de una relación} $R$ entre $A$ y $B$ es el 
-  conjunto de todos los valores de $B$ que la relación asocia a 
-  los elementos de $A$; es decir, es el conjunto de las imágenes 
-  de los elementos del dominio de $R$.
+  El \textbf{rango} de una relación binaria $R$ es el conjunto de las imágenes
+  de mediante $R$.
 \end{definicion}
 
-La función \texttt{(rango r)} devuelve el rango de la relación 
-binaria \texttt{r}. Por ejemplo,
+La función \texttt{(rango r)} devuelve el rango de la relación binaria
+\texttt{r}. Por ejemplo,
 
 \begin{sesion}
 rango [(3,2),(5,2),(3,4)]  ==  [2,4]
@@ -241,12 +233,12 @@ rango r = nub (map snd r)
 \subsubsection{Antiimagen por una función}
 
 \begin{definicion}
-  La \textbf{antiimagen del elemento} $y$ por una relación $r$ de $A$
-  en $B$ es el conjunto de los valores de $A$ cuya imagen es $y$.
+  La \textbf{antiimagen del elemento} $y$ por una relación $r$ es el conjunto
+  de los elementos cuya imagen es $y$.
 \end{definicion}
 
 La \texttt{(antiImagenRelacion r y)} es la antiimagen del elemento y en la
-relación binaria \texttt{r}.
+relación binaria \texttt{r}. Por ejemplo.
 
 \begin{sesion}
 antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
@@ -262,8 +254,8 @@ antiImagenRelacion r y =
 \subsubsection{Relación funcional}
 
 \begin{definicion}
-  Dada una relación $R$ entre $A$ y $B$, se dice \textbf{funcional} 
-  si todos los elementos de su dominio tienen una única imagen en $R$. 
+  Dada una relación binaria $R$, se dice \textbf{funcional} si todos los
+  elementos de su dominio tienen una única imagen en $R$.
 \end{definicion}
 
 La función \texttt{(esFuncional r)} se verifica si la relación 
@@ -287,13 +279,13 @@ esFuncional r =
 \subsubsection{Función}
 
 \begin{definicion}
-  Dada una relación $F$ entre $A$ y $B$, se dirá que es una
-  \textbf{función} si es una relación binaria, es funcional y
-  todos los elementos de $A$ están en el dominio. 
+  Dada una relación $F$ entre $A$ y $B$, se dirá que es una \textbf{función} si
+  es una relación binaria, es funcional y todos los elementos de $A$ están en
+  el dominio.
 \end{definicion}
 
-La función \texttt{(esFuncion xs ys f)} se verifica si \texttt{f}
-es una función de \texttt{xs} en \texttt{ys}. Por ejemplo, 
+La función \texttt{(esFuncion xs ys f)} se verifica si \texttt{f} es una
+función de \texttt{xs} en \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
 esFuncion [3,1] [2,4,7] [(1,7),(3,2)]        ==  True
@@ -311,15 +303,15 @@ esFuncion xs ys f =
 \end{code}
 
 \begin{nota}
-A lo largo de la sección representaremos a las funciones como
-listas de pares.
+  A lo largo de la sección representaremos a las funciones como listas de
+  pares.
 \begin{code}
 type Funcion a b = [(a,b)]
 \end{code}
 \end{nota}
 
 La función \texttt{(funciones xs ys)} devuelve todas las posibles funciones del
-conjunto \texttt{xs} en \texttt{ys}.  Por ejemplo,
+conjunto \texttt{xs} en \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
 ghci> funciones [1,2,3] "ab"
@@ -350,8 +342,8 @@ funciones xs ys =
   $f$ es el valor asociado a $x$ por la función $f$.
 \end{definicion}
 
-La función \texttt{(imagen f x)} es la imagen del elemento \texttt{x}
-en la función \texttt{f}. Por ejemplo,
+La función \texttt{(imagen f x)} es la imagen del elemento \texttt{x} en la
+función \texttt{f}. Por ejemplo,
 
 \begin{sesion}
 imagen [(1,7),(3,2)] 1  ==  7
@@ -376,8 +368,8 @@ imagen f x = head (imagenRelacion f x)
   $a \not= b$, $f(a) \not= f(b)$.
 \end{definicion}
 
-La función \texttt{(esInyectiva fs)} se verifica si la función
-\texttt{fs} es inyectiva.
+La función \texttt{(esInyectiva fs)} se verifica si la función \texttt{fs} es
+inyectiva. Por ejemplo,
 
 \begin{sesion}
 esInyectiva [(1,4),(2,5),(3,6)]        ==  True
@@ -425,7 +417,7 @@ esSobreyectiva _ ys f =
   \href{https://en.wikipedia.org/wiki/Bijective_function}
   {\textbf{biyectiva}}\
   \footnote{\url{https://en.wikipedia.org/wiki/Bijective_function}}
-  si todos los elementos de $B$ son imagen de algún elemento de $A$.              
+  si cada elementos de $B$ es imagen de un único elemento de $A$.              
 \end{definicion}
 
 La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
@@ -449,7 +441,7 @@ esBiyectiva xs ys f =
 \end{code}
 
 \begin{definicion}
-  Si $f$ es una función sobreyectiva entre los conjuntos $A$ y $B$,
+  Si $f$ es una función biyectiva entre los conjuntos $A$ y $B$,
   definimos la
   \href{https://en.wikipedia.org/wiki/Inverse_function}
   {\textbf{función inversa}}\
@@ -476,15 +468,17 @@ inversa xs@((a,b):fs) = nub (inversaAux xs)
       where inversaAux []         = []            
             inversaAux ((x,y):ys) = (y,x):inversaAux ys 
 \end{code}
-    
+
+\comentario{Ver correo sobre mejora de inversa.}
+
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
   que \textbf{conserva la adyacencia} si $\forall u,v \in V$ tales que
   $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A'$.
 \end{definicion}
 
-La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica
-si la función \texttt{f} conserva las adyacencias. Por ejemplo,
+La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica si la función
+\texttt{f} conserva las adyacencias. Por ejemplo,
 
 \begin{sesion}
 ghci> let g1 = creaGrafo [1,2,3] [(1,2),(2,3)]
