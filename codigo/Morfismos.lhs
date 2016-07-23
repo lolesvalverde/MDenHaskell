@@ -241,7 +241,7 @@ isomorfos g = not . null . isomorfismos g
   el orden de un grafo es un invariante por isomorfismos.
 \end{teorema}
 
-Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
 ghci> quickCheckWith (stdArgs {maxSize=7}) prop_ordenInvariante
