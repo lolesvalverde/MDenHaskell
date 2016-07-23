@@ -235,6 +235,8 @@ isomorfos g = not . null . isomorfismos g
   los grafos que son isomorfos a él.
 \end{definicion}
 
+\comentario{Ver el correo sobre generalización de invariantes.}
+
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V\to V'$ un 
   isomorfismo. Entonces, se verifica que $|V(G)| = |V(G')|$; es decir,
@@ -257,12 +259,12 @@ prop_ordenInvariante g h =
 \end{code}
 
 \begin{teorema}
-  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
   isomorfismo. Entonces, se verifica que $|A(G)|=|A(G')|$; es decir,
   el tamaño de un grafo es un invariante por isomorfismos.
 \end{teorema}
 
-Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
 ghci> quickCheckWith (stdArgs {maxSize=7}) prop_tamañoInvariante
@@ -278,12 +280,12 @@ prop_tamañoInvariante g h =
 \end{code}
 
 \begin{teorema}
-  Sean $G=(V,A)$ y $G'=(V',A')$  dos grafos y $\phi:V\to V'$ un 
+  Sean $G = (V,A)$ y $G' = (V',A')$  dos grafos y $\phi: V \to V'$ un 
   isomorfismo. Entonces, tienen la misma secuencia de grados; es decir,
   la secuencia de grados de un grafo es un invariante por isomorfismos.
 \end{teorema}
 
-Vamos a comprobar el teorema anterior con \texttt{QuickCheck}.
+Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
 ghci> quickCheckWith (stdArgs {maxSize=7}) prop_secuenciaGradosInvariante
@@ -398,8 +400,8 @@ esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
 esAutomorfismo g = esIsomorfismo g g 
 \end{code}
 
-La función \texttt{automorfismos g} devuelve la lista de todos los
-posibles automorfismos en \texttt{g}. Por ejemplo,
+La función \texttt{(automorfismos g)} devuelve la lista de todos los posibles
+automorfismos en \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 ghci> automorfismos (grafoCiclo 4)
