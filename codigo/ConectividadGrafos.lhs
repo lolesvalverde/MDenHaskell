@@ -121,22 +121,22 @@ esRecorrido c =
 
 \begin{definicion}
   Un camino que no repite vértices (y, por tanto, tampoco aristas)
-  se llama \textbf{arco}.
+  se llama \textbf{camino simple}.
 \end{definicion}
 
-La función \texttt{(esArco c)} se verifica si el camino
-\texttt{vs} es un arco.
+La función \texttt{(esCaminoSimple c)} se verifica si el camino \texttt{vs} es un
+arco. Por ejemplo,
 
 \begin{sesion}
-esArco [1..4]              == True
-esArco ([1..5] ++ [1..4])  ==  False
-esArco [1,2,1,3,4]         ==  False
-esArco ['a'..'f']          == True
+esCaminoSimple [1..4]              == True
+esCaminoSimple ([1..5] ++ [1..4])  ==  False
+esCaminoSimple [1,2,1,3,4]         ==  False
+esCaminoSimple ['a'..'f']          == True
 \end{sesion}
 
 \begin{code}
-esArco :: Ord a => [a] -> Bool
-esArco vs = nub vas == vas
+esCaminoSimple :: Ord a => [a] -> Bool
+esCaminoSimple vs = nub vas == vas
     where vas = map fst (aristasCamino vs)
 \end{code}
     
@@ -335,7 +335,7 @@ esCiclo grafoNulo [1,2,1]               ==  False
 \begin{code}
 esCiclo :: (Ord a) => Grafo a -> [a] -> Bool
 esCiclo g vs =
-    esArco vs && esCerrado g vs
+    esCaminoSimple vs && esCerrado g vs
 \end{code}
     
 \begin{teorema}
