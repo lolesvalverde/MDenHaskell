@@ -3,7 +3,7 @@
 module ConectividadGrafos (esCamino
                           , aristasCamino
                           , esRecorrido
-                          , esArco
+                          , esCaminoSimple
                           , todosArcos
                           , estanConectados
                           , longitudCamino
