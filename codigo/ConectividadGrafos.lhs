@@ -4,7 +4,7 @@ module ConectividadGrafos (esCamino
                           , aristasCamino
                           , esRecorrido
                           , esCaminoSimple
-                          , todosArcos
+                          , todosCaminos
                           , estanConectados
                           , longitudCamino
                           , distancia
@@ -137,31 +137,31 @@ esCaminoSimple ['a'..'f']          == True
 \begin{code}
 esCaminoSimple :: Ord a => [a] -> Bool
 esCaminoSimple vs = nub vas == vas
-    where vas = map fst (aristasCamino vs)
+  where vas = map fst (aristasCamino vs)
 \end{code}
 
 \comentario{Ver ``Comentarios a esCaminoSimple''}
     
-La función \texttt{(todosRecorridos g inicio final)} devuelve una   
-lista con todos los caminos posibles entre los vértices \texttt{inicio} y 
-\texttt{final}, encontrados usando un algoritmo de búsqueda en                
-profundidad sobre el grafo \texttt{g}.
+La función \texttt{(todosCaminos g inicio final)} devuelve una lista con todos
+los caminos simples posibles en el grafo \texttt{g} entre los vértices
+\texttt{inicio} y \texttt{final}, encontrados usando un algoritmo de búsqueda
+en profundidad.
 
 \begin{sesion}
-ghci> todosArcos (grafoCiclo 7) 1 6
+ghci> todosCaminos (grafoCiclo 7) 1 6
 [[1,2,3,4,5,6],[1,7,6]]
-ghci> todosArcos (grafoRueda 7) 2 5
+ghci> todosCaminos (grafoRueda 7) 2 5
 [[2,1,3,4,5],[2,1,4,5],[2,1,5],[2,3,1,4,5],[2,3,1,5],
  [2,3,4,1,5],[2,3,4,5],[2,7,1,3,4,5],[2,7,1,4,5],[2,7,1,5],
  [2,7,6,1,3,4,5],[2,7,6,1,4,5],[2,7,6,1,5],[2,7,6,5]]
-ghci> todosArcos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
-\index{\texttt{todosArcos}}          
+\index{\texttt{todosCaminos}}          
 \begin{code}
-todosArcos :: Eq a => Grafo a -> a -> a -> [[a]]
-todosArcos g inicio final = bp [inicio] []            
+todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
+todosCaminos g inicio final = bp [inicio] []            
     where bp [] [] = []
           bp [] vis = if (last vis == final) then [vis] else []      
           bp (v:vs) vis 
@@ -170,6 +170,10 @@ todosArcos g inicio final = bp [inicio] []
               | otherwise = bp (adyacentes g v) (vis ++ [v]) ++
                             bp vs vis 
 \end{code}
+
+\comentario{Ver ``Sobre caminos y comprobaciones''}
+
+\comentario{Revisado hasta aquí}
 
 \begin{definicion}
   Dado un grafo $G=(V,A)$, sean $u,v \in V$. Si existe algún
@@ -194,7 +198,7 @@ False
 \begin{code}
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
 estanConectados g u v | null (vertices g) = False
-                      | otherwise = not (null (todosArcos g u v))
+                      | otherwise = not (null (todosCaminos g u v))
 \end{code}
 
 \begin{definicion}
@@ -238,7 +242,7 @@ distancia grafoNulo 2 3                         ==  Infinity
 \begin{code}
 distancia :: Ord a => Grafo a -> a -> a -> Double     
 distancia g u v | estanConectados g u v =
-                    minimum (map longitudCamino (todosArcos g u v))
+                    minimum (map longitudCamino (todosCaminos g u v))
                 | otherwise = 1/0
 \end{code}
 
