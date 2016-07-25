@@ -10,6 +10,8 @@ import GeneradorGrafos
 --    [[1,3],[1,2,3]]
 --    λ> caminos ej1 3 1
 --    [[3,1],[3,2,1]]
+--    λ> caminos ej1 1 1
+--    [[1]]
 caminos :: Eq a => Grafo a -> a -> a -> [[a]]
 caminos g x y = aux [[y]]
   where aux []       = []
