@@ -18,7 +18,7 @@ caminos g x y = aux [[y]]
         aux ([]:zss) = aux zss
         aux ((z:zs):zss)
           | z == x    = (z:zs) : aux zss
-          | otherwise = zss ++ aux [v:z:zs | v <- adyacentes g z \\ zs]
+          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g z \\ zs])
 
 -- Prop. : El primer elemento de (caminos g x y) es de mínima longitud.
 prop_caminos :: Grafo Int -> Property
