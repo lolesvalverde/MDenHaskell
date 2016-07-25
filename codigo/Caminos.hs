@@ -50,8 +50,9 @@ parDeVertices g = do
   where vs = vertices g
 
 -- La comprobación es  
---    λ> quickCheck prop_caminos
+--    λ> quickCheckWith (stdArgs {maxSize=7}) prop_caminos
 --    +++ OK, passed 100 tests.
+--    (0.58 secs, 1,822,906,496 bytes)
 
 -- Para comprobar el orden de los grafos de los ejemplos
 prop_caminos2 :: Grafo Int -> Property
