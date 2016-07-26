@@ -16,7 +16,7 @@ module GrafoConListaDeAristas
     , creaGrafo  -- [a] -> [(a,a)] -> Grafo a
     , vertices   -- Grafo a -> [a]
     , adyacentes -- Grafo a -> a -> [a]
-    , aristaEn   -- (a,a) -> Grafo a -> Bool
+    , aristaEn   -- Grafo a -> (a,a) -> Bool
     , aristas    -- Grafo a -> [(a,a)]
     ) where
 \end{code}
@@ -120,14 +120,14 @@ adyacentes (G _ as) v =
   \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-aristaEn (5,1) ejGrafo  ==  True
-aristaEn (3,1) ejGrafo  ==  False
+aristaEn ejGrafo (5,1)  ==  True
+aristaEn ejGrafo (3,1)  ==  False
 \end{sesion}
 
 \index{\texttt{aristaEn}}
 \begin{code}
-aristaEn :: Ord a => (a,a) -> Grafo a -> Bool
-aristaEn a (G _ as) = elem (parOrdenado a) as
+aristaEn :: Ord a => Grafo a -> (a,a) -> Bool
+aristaEn (G _ as) a = elem (parOrdenado a) as
 \end{code}
 
 \item \texttt{(aristas g)} es la lista de las aristas del grafo \texttt{g}. 
