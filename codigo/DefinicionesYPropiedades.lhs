@@ -18,11 +18,11 @@ de Matemática Discreta.
 \ignora{
 \begin{code}
 module DefinicionesYPropiedades (orden
+                                , tamaño
                                 , sonIncidentes
                                 , esLazo
                                 , entorno
-                                , grado
-                                , tamaño 
+                                , grado 
                                 , esAislado
                                 , esRegular
                                 , valenciaMin
@@ -49,6 +49,7 @@ module DefinicionesYPropiedades (orden
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
+
 import Test.QuickCheck
 import Data.List
 \end{code}
@@ -285,7 +286,7 @@ esSimple (creaGrafo (1,3) [(1,2),(1,3),(2,3)])  ==  True
 \begin{code}
 esSimple :: Ord a => Grafo a -> Bool
 esSimple g =
-  and [not ((x,x) `aristaEn` g) | x <- vertices g]
+  and [not (aristaEn g (x,x)) | x <- vertices g]
 \end{code}
 
 \begin{definicion}
@@ -716,7 +717,7 @@ G [1,2,3,4] [(1,1),(2,2),(3,3),(4,4)]
 complementario :: Ord a => Grafo a -> Grafo a 
 complementario  g =
   creaGrafo vs
-            [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
+            [(u,v)| u <- vs, v <- vs, u <= v, not (aristaEn g (u,v))]
   where vs = vertices g
 \end{code}
 

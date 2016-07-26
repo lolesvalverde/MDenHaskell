@@ -24,6 +24,7 @@ module ConjuntosRelacionesYFunciones ( productoCartesiano
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
+    
 import Test.QuickCheck
 import Data.List
 import DefinicionesYPropiedades 
@@ -494,6 +495,6 @@ False
 conservaAdyacencia :: (Eq a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
 conservaAdyacencia g1 g2 f =
-  and [(imagen f x,imagen f y) `aristaEn` g2
+  and [aristaEn g2 (imagen f x,imagen f y)
       | (x,y) <- aristas g1]
 \end{code}
