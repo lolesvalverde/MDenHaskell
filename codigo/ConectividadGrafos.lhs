@@ -14,10 +14,10 @@ module ConectividadGrafos (esCamino
                           , esCerrado
                           , esCircuito
                           , esCiclo 
-                          , prop_conectadosRelEqui
-                          , componentesConexas
-                          , esConexo
-                          , prop_caracterizaGrafoConexo
+                          -- , prop_conectadosRelEqui
+                          -- , componentesConexas
+                          -- , esConexo
+                          -- , prop_caracterizaGrafoConexo
                           , diametro
                           , excentricidad
                           , radio
@@ -33,6 +33,7 @@ import Morfismos
     
 import Test.QuickCheck
 import Data.List
+import Data.Maybe
 \end{code}
 }
 
@@ -55,26 +56,17 @@ La función \texttt{(esCamino g c)} se verifica si la sucesión de vértices
 \texttt{c} es un camino en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-ghci> esCamino (grafoCiclo 5) [1,2,3,4,5,1]
-True
-ghci> esCamino (grafoCiclo 5) [1,2,4,5,3,1]
-False
-ghci> esCamino grafoThomson [1,2,3]
-False
-ghci> esCamino grafoThomson [1,4,2,5,3,6]
-True
+esCamino (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
+esCamino (grafoCiclo 5) [1,2,4,5,3,1]  ==  False
+esCamino grafoThomson [1,2,3]          ==  False
+esCamino grafoThomson [1,4,2,5,3,6]    ==  True
 \end{sesion}
 
 \index{\texttt{esCamino}}
 \begin{code}
 esCamino :: Ord a => Grafo a -> [a] -> Bool
-esCamino g c = all (`elem` (vertices g)) c &&
-                all p (zip c (tail c))
-      where p (u,v) = elem (u,v) (aristas g)||
-                      elem (v,u) (aristas g)
+esCamino g c = all (aristaEn g) (zip c (tail c))
 \end{code}
-
-\comentario{Se puede simplificar esCamino usando aristaEn.}
 
 La función \texttt{(aristasCamino c)} devuelve la lista de las 
 aristas recorridas en el camino \texttt{c}.
@@ -115,8 +107,6 @@ verticesCamino :: Ord a => [a] -> [a]
 verticesCamino c = nub c
 \end{code}
 
-\comentario{Ver el correo sobre ``Aristas del camino''}
-  
 \begin{definicion}
   Sea $G = (V,A)$ un grafo y sean $u,v \in V$. Un camino entre $u$ y $v$ que no
   repite aristas (quizás vértices) se llama \textbf{recorrido}.
@@ -207,6 +197,8 @@ todosCaminos g x y = aux [[y]]
           | z == x    = (z:zs) : aux zss
           | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\ zs])
         g' = eliminaLazos g
+        eliminaLazos h = creaGrafo (vertices h)
+                               [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
     
 Vamos a comprobar con \texttt{QuickCheck} que el primer elemento de la
@@ -244,36 +236,36 @@ parDeVertices g = do
 Al hacer la comprobación, vamos a mostrar el orden de los grafos que
 genera automáticamente \texttt{quickCheck} para asegurarnos de que la
 comprobación sea suficientemente significativa.
-    
+\end{nota}    
+
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=10}) prop_todosCaminos
+ghci-- > quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminos
 +++ OK, passed 100 tests:
-34% 1
-16% 2
-13% 5
-13% 3
+23% 1
+18% 3
+17% 2
+ 9% 6
  8% 4
- 7% 6
- 6% 7
- 3% 8
+ 7% 7
+ 5% 8
+ 5% 5
+ 4% 9
+ 2% 12
+ 1% 11
+ 1% 10
 \end{sesion}
 
 \index{\texttt{prop\_todosCaminos}}    
 \begin{code}
 prop_todosCaminos :: Grafo Int -> Property
 prop_todosCaminos g =
-  not (null (vertices g)) ==>
+  not (esGrafoNulo g) ==>
   collect (orden g) $
   forAll (parDeVertices g)
          (\(x,y) -> let zss = todosCaminos g x y
                     in null zss || longitudCamino (head zss) ==
                                    minimum (map longitudCamino zss))
 \end{code}
-    
-\ignora{
-La definición que tenía no es correcta, no devuelve todos los caminos.
-\end{code}
-}
         
 \comentario{Ver ``Sobre caminos y comprobaciones''}
 
@@ -300,10 +292,18 @@ False
 
 \index{\texttt{estanConectados}}
 \begin{code}
-estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
-estanConectados g u v | null (vertices g) = False
+estanConectados :: Ord a => Grafo a -> a -> a -> Bool
+estanConectados g u v | esGrafoNulo g = False
                       | otherwise = not (null (todosCaminos g u v))
 \end{code}
+
+\begin{nota}
+La función \texttt{(estanConectados g u v)} no necesita calcular todos los
+caminos entre \texttt{u} y \texttt{v}. Puesto que Haskell utiliza por        
+defecto evaluación perezosa, si existe algún camino entre los dos        
+vértices, basta calcular el primero para saber que la lista de todos los 
+caminos no es vacía
+\end{nota}
 
 \begin{definicion}
   Se define la \textbf{distancia} entre $u$ y $v$ en el grafo $G$
@@ -312,22 +312,24 @@ estanConectados g u v | null (vertices g) = False
 \end{definicion}
 
 La función \texttt{(distancia g u v)} devuelve la distancia entre los
-vértices \texttt{u} y \texttt{v} en el grafo \texttt{g}. Por ejemplo,
+vértices \texttt{u} y \texttt{v} en el grafo \texttt{g}. En caso de 
+que los vértices no estén conectados devuelve el valor    
+\texttt{Nothing}. Por ejemplo,
 
 \begin{sesion}
-distancia (grafoCiclo 7) 1 4                    ==  3.0
-distancia (grafoRueda 7) 2 5                    ==  2.0
-distancia (grafoEstrella 4) 1 6                 ==  1.0
-distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Infinity
-distancia grafoNulo 2 3                         ==  Infinity
+distancia (grafoCiclo 7) 1 4                    ==  Just 3
+distancia (grafoRueda 7) 2 5                    ==  Just 2
+distancia (grafoEstrella 4) 1 3                 ==  Just 1
+distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Nothing
+distancia grafoNulo 2 3                         ==  Nothing
 \end{sesion}
 
 \index{\texttt{distancia}}
 \begin{code}
-distancia :: Ord a => Grafo a -> a -> a -> Double     
+distancia :: Ord a => Grafo a -> a -> a -> Maybe Int    
 distancia g u v | estanConectados g u v =
-                    minimum (map longitudCamino (todosCaminos g u v))
-                | otherwise = 1/0
+                    Just (longitudCamino (head (todosCaminos g u v)))
+                | otherwise = Nothing
 \end{code}
 
 \begin{definicion}
@@ -336,24 +338,24 @@ distancia g u v | estanConectados g u v =
   vértices se llama \textbf{geodésica} entre $u$ y $v$.
 \end{definicion}
 
-La función \texttt{(esGeodesica g c u v)} se verifica si el camino
-\texttt{c} es una geodesica entre \texttt{u} y \texttt{v} en
-el grafo \texttt{g}.
+La función \texttt{(esGeodesica g c)} se verifica si el camino
+\texttt{c} es una geodésica entre sus extremos en el grafo \texttt{g}.
 
 \begin{sesion}
-esGeodesica (grafoCiclo 7) [1,2,3,4,5,6] 1 6            == False
-esGeodesica (grafoCiclo 7) [1,7,6] 1 6                  == True            
-esGeodesica (grafoRueda 7) [2,1,5] 2 5                  == True
-esGeodesica (grafoRueda 7) [2,1,4,5] 2 5                == False
-esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4] 1 4  == False
-esGeodesica grafoNulo [1,4] 1 4                         == False
+esGeodesica (grafoCiclo 7) [1,2,3,4,5,6]            == False
+esGeodesica (grafoCiclo 7) [1,7,6]                  == True            
+esGeodesica (grafoRueda 7) [2,1,5]                  == True
+esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4]  == False
+esGeodesica grafoNulo [1,4]                         == False
 \end{sesion}
 
 \index{\texttt{esGeodesica}}    
 \begin{code}
-esGeodesica :: Ord a => Grafo a -> [a] -> a -> a -> Bool
-esGeodesica g c u v = esCamino g c &&
-    longitudCamino c == distancia g u v
+esGeodesica :: Ord a => Grafo a -> [a] -> Bool
+esGeodesica g c = 
+    longitudCamino c == fromJust (distancia g u v)
+    where u = head c
+          v = last c
 \end{code}
   
 \begin{definicion}
@@ -361,9 +363,8 @@ esGeodesica g c u v = esCamino g c &&
   son iguales.
 \end{definicion}
 
-La función \texttt{(esCerrado g c)} se verifica si la sucesión de 
-vértices \texttt{c} es un camino cerrado en el grafo \texttt{g}.
-Por ejemplo,
+La función \texttt{(esCerrado g c)} se verifica si el camino \texttt{c} 
+es cerrado en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 esCerrado (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
@@ -376,8 +377,7 @@ esCerrado grafoNulo [1,2,1]             ==  False
 \index{\texttt{esCerrado}}
 \begin{code}
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
-esCerrado g c =
-    esCamino g c && head c == last c
+esCerrado g c = head c == last c
 \end{code}
   
 \begin{definicion}
@@ -405,13 +405,12 @@ esCircuito g c =
 \end{code}
 
 \begin{definicion}
-  Un arco en un grafo $G$ se dice \textbf{circuito} si sus extremos
-  son iguales.
+  Un caminoSimple en un grafo $G$ se dice que es un \textbf{circuito} si 
+  sus extremos son iguales.
 \end{definicion}
 
-La función \texttt{(esCiclo g c)} se verifica si la sucesión de 
-vértices \texttt{c} es un ciclo en el grafo \texttt{g}.
-Por ejemplo,
+La función \texttt{(esCiclo g c)} se verifica si el camino \texttt{c} 
+es un ciclo en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 esCiclo (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
@@ -428,102 +427,133 @@ esCiclo g c =
     esCaminoSimple c && esCerrado g c
 \end{code}
     
-\begin{teorema}
-  Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
-  es una relación de equivalencia.
-\end{teorema}
+-- \begin{teorema}
+--   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
+--   es una relación de equivalencia.
+-- \end{teorema}
 
-A continuación, comprobaremos el resultado con \texttt{quickCheck}.
+-- A continuación, comprobaremos el resultado con \texttt{quickCheck}.
   
-\begin{sesion}
-ghci> quickCheck prop_conectadosRelEqui
-+++ OK, passed 100 tests.
-\end{sesion}
+-- \begin{sesion}
+-- ghci> quickCheck prop_conectadosRelEqui
+-- +++ OK, passed 100 tests.
+-- \end{sesion}
 
-\index{\texttt{prop\_ConectadosRelEqui}}   
-\begin{code}
-prop_conectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
-prop_conectadosRelEqui g u v w =
-    reflexiva && simetrica && transitiva
-    where reflexiva = estanConectados g u u
-          simetrica =
-              not (estanConectados g u v) || estanConectados g v u
-          transitiva =
-              not (estanConectados g u v && estanConectados g v w)
-                 || estanConectados g u w           
-\end{code}
+-- \index{\texttt{prop\_ConectadosRelEqui}}   
+-- \begin{code}
+-- prop_conectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
+-- prop_conectadosRelEqui g u v w =
+--     reflexiva && simetrica && transitiva
+--     where reflexiva = estanConectados g u u
+--           simetrica =
+--               not (estanConectados g u v) || estanConectados g v u
+--           transitiva =
+--               not (estanConectados g u v && estanConectados g v w)
+--                  || estanConectados g u w           
+-- \end{code}
 
-\begin{definicion}
-  Las clases de equivalencia obtenidas por la relación $∼$, 
-  estar conectados por un camino en un grafo $G$,  inducen subgrafos 
-  en $G$, los vértices y todas las aristas de los caminos que los conectan, 
-  que reciben el nombre de \textbf{componentes conexas por caminos} de $G$.
-\end{definicion}
+-- \begin{definicion}
+--   Las clases de equivalencia obtenidas por la relación $∼$, 
+--   estar conectados por un camino en un grafo $G$,  inducen subgrafos 
+--   en $G$, los vértices y todas las aristas de los caminos que los conectan, 
+--   que reciben el nombre de \textbf{componentes conexas por caminos} de $G$.
+-- \end{definicion}
 
-La función \texttt{(componentesConexas g)} devuelve las componentes 
-conexas por caminos del grafo \texttt{g}. Por ejemplo,
+-- La función \texttt{(componentesConexas g)} devuelve las componentes 
+-- conexas por caminos del grafo \texttt{g}. Por ejemplo,
 
-\begin{sesion}
-ghci> componentesConexas grafoPetersen
-[[1,2,3,4,5,6,7,8,9,10]]
-ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
-[[1,2,3],[4],[5]]
-ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
-[[1,2,3],[4,5]]
-ghci> componentesConexas grafoNulo
-[]
-\end{sesion}
+-- \begin{sesion}
+-- ghci> componentesConexas grafoPetersen
+-- [[1,2,3,4,5,6,7,8,9,10]]
+-- ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
+-- [[1,2,3],[4],[5]]
+-- ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+-- [[1,2,3],[4,5]]
+-- ghci> componentesConexas grafoNulo
+-- []
+-- \end{sesion}
       
-\index{\texttt{componentesConexas}}
-\begin{code}
-componentesConexas :: Eq a => Grafo a -> [[a]]
-componentesConexas g = aux (vertices g)
-      where aux []     = []
-            aux (v:vs) = c: aux (vs \\ c)
-                 where c = filter (estanConectados g v) (v:vs)
-\end{code}
+-- \index{\texttt{componentesConexas}}
+-- \begin{code}
+-- componentesConexas :: Ord a => Grafo a -> [[a]]
+-- componentesConexas g = aux (vertices g)
+--       where aux []     = []
+--             aux (v:vs) = c: aux (vs \\ c)
+--                  where c = filter (estanConectados g v) (v:vs)
+-- \end{code}
+
+-- \begin{definicion}
+--   Dado un grafo, diremos que es \textbf{conexo} si la relación $~$
+--   tiene una única clase de equivalencia en él; es decir, si el grafo
+--   tiene una única componente conexa.
+-- \end{definicion}
+
+-- La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
+-- es conexo. Por ejemplo,
+
+-- \begin{sesion}
+-- esConexo (completo 5)                      == True
+-- esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
+-- esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
+-- esConexo grafoNulo                         == False    
+-- \end{sesion}
+
+-- \index{\texttt{esConexo}}
+-- \begin{code}
+-- esConexo :: Ord a => Grafo a -> Bool
+-- esConexo g = length (componentesConexas g) == 1
+-- \end{code}             
+
+-- \begin{teorema}
+--   Sea $G$ un grafo, $G=(V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
+--   existe un camino entre $u$ y $v$.
+-- \end{teorema}
+
+-- Vamos a comprobar el resultado con \texttt{quickCheck}
+
+-- \begin{sesion}
+-- ghci>  quickCheck prop_caracterizaGrafoConexo
+-- +++ OK, passed 100 tests.
+-- \end{sesion}      
+    
+-- \begin{code}
+-- prop_caracterizaGrafoConexo :: Grafo Int -> Property
+-- prop_caracterizaGrafoConexo g =
+--     esConexo g ==> and [estanConectados g u v | 
+--                         u <- vertices g, v <- vertices g]
+--     && and [estanConectados g u v |
+--          u <- vertices g, v <- vertices g] ==> esConexo g
+-- \end{code}
 
 \begin{definicion}
-  Dado un grafo, diremos que es \textbf{conexo} si la relación $~$
-  tiene una única clase de equivalencia en él; es decir, si el grafo
-  tiene una única componente conexa.
+  Sean $G=(V,A)$ un grafo y $v \in V$. Se define la \textbf{excentricidad}
+  de $v$ como el máximo de las distancias entre $v$ y el resto de
+  vértices de $G$. La denotaremos por $e(G)$.
 \end{definicion}
 
-La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
-es conexo. Por ejemplo,
+La función \texttt{(excentricidad g v)} devuelve la excentricidad del 
+vértice \texttt{v} en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-esConexo (completo 5)                      == True
-esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
-esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
-esConexo grafoNulo                         == False    
+excentricidad (grafoCiclo 8) 5      ==  Just 4
+excentricidad (grafoRueda 7) 4      ==  Just 2
+excentricidad (grafoRueda 7) 1      ==  Just 1
+excentricidad grafoPetersen  6      ==  Just 2
+ghci> let g = creaGrafo [1,2,3] [(1,2)]
+excentricidad g 3                   ==  Nothing
+excentricidad grafoNulo 3           ==  Nothing
 \end{sesion}
 
-\index{\texttt{esConexo}}
+\index{\texttt{excentricidad}}
 \begin{code}
-esConexo :: Eq a => Grafo a -> Bool
-esConexo g = length (componentesConexas g) == 1
-\end{code}             
-
-\begin{teorema}
-  Sea $G$ un grafo, $G=(V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
-  existe un camino entre $u$ y $v$.
-\end{teorema}
-
-Vamos a comprobar el resultado con \texttt{quickCheck}
-
-\begin{sesion}
-ghci>  quickCheck prop_caracterizaGrafoConexo
-+++ OK, passed 100 tests.
-\end{sesion}      
-    
-\begin{code}
-prop_caracterizaGrafoConexo :: Grafo Int -> Property
-prop_caracterizaGrafoConexo g =
-    esConexo g ==> and [estanConectados g u v | 
-                        u <- vertices g, v <- vertices g]
-    && and [estanConectados g u v |
-         u <- vertices g, v <- vertices g] ==> esConexo g
+excentricidad :: Ord a => Grafo a -> a -> Maybe Int
+excentricidad g u
+    | esGrafoNulo g = Nothing
+    | otherwise = aux [fromJust (d v) | v <- vs, isJust (d v)]
+    where vs = vertices g \\ [u]
+          d w = distancia g u w
+          aux [] = Nothing
+          aux ds = Just (maximum ds)
 \end{code}
 
 \begin{definicion}
@@ -536,48 +566,22 @@ La función \texttt{(diametro g)} devuelve el diámetro del
 grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-diametro (grafoCiclo 8)      ==  4.0
-diametro (grafoRueda 7)      ==  2.0
-diametro grafoPetersen       ==  2.0
-diametro grafoMoebiusCantor  ==  4.0
-diametro grafoNulo           ==  0.0        
+diametro (grafoCiclo 8)      ==  Just 4
+diametro (grafoRueda 7)      ==  Just 2
+diametro grafoPetersen       ==  Just 2
+ghci> let g = creaGrafo [1,2,3] [(1,2)]
+diametro g                   ==  Just 1
+diametro grafoNulo           ==  Nothing       
 \end{sesion}
 
 \index{\texttt{diametro}}
 \begin{code}
-diametro :: Ord a => Grafo a -> Double
-diametro g
-    | null (vertices g) = 0     
-    | otherwise =
-        maximum (map f (combinaciones 2 (vertices g)))
-            where f ([u,v]) = distancia g u v
-\end{code}
-
-\begin{definicion}
-  Sean $G=(V,A)$ un grafo y $v \in V$. Se define la \textbf{excentricidad}
-  de $v$ como el máximo de las distancias entre $v$ y el resto de
-  vértices de $G$. La denotaremos por $e(G)$.
-\end{definicion}
-
-La función \texttt{(excentricidad g v)} devuelve la excentricidad del 
-vértice \texttt{v} en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-excentricidad (grafoCiclo 8) 5      ==  4.0
-excentricidad (grafoRueda 7) 4      ==  2.0
-excentricidad (grafoRueda 7) 1      ==  1.0
-excentricidad grafoPetersen  6      ==  2.0
-excentricidad grafoMoebiusCantor 7  ==  4.0
-excentricidad grafoNulo 3           ==  0.0              
-\end{sesion}
-
-\index{\texttt{excentricidad}}
-\begin{code}
-excentricidad :: Ord a => Grafo a -> a -> Double
-excentricidad g u
-    | null (vertices g) = 0
-    | otherwise = maximum (map f [(u,v) | v <- vertices g])
-         where f (a,b) = distancia g a b
+diametro :: Ord a => Grafo a -> Maybe Int           
+diametro g | esGrafoNulo g = Nothing
+           | otherwise = aux [excentricidad g v | v <- vs]
+    where vs = vertices g
+          aux [] = Nothing
+          aux xs = Just (maximum (map fromJust (filter isJust xs)))
 \end{code}
 
 \begin{definicion}
@@ -590,20 +594,22 @@ La función \texttt{(radio g)} devuelve el radio del
 grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-radio (grafoCiclo 8)      ==  4.0
-radio (grafoRueda 7)      ==  1.0
-radio (grafoRueda 7)      ==  1.0
-radio grafoPetersen       ==  2.0
-radio grafoMoebiusCantor  ==  4.0
-radio grafoNulo           ==  0.0
+radio (grafoCiclo 8)      ==  Just 4
+radio (grafoRueda 7)      ==  Just 1
+radio grafoPetersen       ==  Just 2
+ghci> let g = creaGrafo [1,2,3] [(1,2)]
+radio g                   ==  Just 1
+radio grafoNulo           ==  Nothing
 \end{sesion}
 
 \index{\texttt{radio}}
 \begin{code}
-radio :: Ord a => Grafo a -> Double        
-radio g | null (vertices g) = 0
-        | otherwise =
-            minimum (map (excentricidad g) (vertices g))
+radio :: Ord a => Grafo a -> Maybe Int        
+radio g | esGrafoNulo g = Nothing
+        | otherwise = aux [excentricidad g v | v <- vs]
+    where vs = vertices g
+          aux [] = Nothing
+          aux xs = Just (minimum (map fromJust (filter isJust xs)))
 \end{code}
     
 \begin{definicion}
