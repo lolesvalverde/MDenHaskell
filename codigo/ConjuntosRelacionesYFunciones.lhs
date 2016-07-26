@@ -382,7 +382,7 @@ esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
 \begin{code}
 esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
 esInyectiva f =
-  and [unitario (antiImagenRelacion f y) | y <- rango f] 
+  all unitario [antiImagenRelacion f y | y <- rango f] 
 \end{code}
 
 \begin{definicion}
@@ -494,7 +494,6 @@ False
 \begin{code}
 conservaAdyacencia :: (Eq a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
-conservaAdyacencia g1 g2 f =
-  and [aristaEn g2 (imagen f x,imagen f y)
-      | (x,y) <- aristas g1]
+conservaAdyacencia g1 g2 f = all (aristaEn g2) fs 
+    where fs = [(imagen f x,imagen f y) | (x,y) <- aristas g1]
 \end{code}
