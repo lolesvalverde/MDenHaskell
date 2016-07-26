@@ -2,11 +2,12 @@
 \begin{code}
 module ConectividadGrafos (esCamino
                           , aristasCamino
+                          , verticesCamino
                           , esRecorrido
                           , esCaminoSimple
+                          , longitudCamino 
                           , todosCaminos
                           , estanConectados
-                          , longitudCamino
                           , distancia
                           , esGeodesica
                           , esCerrado
@@ -49,8 +50,8 @@ problema de encontrar la ruta más ventajosa en cada caso.
   $\forall i \in \{0,\dots,k-1\}, (v_i,v_{i+1}) \in A$.
 \end{definicion}
 
-La función \texttt{(esCamino g vs)} se verifica si la sucesión de vértices
-\texttt{vs} es un camino en el grafo \texttt{g}. Por ejemplo,
+La función \texttt{(esCamino g c)} se verifica si la sucesión de vértices
+\texttt{c} es un camino en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 ghci> esCamino (grafoCiclo 5) [1,2,3,4,5,1]
@@ -66,16 +67,16 @@ True
 \index{\texttt{esCamino}}
 \begin{code}
 esCamino :: Ord a => Grafo a -> [a] -> Bool
-esCamino g vs = all (`elem` (vertices g)) vs &&
-                all p (zip vs (tail vs))
+esCamino g c = all (`elem` (vertices g)) c &&
+                all p (zip c (tail c))
       where p (u,v) = elem (u,v) (aristas g)||
                       elem (v,u) (aristas g)
 \end{code}
 
 \comentario{Se puede simplificar esCamino usando aristaEn.}
 
-La función \texttt{(aristasCamino vs)} devuelve la lista de las 
-aristas recorridas en el camino \texttt{vs}.
+La función \texttt{(aristasCamino c)} devuelve la lista de las 
+aristas recorridas en el camino \texttt{c}.
 
 \begin{sesion}
 ghci> aristasCamino [1,2,3,4,5,1]
@@ -90,8 +91,27 @@ ghci> aristasCamino [1,4,2,5,3,6]
 
 \index{\texttt{aristasCamino}}
 \begin{code}
-aristasCamino :: Eq a => [a] -> [(a,a)]
-aristasCamino vs = zip vs (tail vs)
+aristasCamino :: Ord a => [a] -> [(a,a)]
+aristasCamino c =
+    map parOrdenado (zip c (tail c))
+    where parOrdenado (u,v) | u <= v = (u,v)
+                            | otherwise = (v,u)
+\end{code}
+
+La función \texttt{(verticesCamino c)} devuelve la lista de las 
+vertices recorridas en el camino \texttt{c}.
+
+\begin{sesion}
+verticesCamino [1,2,3,4,5,1]  ==  [1,2,3,4,5]
+verticesCamino [1,2,4,5,3,1]  ==  [1,2,4,5,3]
+verticesCamino [1,2,3]        ==  [1,2,3]
+verticesCamino []             ==  []
+\end{sesion}
+
+\index{\texttt{verticesCamino}}
+\begin{code}
+verticesCamino :: Ord a => [a] -> [a]
+verticesCamino c = nub c
 \end{code}
 
 \comentario{Ver el correo sobre ``Aristas del camino''}
@@ -112,7 +132,7 @@ esRecorrido [1,2,1,3,4]      ==  True
 \end{sesion}
        
 \begin{code}
-esRecorrido :: Eq a => [a] -> Bool      
+esRecorrido :: Ord a => [a] -> Bool      
 esRecorrido c =
   aristasCamino c == nub (aristasCamino c)
 \end{code}      
@@ -124,53 +144,132 @@ esRecorrido c =
   se llama \textbf{camino simple}.
 \end{definicion}
 
-La función \texttt{(esCaminoSimple vs)} se verifica si el camino \texttt{vs} es
+La función \texttt{(esCaminoSimple c)} se verifica si el camino \texttt{c} es
 un arco. Por ejemplo,
 
 \begin{sesion}
-esCaminoSimple [1..4]              == True
-esCaminoSimple ([1..5] ++ [1..4])  ==  False
-esCaminoSimple [1,2,1,3,4]         ==  False
-esCaminoSimple ['a'..'f']          == True
+esCaminoSimple [1..4]              ==  True
+esCaminoSimple [1,2,6,1]           ==  True
+esCaminoSimple [1,2,3,1,4]         ==  False
+esCaminoSimple ['a'..'f']          ==  True
 \end{sesion}
 
 \begin{code}
 esCaminoSimple :: Ord a => [a] -> Bool
-esCaminoSimple vs = nub vas == vas
-  where vas = map fst (aristasCamino vs)
+esCaminoSimple c = if (head c /= last c)
+                   then (verticesCamino c == c)
+                   else (verticesCamino c ++ [last c] == c)
 \end{code}
 
-\comentario{Ver ``Comentarios a esCaminoSimple''}
+\begin{definicion}
+  Se llama \textbf{longitud} de un camino al número de veces que
+  se atraviesa una arista en dicho camino.
+\end{definicion}
+
+La función \texttt{(longitudCamino c)} devuelve la longitud del camino
+\texttt{c}. Por ejemplo,
+
+\begin{sesion}
+longitudCamino [1,2,3,4]   == 3
+longitudCamino ['a'..'z']  == 25
+longitudCamino [2,4..10]   == 4            
+\end{sesion}
+
+\index{\texttt{longitudCamino}}
+\begin{code}
+longitudCamino :: Num b => [a] -> b
+longitudCamino c = genericLength c - 1
+\end{code}
     
 La función \texttt{(todosCaminos g inicio final)} devuelve una lista con todos
 los caminos simples posibles en el grafo \texttt{g} entre los vértices
-\texttt{inicio} y \texttt{final}, encontrados usando un algoritmo de búsqueda
-en profundidad.
+\texttt{inicio} y \texttt{final}, generados de forma que el primer
+camino de la lista sea de longitud mínima.
 
 \begin{sesion}
 ghci> todosCaminos (grafoCiclo 7) 1 6
-[[1,2,3,4,5,6],[1,7,6]]
+[[1,7,6],[1,2,3,4,5,6]]
 ghci> todosCaminos (grafoRueda 7) 2 5
-[[2,1,3,4,5],[2,1,4,5],[2,1,5],[2,3,1,4,5],[2,3,1,5],
- [2,3,4,1,5],[2,3,4,5],[2,7,1,3,4,5],[2,7,1,4,5],[2,7,1,5],
- [2,7,6,1,3,4,5],[2,7,6,1,4,5],[2,7,6,1,5],[2,7,6,5]]
+[[2,1,5],[2,3,1,5],[2,7,1,5],[2,1,4,5],[2,3,4,5],[2,1,6,5],
+ [2,7,6,5],[2,3,4,1,5],[2,7,6,1,5],[2,3,1,4,5],[2,7,1,4,5],
+ [2,1,3,4,5],[2,3,1,6,5],[2,7,1,6,5],[2,1,7,6,5],[2,7,6,1,4,5],
+ [2,7,1,3,4,5],[2,3,4,1,6,5],[2,3,1,7,6,5],[2,7,6,1,3,4,5],[2,3,4,1,7,6,5]]
 ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
-\index{\texttt{todosCaminos}}          
+Vamos a comprobar con \texttt{QuickCheck} que el primer elemento de la
+lista que devuelve la función \texttt{todosCaminos g u v)} es de longitud
+mínima. Para ello, vamos a utilizar la función \texttt{(parDeVertices g)}
+que es un generador de pares de vértices del grafo no nulo \texttt{g}. 
+Por ejemplo, 
+
+\begin{sesion}
+ghci> sample (parDeVertices (creaGrafo [1..9] []))
+(3,9)
+(9,3)
+(7,4)
+(4,3)
+(2,8)
+(7,2)
+(8,4)
+(5,3)
+(7,2)
+(3,1)
+(7,2)
+\end{sesion}
+
 \begin{code}
-todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
-todosCaminos g inicio final = bp [inicio] []            
-    where bp [] [] = []
-          bp [] vis = if (last vis == final) then [vis] else []      
-          bp (v:vs) vis 
-              | v == final = [vis ++ [v]]
-              | elem v vis = bp vs vis
-              | otherwise = bp (adyacentes g v) (vis ++ [v]) ++
-                            bp vs vis 
+parDeVertices :: Grafo Int -> Gen (Int,Int)
+parDeVertices g = do
+  x <- elements vs
+  y <- elements vs
+  return (x,y)
+  where vs = vertices g
 \end{code}
 
+\begin{nota}
+Al hacer la comprobación, vamos a mostrar el orden de los grafos que
+genera automáticamente \texttt{quickCheck} para asegurarnos de que la
+comprobación sea suficientemente significativa.
+    
+\begin{sesion}
+ghci> quickCheckWith (stdArgs {maxSize=10}) prop_todosCaminos
++++ OK, passed 100 tests:
+34% 1
+16% 2
+13% 5
+13% 3
+ 8% 4
+ 7% 6
+ 6% 7
+ 3% 8
+\end{sesion}
+
+\begin{code}
+prop_todosCaminos :: Grafo Int -> Property
+prop_todosCaminos g =
+  not (null (vertices g)) ==>
+  collect (orden g) $
+  forAll (parDeVertices g)
+         (\(x,y) -> let zss = todosCaminos g x y
+                    in null zss || longitudCamino (head zss) ==
+                                   minimum (map longitudCamino zss))
+\end{code}
+    
+\ignora{
+La definición que tenía no es correcta, no devuelve todos los caminos.         
+\begin{code}
+todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
+todosCaminos g x y = aux [[y]]
+  where aux []       = []
+        aux ([]:zss) = aux zss
+        aux ((z:zs):zss)
+          | z == x    = (z:zs) : aux zss
+          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g z \\ zs])
+\end{code}
+}
+        
 \comentario{Ver ``Sobre caminos y comprobaciones''}
 
 \comentario{Revisado hasta aquí}
@@ -199,26 +298,6 @@ False
 estanConectados ::  Eq a => Grafo a -> a -> a -> Bool
 estanConectados g u v | null (vertices g) = False
                       | otherwise = not (null (todosCaminos g u v))
-\end{code}
-
-\begin{definicion}
-  Se llama \textbf{longitud} de un camino al número de veces que
-  se atraviesa una arista en dicho camino.
-\end{definicion}
-
-La función \texttt{(longitudCamino vs)} devuelve la longitud del camino
-\texttt{vs}. Por ejemplo,
-
-\begin{sesion}
-longitudCamino [1,2,3,4]   == 3
-longitudCamino ['a'..'z']  == 25
-longitudCamino [2,4..10]   == 4            
-\end{sesion}
-
-\index{\texttt{longitudCamino}}
-\begin{code}
-longitudCamino :: Num b => [a] -> b
-longitudCamino vs = (genericLength vs) - 1
 \end{code}
 
 \begin{definicion}
@@ -252,8 +331,8 @@ distancia g u v | estanConectados g u v =
   vértices se llama \textbf{geodésica} entre $u$ y $v$.
 \end{definicion}
 
-La función \texttt{(esGeodesica g vs u v)} se verifica si el camino
-\texttt{vs} es una geodesica entre \texttt{u} y \texttt{v} en
+La función \texttt{(esGeodesica g c u v)} se verifica si el camino
+\texttt{c} es una geodesica entre \texttt{u} y \texttt{v} en
 el grafo \texttt{g}.
 
 \begin{sesion}
@@ -268,8 +347,8 @@ esGeodesica grafoNulo [1,4] 1 4                         == False
 \index{\texttt{esGeodesica}}    
 \begin{code}
 esGeodesica :: Ord a => Grafo a -> [a] -> a -> a -> Bool
-esGeodesica g vs u v = esCamino g vs &&
-    longitudCamino vs == distancia g u v
+esGeodesica g c u v = esCamino g c &&
+    longitudCamino c == distancia g u v
 \end{code}
   
 \begin{definicion}
@@ -277,8 +356,8 @@ esGeodesica g vs u v = esCamino g vs &&
   son iguales.
 \end{definicion}
 
-La función \texttt{(esCerrado g vs)} se verifica si la sucesión de 
-vértices \texttt{vs} es un camino cerrado en el grafo \texttt{g}.
+La función \texttt{(esCerrado g c)} se verifica si la sucesión de 
+vértices \texttt{c} es un camino cerrado en el grafo \texttt{g}.
 Por ejemplo,
 
 \begin{sesion}
@@ -292,8 +371,8 @@ esCerrado grafoNulo [1,2,1]             ==  False
 \index{\texttt{esCerrado}}
 \begin{code}
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
-esCerrado g vs =
-    esCamino g vs && head vs == last vs
+esCerrado g c =
+    esCamino g c && head c == last c
 \end{code}
   
 \begin{definicion}
@@ -301,8 +380,8 @@ esCerrado g vs =
   son iguales.
 \end{definicion}
 
-La función \texttt{(esCircuito g vs)} se verifica si la sucesión de 
-vértices \texttt{vs} es un circuito en el grafo \texttt{g}.
+La función \texttt{(esCircuito g c)} se verifica si la sucesión de 
+vértices \texttt{c} es un circuito en el grafo \texttt{g}.
 Por ejemplo,
 
 \begin{sesion}
@@ -316,8 +395,8 @@ esCircuito grafoNulo [1,2,1]               ==  False
 \index{\texttt{esCircuito}}
 \begin{code}
 esCircuito :: (Ord a) => Grafo a -> [a] -> Bool
-esCircuito g vs =
-    esRecorrido vs && esCerrado g vs
+esCircuito g c =
+    esRecorrido c && esCerrado g c
 \end{code}
 
 \begin{definicion}
@@ -325,8 +404,8 @@ esCircuito g vs =
   son iguales.
 \end{definicion}
 
-La función \texttt{(esCiclo g vs)} se verifica si la sucesión de 
-vértices \texttt{vs} es un ciclo en el grafo \texttt{g}.
+La función \texttt{(esCiclo g c)} se verifica si la sucesión de 
+vértices \texttt{c} es un ciclo en el grafo \texttt{g}.
 Por ejemplo,
 
 \begin{sesion}
@@ -340,8 +419,8 @@ esCiclo grafoNulo [1,2,1]               ==  False
 \index{\texttt{esCircuito}}
 \begin{code}
 esCiclo :: (Ord a) => Grafo a -> [a] -> Bool
-esCiclo g vs =
-    esCaminoSimple vs && esCerrado g vs
+esCiclo g c =
+    esCaminoSimple c && esCerrado g c
 \end{code}
     
 \begin{teorema}
