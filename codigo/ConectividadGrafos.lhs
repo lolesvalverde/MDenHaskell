@@ -7,6 +7,7 @@ module ConectividadGrafos (esCamino
                           , esCaminoSimple
                           , longitudCamino 
                           , todosCaminos
+                          , prop_todosCaminos 
                           , estanConectados
                           , distancia
                           , esGeodesica
@@ -135,9 +136,7 @@ esRecorrido [1,2,1,3,4]      ==  True
 esRecorrido :: Ord a => [a] -> Bool      
 esRecorrido c =
   aristasCamino c == nub (aristasCamino c)
-\end{code}      
-
-\comentario{Ver ``Comentarios a esRecorrido''}
+\end{code}
 
 \begin{definicion}
   Un camino que no repite vértices (y, por tanto, tampoco aristas)
@@ -148,10 +147,10 @@ La función \texttt{(esCaminoSimple c)} se verifica si el camino \texttt{c} es
 un arco. Por ejemplo,
 
 \begin{sesion}
-esCaminoSimple [1..4]              ==  True
-esCaminoSimple [1,2,6,1]           ==  True
-esCaminoSimple [1,2,3,1,4]         ==  False
-esCaminoSimple ['a'..'f']          ==  True
+esCaminoSimple [1..4]       ==  True
+esCaminoSimple [1,2,6,1]    ==  True
+esCaminoSimple [1,2,3,1,4]  ==  False
+esCaminoSimple ['a'..'f']   ==  True
 \end{sesion}
 
 \begin{code}
@@ -198,6 +197,18 @@ ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
+\index{\texttt{todosCaminos}}
+\begin{code}
+todosCaminos :: Ord a => Grafo a -> a -> a -> [[a]]
+todosCaminos g x y = aux [[y]]
+  where aux []       = []
+        aux ([]:zss) = aux zss
+        aux ((z:zs):zss)
+          | z == x    = (z:zs) : aux zss
+          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\ zs])
+        g' = eliminaLazos g
+\end{code}
+    
 Vamos a comprobar con \texttt{QuickCheck} que el primer elemento de la
 lista que devuelve la función \texttt{todosCaminos g u v)} es de longitud
 mínima. Para ello, vamos a utilizar la función \texttt{(parDeVertices g)}
@@ -219,6 +230,7 @@ ghci> sample (parDeVertices (creaGrafo [1..9] []))
 (7,2)
 \end{sesion}
 
+\index{texttt{parDeVertices}}
 \begin{code}
 parDeVertices :: Grafo Int -> Gen (Int,Int)
 parDeVertices g = do
@@ -246,6 +258,7 @@ ghci> quickCheckWith (stdArgs {maxSize=10}) prop_todosCaminos
  3% 8
 \end{sesion}
 
+\index{\texttt{prop\_todosCaminos}}    
 \begin{code}
 prop_todosCaminos :: Grafo Int -> Property
 prop_todosCaminos g =
@@ -258,15 +271,7 @@ prop_todosCaminos g =
 \end{code}
     
 \ignora{
-La definición que tenía no es correcta, no devuelve todos los caminos.         
-\begin{code}
-todosCaminos :: Eq a => Grafo a -> a -> a -> [[a]]
-todosCaminos g x y = aux [[y]]
-  where aux []       = []
-        aux ([]:zss) = aux zss
-        aux ((z:zs):zss)
-          | z == x    = (z:zs) : aux zss
-          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g z \\ zs])
+La definición que tenía no es correcta, no devuelve todos los caminos.
 \end{code}
 }
         
