@@ -27,6 +27,7 @@ Se utilizará la representación de los grafos como listas de aristas.
 \ignora{
 \begin{code}
 module EjemplosGrafos (grafoNulo
+                      , esGrafoNulo 
                       , grafoCiclo
                       , grafoAmistad
                       , completo
@@ -80,7 +81,7 @@ g12 = creaGrafo [1..4] [(1,1),(1,2),(3,3)]
   vértices ni aristas.
 \end{definicion}
 
-La función \texttt{grafoNulo} devuelve un grafo nulo.
+La función \texttt{(grafoNulo)} devuelve un grafo nulo.
 
 \begin{sesion}
 grafoNulo == G [] []
@@ -90,6 +91,22 @@ grafoNulo == G [] []
 \begin{code}
 grafoNulo :: Ord a => Grafo a
 grafoNulo = creaGrafo [] []
+\end{code}
+
+La función \texttt{(esGrafoNulo g)} se verifica si \texttt{g} es un   
+grafo nulo
+
+\begin{sesion}
+esGrafoNulo grafoNulo                  ==  True
+esGrafoNulo (creaGrafo [] [(1,2)])     ==  False
+esGrafoNulo (creaGrafo [1,2] [(1,2)])  ==  False
+\end{sesion}
+
+\index{\texttt{grafoNulo}}
+\begin{code}
+esGrafoNulo :: Grafo a -> Bool
+esGrafoNulo g =
+    null (vertices g) && null (aristas g)
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO CICLO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
