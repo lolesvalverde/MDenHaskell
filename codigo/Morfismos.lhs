@@ -111,7 +111,8 @@ False
 \end{sesion}
 
 \begin{code}
-esMorfismo :: (Eq a,Ord b) => Grafo a -> Grafo b -> Funcion a b -> Bool
+esMorfismo :: (Ord a,Ord b) => Grafo a -> Grafo b ->
+              Funcion a b -> Bool
 esMorfismo g1 g2 f =
   esFuncion (vertices g1) (vertices g2) f &&
   conservaAdyacencia g1 g2 f
@@ -134,7 +135,7 @@ ghci> morfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
 
 \index{\texttt{morfismos}}
 \begin{code}
-morfismos :: (Eq a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
+morfismos :: (Ord a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
 morfismos g h =
   [f | f <- funciones (vertices g) (vertices h)
      , esMorfismo g h f]
