@@ -18,6 +18,7 @@ module ConjuntosRelacionesYFunciones ( productoCartesiano
                                      , esSobreyectiva
                                      , esBiyectiva
                                      , inversa
+                                     , imagenInversa
                                      , conservaAdyacencia
                                      ) where
   
@@ -110,7 +111,7 @@ combinaciones 0 _          = [[]]
 combinaciones _ []         = []
 combinaciones k (x:xs) = 
     [x:ys | ys <- combinaciones (k-1) xs] ++ combinaciones k xs
-\end{code}                                       
+\end{code}
 
 \subsubsection{Variaciones con repetición}
 
@@ -421,9 +422,8 @@ esSobreyectiva _ ys f =
   si cada elementos de $B$ es imagen de un único elemento de $A$.              
 \end{definicion}
 
-La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
-\texttt{f} es sobreyectiva. A la hora de definirla, estamos contando con que
-\texttt{f} es una función entre \texttt{xs} y \texttt{ys}.  Por ejemplo,
+La función \texttt{(esBiyectiva xs ys f)} se verifica si la función
+\texttt{f} es biyectiva.  Por ejemplo,
 
 \begin{sesion}
 ghci> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
@@ -441,6 +441,40 @@ esBiyectiva xs ys f =
   esInyectiva f && esSobreyectiva xs ys f
 \end{code}
 
+La funciones \texttt{biyecciones1 xs ys} y \texttt{biyecciones2 xs ys}
+devuelven la lista de todas las biyecciones entre los conjuntos
+\texttt{xs} y \texttt{ys}. La primera lo hace filtrando las funciones
+entre los conjuntos que son biyectivas y la segunda lo hace construyendo
+únicamente las funciones biyectivas entre los conjuntos, con el
+consecuente ahorro computacional.
+
+\begin{sesion}
+ghci> length (biyecciones1 [1..7] ['a'..'g'])
+5040
+(16.75 secs, 4,146,744,104 bytes)
+ghci> length (biyecciones2 [1..7] ['a'..'g'])
+5040
+(0.02 secs, 0 bytes)
+ghci> length (biyecciones1 [1..6] ['a'..'g'])
+0
+(2.53 secs, 592,625,824 bytes)
+ghci> length (biyecciones2 [1..6] ['a'..'g'])
+0
+(0.01 secs, 0 bytes)
+\end{sesion}
+
+\index{\texttt{biyecciones}}
+\begin{code}
+biyecciones1 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones1 xs ys =
+  filter (esBiyectiva xs ys) (funciones xs ys)
+
+biyecciones2 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones2 xs ys
+  | length xs /= length ys = []
+  | otherwise              = [zip xs zs | zs <- permutations ys]
+\end{code}
+       
 \begin{definicion}
   Si $f$ es una función biyectiva entre los conjuntos $A$ y $B$,
   definimos la
@@ -464,36 +498,65 @@ ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
 \index{\texttt{inversa}}
 \begin{code}
 inversa :: (Eq a, Eq b) => [(a,b)] -> [(b,a)]
-inversa [] = []           
-inversa xs@((a,b):fs) = nub (inversaAux xs)
-      where inversaAux []         = []            
-            inversaAux ((x,y):ys) = (y,x):inversaAux ys 
+inversa f = [(y,x) | (x,y) <- f]
 \end{code}
 
-\comentario{Ver correo sobre mejora de inversa.}
+\begin{nota}
+Para considerar la inversa de una función, esta tiene que ser
+biyectiva. Luego \texttt{(inversa f)} asigna a cada elemento del
+conjunto imagen (que en este caso coincide con la imagen) uno y solo
+uno del conjunto de salida.
+\end{nota}
+
+La función \texttt{(imagenInversa f y)} devuelve el elemento del conjunto   
+de salida de la función \texttt{f} tal que su imagen es \texttt{y}.
+
+\begin{sesion}
+ghci> inversa [(1,4),(2,5),(3,6)]
+[(4,1),(5,2),(6,3)]
+ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
+[(4,1),(4,2),(6,3)]
+\end{sesion}
+
+\index{\texttt{imagenInversa}}
+\begin{code}
+imagenInversa :: (Eq a, Eq b) => [(a,b)] -> b -> a
+imagenInversa f y = imagen (inversa f) y
+\end{code}
+
+\subsubsection{Conservar adyacencia}
 
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
-  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ tales que
-  $(u,v) \in A$ entonces verifica que $(f(u),f(v)) \in A'$.
+  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica
+  $(u,v)\in A$ si y solamente si $(f(u),f(v)) \in A'$.
 \end{definicion}
 
-La función \texttt{(conservaAdyacencia g1 g2 f)} se verifica si la función
-\texttt{f} conserva las adyacencias. Por ejemplo,
+La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
+\texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las           
+adyacencias. Por ejemplo,
 
 \begin{sesion}
-ghci> let g1 = creaGrafo [1,2,3] [(1,2),(2,3)]
-ghci> let g2 = creaGrafo [4,5,6] [(4,6),(5,6)]
-ghci> conservaAdyacencia g1 g2 [(1,4),(2,6),(3,5)]
-True
-ghci> conservaAdyacencia g1 g2 [(1,4),(2,5),(3,6)]
+ghci> let g1 = creaGrafo [1..4] [(1,2),(2,3),(3,4)]
+ghci> let g2 = creaGrafo [1..4] [(1,2),(2,3),(2,4)]
+ghci> let g3 = creaGrafo [4,6..10] [(4,8),(6,8),(8,10)]
+ghci> conservaAdyacencia g1 g3 [(1,4),(2,6),(3,8),(4,10)]
 False
+ghci> conservaAdyacencia g2 g3 [(1,4),(2,8),(3,6),(4,10)]
+True
 \end{sesion}
 
 \index{\texttt{conservaAdyacencia}}
 \begin{code}
-conservaAdyacencia :: (Eq a, Ord b) =>
+conservaAdyacencia :: (Ord a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
-conservaAdyacencia g1 g2 f = all (aristaEn g2) fs 
-    where fs = [(imagen f x,imagen f y) | (x,y) <- aristas g1]
+conservaAdyacencia g h f
+    | orden g /= orden h = False
+    | otherwise = all (aristaEn h) gs && all (aristaEn g) hs
+    where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
+          hs = concat [aux (x,y) | (x,y) <- aristas h]
+          aux (a,b) = [(x,y) | x <- antiImagenRelacion f a,
+                               y <- antiImagenRelacion f b]
 \end{code}
+
+\comentario{Tengo que revisar la función}
