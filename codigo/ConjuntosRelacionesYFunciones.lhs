@@ -17,6 +17,7 @@ module ConjuntosRelacionesYFunciones ( productoCartesiano
                                      , esInyectiva
                                      , esSobreyectiva
                                      , esBiyectiva
+                                     , biyecciones  
                                      , inversa
                                      , imagenInversa
                                      , conservaAdyacencia
@@ -475,6 +476,17 @@ biyecciones2 xs ys
   | otherwise              = [zip xs zs | zs <- permutations ys]
 \end{code}
        
+\begin{nota}
+A partir de ahora trabajaremos con la función \texttt{biyecciones2} así  
+que la redefiniremos como \texttt{biyecciones}}
+
+\index{\texttt{biyecciones}}
+\begin{code}
+biyecciones :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones = biyecciones2
+\end{code}
+\end{nota}
+               
 \begin{definicion}
   Si $f$ es una función biyectiva entre los conjuntos $A$ y $B$,
   definimos la
@@ -557,4 +569,3 @@ conservaAdyacencia g h f =
           aux (a,b) = [(x,y) | x <- antiImagenRelacion f a,
                                y <- antiImagenRelacion f b]
 \end{code}
-\comentario{Tengo que revisar la función}
