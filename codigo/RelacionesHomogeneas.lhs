@@ -1,12 +1,14 @@
 \ignora{
 \begin{code}
 module RelacionesHomogeneas ( esRelacionHomogenea
+                            , estaRelacionado
                             , esReflexiva
                             , esSimetrica
                             , esAntisimetrica
                             , esTransitiva
                             , esRelacionEquivalencia
-                            , esRelacionOrden) where
+                            , esRelacionOrden
+                            , clasesEquivalencia) where
   
 import GrafoConListaDeAristas
 import EjemplosGrafos
@@ -43,6 +45,7 @@ esRelacionHomogenea [1..4] [(1,2),(2,5),(3,4),(4,1)] == False
 esRelacionHomogenea [1..4] [(1,2),(3,4),(4,1)]       == True
 \end{sesion}
 
+\index{\texttt{esRelacionHomogenea}}
 \begin{code}
 esRelacionHomogenea :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionHomogenea xs r = esRelacion xs xs r
@@ -62,6 +65,7 @@ estaRelacionado [(1,3),(2,5),(4,6)] 2 5 == True
 estaRelacionado [(1,3),(2,5),(4,6)] 2 3 == False
 \end{sesion}
 
+\index{\texttt{estaRelacionado}}
 \begin{code}
 estaRelacionado :: Eq a => [(a,a)] -> a -> a -> Bool
 estaRelacionado r x y = elem (x,y) r
@@ -96,13 +100,14 @@ ghci> esReflexiva [1..n] r
 False
 \end{sesion}
 
+\index{\texttt{esReflexiva}}
 \begin{code}
 esReflexiva :: Eq a => [a] -> [(a,a)] -> Bool
 esReflexiva xs r = all (`elem` r) (zip xs xs) 
 \end{code}
 
 \begin{nota}
-En el conjunto \mathds{N}, las relaciones caracterizadas por:
+En el conjunto $\mathbb{N}$, las relaciones caracterizadas por:
 \begin{itemize}
   \item $xRy \longleftrightarrow x \leq y$,
   \item $xSy \longleftrightarrow x-y$ es par,
@@ -141,13 +146,14 @@ ghci> esSimetrica [1..n] r
 False
 \end{sesion}
 
+\index{\texttt{esSimetrica}}
 \begin{code}
 esSimetrica :: Eq a => [a] -> [(a,a)] -> Bool
 esSimetrica xs r = all (`elem` r) [(y,x) | (x,y) <- r] 
 \end{code}
 
 \begin{nota}
-  En el conjunto \mathds{N}, la relación caracterizada por
+  En el conjunto $\mathbb{N}$, la relación caracterizada por
   $xSy \longleftrightarrow x-y$ es par, es una relación binaria
   homogénea simétrica.
 \end{nota}
@@ -157,7 +163,7 @@ esSimetrica xs r = all (`elem` r) [(y,x) | (x,y) <- r]
 \begin{definicion}
   Sea $R$ una relación binaria homogénea en el conjunto $A$. Diremos que $R$
   es \textbf{antisimétrica} cuando $\forall (x,y) \in R$ se tiene que 
-  $xRy e yRx \longrightarrow y=x$ .
+  $xRy \; e \; yRx \longrightarrow y=x$ .
 \end{definicion}
 
 
@@ -183,6 +189,7 @@ ghci> esAntisimetrica [1..n] r
 True
 \end{sesion}
 
+\index{\texttt{esAntisimetrica}}
 \begin{code}
 esAntisimetrica :: Eq a => [a] -> [(a,a)] -> Bool
 esAntisimetrica xs r = 
@@ -191,7 +198,7 @@ esAntisimetrica xs r =
 \end{code}
 
 \begin{nota}
-En el conjunto \mathds{N}, las relaciones caracterizadas por:
+En el conjunto $\mathbb{N}$, las relaciones caracterizadas por:
 \begin{itemize}
   \item $xRy \longleftrightarrow x \leq y$,
   \item $xTy \longleftrightarrow x$ divide a $y$,
@@ -205,7 +212,7 @@ son relaciones binarias homogéneas antisimétricas.
 \begin{definicion}
   Sea $R$ una relación binaria homogénea en el conjunto $A$. Diremos que $R$
   es \textbf{transitiva} cuando $\forall (x,y),(y,z) \in R$ se tiene que 
-  $xRy e yRz \longrightarrow xRz$ .
+  $xRy \; e \; yRz \longrightarrow xRz$ .
 \end{definicion}
 
 
@@ -231,6 +238,7 @@ ghci> esTransitiva [1..n] r
 True
 \end{sesion}
 
+\index{\texttt{esTransitiva}}
 \begin{code}
 esTransitiva :: Eq a => [a] -> [(a,a)] -> Bool
 esTransitiva xs r = 
@@ -238,7 +246,7 @@ esTransitiva xs r =
 \end{code}
 
 \begin{nota}
-En el conjunto \mathds{N}, las relaciones caracterizadas por:
+En el conjunto $\mathbb{N}$, las relaciones caracterizadas por:
 \begin{itemize}
   \item $xRy \longleftrightarrow x \leq y$,
   \item $xSy \longleftrightarrow x-y$ es par, 
@@ -277,17 +285,17 @@ ghci> esRelacionEquivalencia [1..n] r
 False
 \end{sesion}
 
+\index{\texttt{esRelacionEquivalencia}}
 \begin{code}
 esRelacionEquivalencia :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionEquivalencia xs r =
-    esRelacionHomogenea xs r &&
     esReflexiva xs r         &&
     esSimetrica xs r         &&
     esTransitiva xs r
 \end{code}
 
 \begin{nota}
-  En el conjunto \mathds{N}, la relación caracterizada por
+  En el conjunto $\mathbb{N}$, la relación caracterizada por
   $xSy \longleftrightarrow x-y$ es par, es una relación de equivalencia.
 \end{nota}
     
@@ -320,17 +328,17 @@ ghci> esRelacionOrden [1..n] r
 False
 \end{sesion}
 
+\index{\texttt{esRelacionOrden}}
 \begin{code}
 esRelacionOrden :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionOrden xs r =
-    esRelacionHomogenea xs r &&
     esReflexiva xs r         &&
     esAntisimetrica xs r     &&
     esTransitiva xs r
 \end{code}
 
 \begin{nota}
-En el conjunto \mathds{N}, las relaciones caracterizadas por:
+En el conjunto $\mathbb{N}$, las relaciones caracterizadas por:
 \begin{itemize}
   \item $xRy \longleftrightarrow x \leq y$,
   \item $xTy \longleftrightarrow x$ divide a $y$,
@@ -353,14 +361,25 @@ La función \texttt{(clasesEquivalencia xs r)} devuelve las clases de la
 relación de equivalencia \texttt{r} en \texttt{xs}. Por ejemplo,
 
 \begin{sesion}
-  
+ghci> let n = 50
+ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]
+ghci> clasesEquivalencia [1..n] r
+[[1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49],
+[2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50]]
+ghci> let n = 50
+ghci> let m = 5
+ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x m == mod y m]
+ghci> clasesEquivalencia [1..n] r
+[[1,6,11,16,21,26,31,36,41,46],[2,7,12,17,22,27,32,37,42,47],
+ [3,8,13,18,23,28,33,38,43,48],[4,9,14,19,24,29,34,39,44,49],
+ [5,10,15,20,25,30,35,40,45,50]]
 \end{sesion}
 
+\index{\texttt{clasesEquivalencia}}
 \begin{code}
 clasesEquivalencia :: Eq a => [a] -> [(a,a)] -> [[a]]
 clasesEquivalencia _ [] = []
-clasesEquivalencia (x:xs) r = c: clasesEquivalencia (xs \\ c) r
-    where c = x:filter (estaRelacionado r x) xs
+clasesEquivalencia [] _ = []
+clasesEquivalencia (x:xs) r = (x:c): clasesEquivalencia (xs \\ c) r
+    where c = filter (estaRelacionado r x) xs
 \end{code}
-
-\comentario{Falta terminar, sigo después de comer}
