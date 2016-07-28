@@ -134,7 +134,7 @@ ghci> morfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
 morfismos :: (Ord a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
 morfismos g h =
   [f | f <- funciones (vertices g) (vertices h)
-     , esMorfismo g h f]
+     , conservaAdyacencia g h f]
 \end{code}
 
 \subsection{Isomorfismos}
@@ -167,10 +167,11 @@ False
 esIsomorfismo :: (Ord a,Ord b) =>
                  Grafo a -> Grafo b -> Funcion a b -> Bool
 esIsomorfismo g h f =
-  esBiyectiva vs1 vs2 f &&
-  conservaAdyacencia g h f
-  where vs1 = vertices g
-        vs2 = vertices h      
+  esBiyectiva vs1 vs2 f      &&
+  esMorfismo g h f           &&
+  esMorfismo h g (inversa f)
+      where vs1 = vertices g
+            vs2 = vertices h      
 \end{code}
 
 La función \texttt{(isomorfismos1 g h)} devuelve todos los isomorfismos posibles
@@ -331,28 +332,28 @@ ghci> length (isomorfismos2 (grafoCiclo 6) (completo 7))
 0
 (0.01 secs, 0 bytes)
 
-ghci> let n = 6 in (isomorfos1 (completo n) (completo n))
-True
-(0.01 secs, 0 bytes)
-ghci> let n = 6 in (isomorfos2 (completo n) (completo n))
-True
-(0.01 secs, 0 bytes)
-
-ghci> isomorfos1 (grafoCiclo 100) (grafoRueda 100)
+ghci> isomorfos1 (completo 10) (grafoCiclo 10)
 False
+(51.90 secs, 12,841,861,176 bytes)
+ghci> isomorfos2 (completo 10) (grafoCiclo 10)
+False
+(0.00 secs, 0 bytes)
 
+ghci> isomorfos1 (grafoCiclo 10) (grafoRueda 10)
+False
+(73.90 secs, 16,433,969,976 bytes)
 ghci> isomorfos2 (grafoCiclo 100) (grafoRueda 100)
 False
-(0.01 secs, 0 bytes)
+(0.00 secs, 0 bytes)
 \end{sesion}
 
 \begin{nota}
-Cuando los grafos son , comprobar que tienen el mismo número de
+Cuando los grafos son isomorfos, comprobar que tienen el mismo número de
 vértices, el mismo número de aristas y la misma secuencia gráfica no requiere
 mucho tiempo ni espacio, dando lugar a costes muy similares entre los dos pares
-de definiciones. Sin embargo, cuando los grafos no son isomorfos y fallan en
-alguna de las propiedades, el resultado es inmediato con las segundas
-definiciones.
+de definiciones. Sin embargo, cuando los grafos tienen el mismo número
+de vértices y fallan en alguna de las demás propiedades, el resultado es
+muy costoso para la primera definición mientras que es inmediato con la segunda.
 
 A partir de ahora utilizaremos la función \texttt{(isomorfismos2 g h)}  
 para calcular los isomorfismos entre dos grafos y la función     

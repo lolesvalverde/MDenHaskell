@@ -475,17 +475,9 @@ biyecciones2 xs ys
   | otherwise              = [zip xs zs | zs <- permutations ys]
 \end{code}
 
-En lo que sigue usaremos como \texttt{biyecciones} la segunda definición
-
-\index{\texttt{biyecciones}}
-\begin{code}
-biyecciones :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
-biyecciones = biyecciones2
-\end{code}
-       
 \begin{nota}
-A partir de ahora trabajaremos con la función \texttt{biyecciones2} así  
-que la redefiniremos como \texttt{biyecciones}}
+En lo que sigue trabajaremos con la función \texttt{biyecciones2} así  
+que la redefiniremos como \texttt{biyecciones}}.
 
 \index{\texttt{biyecciones}}
 \begin{code}
@@ -547,8 +539,8 @@ imagenInversa f = imagen (inversa f)
 
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
-  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica
-  $(u,v) \in A$ si y solamente si $(f(u),f(v)) \in A'$.
+  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica  
+  que si $(u,v) \in A$, entonces $(f(u),f(v)) \in A'$.
 \end{definicion}
 
 La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
@@ -569,14 +561,8 @@ True
 \begin{code}
 conservaAdyacencia :: (Ord a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
-conservaAdyacencia g h f =
-    all (aristaEn h) gs && all (aristaEn g) hs
+conservaAdyacencia g h f = all (aristaEn h) gs
     where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
-          hs = concat [aux (x,y) | (x,y) <- aristas h]
-          aux (a,b) = [(x,y) | x <- antiImagenRelacion f a,
-                               y <- antiImagenRelacion f b]
 \end{code}
 
-\comentario{Ni la especificación ni la correspondiente definición coincide con
-  la de MD.} 
 
