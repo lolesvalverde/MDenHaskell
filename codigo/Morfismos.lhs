@@ -1,4 +1,3 @@
-
 \ignora{
 \begin{code}
 module Morfismos ( esMorfismo
@@ -93,9 +92,8 @@ caracterísicas.
   adyacencias.
 \end{definicion}
 
-La función \texttt{(esMorfismo g h vvs)} se verifica si la
-función representada por \texttt{vvs} es un morfismo entre los 
-grafos \texttt{g} y \texttt{h}.
+La función \texttt{(esMorfismo g h vvs)} se verifica si la función representada
+por \texttt{vvs} es un morfismo entre los grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
 ghci> let g1 = creaGrafo [1,2,3] [(1,2),(2,3)]
@@ -143,13 +141,12 @@ morfismos g h =
 
 \begin{definicion}
   Dados dos grafos simples $G = (V,A)$ y $G' = (V',A')$, un
-  \textbf{isomorfismo} entre $G$ y $G'$ es un morfismo biyectivo
-  cuyo inverso es morfismo entre $G'$ y $G$.
+  \textbf{isomorfismo} entre $G$ y $G'$ es un morfismo biyectivo cuyo inverso
+  es morfismo entre $G'$ y $G$.
 \end{definicion}
 
-La función \texttt{(esIsomorfismo g h f)} se verifica si la
-aplicación \texttt{f} es un isomorfismo entre los 
-grafos \texttt{g} y \texttt{h}.
+La función \texttt{(esIsomorfismo g h f)} se verifica si la aplicación
+\texttt{f} es un isomorfismo entre los grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
 ghci> esIsomorfismo (grafoCiclo 3)

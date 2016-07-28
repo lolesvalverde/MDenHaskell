@@ -5,5 +5,7 @@ Este directorio contiene el código Haskell del proyecto. Su contenido es
 + [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/GeneradorGrafos.lhs][GeneradorGrafos.lhs]] :: Generador de grafos para QuickCheck.
 + [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/EjemplosGrafos.lhs][EjemplosGrafos.lhs]] :: Ejemplos de grafos.
 + [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/DefinicionesYPropiedades.lhs][DefinicionesYPropiedades.lhs]] :: Definiciones y propiedades de grafos.
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/ConjuntosRelacionesYFunciones.lhs][ConjuntosRelacionesYFunciones.lhs]] :: Conjuntos, relaciones y funciones.
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/RelacionesHomogeneas.lhs][RelacionesHomogeneas.lhs]] :: Relaciones homogéneas.
 + [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/Morfismos.lhs][Morfismos.lhs]] :: Morfismos de grafos.
-
++ [[https://github.com/lolesvalverde/MDenHaskell/blob/master/codigo/ConectividadGrafos.lhs][ConectividadGrafos.lhs]] :: Conectividad de grafos.

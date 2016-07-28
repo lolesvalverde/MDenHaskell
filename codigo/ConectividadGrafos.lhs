@@ -469,7 +469,7 @@ esCiclo g c =
  \end{teorema}
 
 La función \texttt{(estarConectadosCamino g)} devuelve la relación entre   
-los vértices del grafo \texttt{g] de estar conectados por un camino en    
+los vértices del grafo \texttt{g} de estar conectados por un camino en    
 él.
 
 \begin{code}

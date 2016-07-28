@@ -388,7 +388,7 @@ esInyectiva f =
 \end{code}
 
 \begin{definicion}
-  Diremos que una función $f$ entre dos conjuntos $A$ y $B$ es una
+  Diremos que una función $f$ entre dos conjuntos $A$ y $B$ es
   \href{https://en.wikipedia.org/wiki/Surjective_function}
   {\textbf{sobreyectiva}}\
   \footnote{\url{https://en.wikipedia.org/wiki/Surjective_function}}
@@ -464,7 +464,6 @@ ghci> length (biyecciones2 [1..6] ['a'..'g'])
 (0.01 secs, 0 bytes)
 \end{sesion}
 
-\index{\texttt{biyecciones}}
 \begin{code}
 biyecciones1 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
 biyecciones1 xs ys =
@@ -474,6 +473,14 @@ biyecciones2 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
 biyecciones2 xs ys
   | length xs /= length ys = []
   | otherwise              = [zip xs zs | zs <- permutations ys]
+\end{code}
+
+En lo que sigue usaremos como \texttt{biyecciones} la segunda definición
+
+\index{\texttt{biyecciones}}
+\begin{code}
+biyecciones :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones = biyecciones2
 \end{code}
        
 \begin{nota}
@@ -533,7 +540,7 @@ ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
 \index{\texttt{imagenInversa}}
 \begin{code}
 imagenInversa :: (Eq a, Eq b) => [(a,b)] -> b -> a
-imagenInversa f y = imagen (inversa f) y
+imagenInversa f = imagen (inversa f)
 \end{code}
 
 \subsubsection{Conservar adyacencia}
@@ -541,11 +548,11 @@ imagenInversa f y = imagen (inversa f) y
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
   que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica
-  $(u,v)\in A$ si y solamente si $(f(u),f(v)) \in A'$.
+  $(u,v) \in A$ si y solamente si $(f(u),f(v)) \in A'$.
 \end{definicion}
 
 La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
-\texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las           
+\texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las
 adyacencias. Por ejemplo,
 
 \begin{sesion}
@@ -569,3 +576,7 @@ conservaAdyacencia g h f =
           aux (a,b) = [(x,y) | x <- antiImagenRelacion f a,
                                y <- antiImagenRelacion f b]
 \end{code}
+
+\comentario{Ni la especificación ni la correspondiente definición coincide con
+  la de MD.} 
+

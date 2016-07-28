@@ -192,10 +192,10 @@ La función \texttt{(esAislado g v)} se verifica si el vértice \texttt{v}
 es aislado en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-esAislado (grafoEstrella 5)                     0  ==  False
-esAislado (bipartitoCompleto 1 5)               4  ==  False
-esAislado (creaGrafo (1,4) [(1,2),(1,4),(2,4)]) 2  ==  False
-esAislado (creaGrafo (1,4) [(1,2),(1,4),(2,4)]) 3  ==  True
+esAislado (grafoEstrella 5)                      0  ==  False
+esAislado (bipartitoCompleto 1 5)                4  ==  False
+esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 2  ==  False
+esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 3  ==  True
 
 \end{sesion}
 
@@ -234,10 +234,10 @@ esRegular g = all (==x) xs
 La función \texttt{(valenciaMin g)} devuelve la valencia mínima del grafo \texttt{g}.
 
 \begin{sesion}
-valenciaMin (grafoEstrella 6)                      ==  1
-valenciaMin (grafoCiclo 4)                         ==  2
-valenciaMin grafoPetersen                          ==  3
-valenciaMin (creaGrafo (1,4) [(1,2),(1,4),(2,4)])  ==  0
+valenciaMin (grafoEstrella 6)                       ==  1
+valenciaMin (grafoCiclo 4)                          ==  2
+valenciaMin grafoPetersen                           ==  3
+valenciaMin (creaGrafo [1..4] [(1,2),(1,4),(2,4)])  ==  0
 \end{sesion}
 
 \index{\texttt{valenciaMin}}
@@ -270,16 +270,13 @@ valenciaMax g = maximum [grado g v | v <- vertices g]
   Se dice que un grafo es simple si no contiene lazos ni aristas repetidas.
 \end{definicion}
 
-\comentario{Los grafos que estamos considerando las aristas es un
-  conjunto, por lo que ser simples se reduce a no tener lazos.}
-
 La función \texttt{(esSimple g)} se verifica si \texttt{g} es un grafo simple.
 
 \begin{sesion}
-esSimple (bipartitoCompleto 3 4)                ==  True
-esSimple (creaGrafo (1,3) [(1,1),(1,2),(2,3)])  ==  False
-esSimple (creaGrafo (1,3) [(1,2),(1,2),(2,3)])  ==  False
-esSimple (creaGrafo (1,3) [(1,2),(1,3),(2,3)])  ==  True
+esSimple (bipartitoCompleto 3 4)                 ==  True
+esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)])  ==  False
+esSimple (creaGrafo [1..3] [(1,2),(1,2),(2,3)])  ==  False
+esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)])  ==  True
 \end{sesion}
 
 \index{\texttt{esSimple}}
@@ -365,7 +362,7 @@ esSubgrafo g' g =
   aristas  g' `esSubconjunto` aristas  g 
 \end{code}
 
-En la definición anterior se ha usado la función \texttt{(subconjunto xs ys)}
+En la definición anterior se ha usado la función \texttt{(esSubconjunto xs ys)}
 que se verifica si \texttt{xs} es un subconjunto de \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
@@ -381,19 +378,19 @@ esSubconjunto xs ys =
 \end{code}
 
 \begin{definicion}
-  Si $G' = (V',A')$ es un subgrafo de $G = (V,A)$ tal que $V' = V$, diremos que $G'$ es un
-  \textbf{subgrafo maximal}, \textbf{grafo recubridor} o \textbf{grafo de
-    expansión} (en inglés, \emph{spanning grah}) de $G$. 
+  Si $G' = (V',A')$ es un subgrafo de $G = (V,A)$ tal que $V' = V$, diremos que
+  $G'$ es un \textbf{subgrafo maximal}, \textbf{grafo recubridor} o
+  \textbf{grafo de expansión} (en inglés, \emph{spanning grah}) de $G$.
 \end{definicion}
 
 La función \texttt{(esSubgrafoMax g' g)} se verifica si \texttt{g'} es un
 subgrafo maximal de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoMax (grafoRueda 4) (grafoRueda 3)             ==  False
-esSubgrafoMax (grafoRueda 4) (grafoCiclo 4)             ==  True
-esSubgrafoMax (grafoCiclo 3) (creaGrafo (1,3) [(1,2)])  ==  True
-esSubgrafoMax (grafoCiclo 3) (creaGrafo (1,2) [(1,2)])  ==  False
+esSubgrafoMax (grafoRueda 4) (grafoRueda 3)              ==  False
+esSubgrafoMax (grafoRueda 4) (grafoCiclo 4)              ==  True
+esSubgrafoMax (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
+esSubgrafoMax (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  False
 \end{sesion}
 
 \index{\texttt{esSubgrafoMax}}
@@ -409,14 +406,14 @@ esSubgrafoMax g' g =
   $G' \subset G$.
 \end{definicion}
 
-La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un subgrafo
-propio de \texttt{g}.
+La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un
+subgrafo propio de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoPropio (grafoRueda 4) (grafoRueda 3)             ==  True
-esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)             ==  False
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo (1,3) [(1,2)])  ==  True
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo (1,2) [(1,2)])  ==  True
+esSubgrafoPropio (grafoRueda 4) (grafoRueda 3)              ==  True
+esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)              ==  False
+esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
+esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  True
 \end{sesion}
 
 \index{\texttt{esSubgrafoPropio}}
@@ -429,21 +426,12 @@ esSubgrafoPropio g' g =
 
 \subsection{Propiedades de grafos}
 
-\ignora{
-import GrafoConListaDeAristas
--- import GrafoConVectorDeAdyacencia
--- import GrafoConMatrizDeAdyacencia
-import EjemplosGrafos
-import GeneradorGrafosLista
--- importGeneradorGrafosArray
-}
-
 \begin{teorema}[Lema del apretón de manos]
   En todo grafo simple el número de vértices de grado impar es par o cero.
 \end{teorema}
 
-Vamos a comprobar que se verifica el lema del apretón de manos utilizando la función
-\texttt{prop\_LemaApretonDeManos}. 
+Vamos a comprobar que se verifica el lema del apretón de manos utilizando la
+función \texttt{prop\_LemaApretonDeManos}.
 
 \begin{sesion}
   ghci> quickCheck prop_LemaApretonDeManos
