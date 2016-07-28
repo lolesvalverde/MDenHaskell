@@ -15,10 +15,10 @@ module ConectividadGrafos (esCamino
                           , esCerrado
                           , esCircuito
                           , esCiclo 
-                          -- , prop_conectadosRelEqui
-                          -- , componentesConexas
-                          -- , esConexo
-                          -- , prop_caracterizaGrafoConexo
+                          , prop_conectadosRelEqui
+                          , componentesConexas
+                          , esConexo
+                          , prop_caracterizaGrafoConexo
                           , diametro
                           , excentricidad
                           , radio
@@ -29,6 +29,7 @@ import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
 import ConjuntosRelacionesYFunciones
+import RelacionesHomogeneas
 import DefinicionesYPropiedades
 import Morfismos
     
@@ -274,7 +275,7 @@ comprobación sea suficientemente significativa.
 \end{nota}    
 
 \begin{sesion}
-ghci-- > quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminosBA
+ghci> quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminosBA
 +++ OK, passed 100 tests:
 23% 1
 18% 3
@@ -462,103 +463,108 @@ esCiclo g c =
     esCaminoSimple c && esCerrado g c
 \end{code}
     
--- \begin{teorema}
---   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
---   es una relación de equivalencia.
--- \end{teorema}
+\begin{teorema}
+   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino)
+   es una relación de equivalencia.
+ \end{teorema}
 
--- A continuación, comprobaremos el resultado con \texttt{quickCheck}.
+La función \texttt{(estarConectadosCamino g)} devuelve la relación entre   
+los vértices del grafo \texttt{g] de estar conectados por un camino en    
+él.
+
+\begin{code}
+estarConectadosCamino :: Ord a => Grafo a -> [(a,a)]
+estarConectadosCamino g =
+    [(u,v) | u <- vs, v <- vs , estanConectados g u v]
+        where vs = vertices g
+\end{code}
+
+A continuación, comprobaremos el resultado con \texttt{quickCheck}.
   
--- \begin{sesion}
--- ghci> quickCheck prop_conectadosRelEqui
--- +++ OK, passed 100 tests.
--- \end{sesion}
+\begin{sesion}
+ghci> quickCheckWith (stdArgs {maxSize=50}) prop_conectadosRelEqui
++++ OK, passed 100 tests.
+\end{sesion}
 
--- \index{\texttt{prop\_ConectadosRelEqui}}   
--- \begin{code}
--- prop_conectadosRelEqui :: Grafo Int -> Int -> Int -> Int -> Bool
--- prop_conectadosRelEqui g u v w =
---     reflexiva && simetrica && transitiva
---     where reflexiva = estanConectados g u u
---           simetrica =
---               not (estanConectados g u v) || estanConectados g v u
---           transitiva =
---               not (estanConectados g u v && estanConectados g v w)
---                  || estanConectados g u w           
--- \end{code}
+\index{\texttt{prop\_ConectadosRelEqui}}   
+\begin{code}
+prop_conectadosRelEqui :: Grafo Int -> Bool
+prop_conectadosRelEqui g =
+    esRelacionEquivalencia (vertices g) r
+        where r = estarConectadosCamino g
+\end{code}
 
--- \begin{definicion}
---   Las clases de equivalencia obtenidas por la relación $∼$, 
---   estar conectados por un camino en un grafo $G$,  inducen subgrafos 
---   en $G$, los vértices y todas las aristas de los caminos que los conectan, 
---   que reciben el nombre de \textbf{componentes conexas por caminos} de $G$.
--- \end{definicion}
+\begin{definicion}
+  Las clases de equivalencia obtenidas por la relación $∼$, 
+  estar conectados por un camino en un grafo $G$,  inducen subgrafos 
+  en $G$, los vértices y todas las aristas de los caminos que los conectan, 
+  que reciben el nombre de \textbf{componentes conexas por caminos} de $G$.
+\end{definicion}
 
--- La función \texttt{(componentesConexas g)} devuelve las componentes 
--- conexas por caminos del grafo \texttt{g}. Por ejemplo,
+La función \texttt{(componentesConexas g)} devuelve las componentes 
+conexas por caminos del grafo \texttt{g}. Por ejemplo,
 
--- \begin{sesion}
--- ghci> componentesConexas grafoPetersen
--- [[1,2,3,4,5,6,7,8,9,10]]
--- ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
--- [[1,2,3],[4],[5]]
--- ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
--- [[1,2,3],[4,5]]
--- ghci> componentesConexas grafoNulo
--- []
--- \end{sesion}
+\begin{sesion}
+ghci> componentesConexas grafoPetersen
+[[1,2,3,4,5,6,7,8,9,10]]
+ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
+[[1,2,3],[4],[5]]
+ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+[[1,2,3],[4,5]]
+ghci> componentesConexas grafoNulo
+[]
+\end{sesion}
       
--- \index{\texttt{componentesConexas}}
--- \begin{code}
--- componentesConexas :: Ord a => Grafo a -> [[a]]
--- componentesConexas g = aux (vertices g)
---       where aux []     = []
---             aux (v:vs) = c: aux (vs \\ c)
---                  where c = filter (estanConectados g v) (v:vs)
--- \end{code}
+\index{\texttt{componentesConexas}}
+\begin{code}
+componentesConexas :: Ord a => Grafo a -> [[a]]
+componentesConexas g =
+    clasesEquivalencia vs (estarConectadosCamino g)
+        where vs = vertices g
+\end{code}
 
--- \begin{definicion}
---   Dado un grafo, diremos que es \textbf{conexo} si la relación $~$
---   tiene una única clase de equivalencia en él; es decir, si el grafo
---   tiene una única componente conexa.
--- \end{definicion}
+\begin{definicion}
+  Dado un grafo, diremos que es \textbf{conexo} si la relación $~$
+  tiene una única clase de equivalencia en él; es decir, si el grafo
+  tiene una única componente conexa.
+\end{definicion}
 
--- La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
--- es conexo. Por ejemplo,
+La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
+es conexo. Por ejemplo,
 
--- \begin{sesion}
--- esConexo (completo 5)                      == True
--- esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
--- esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
--- esConexo grafoNulo                         == False    
--- \end{sesion}
+\begin{sesion}
+esConexo (completo 5)                      == True
+esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
+esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
+esConexo grafoNulo                         == False    
+\end{sesion}
 
--- \index{\texttt{esConexo}}
--- \begin{code}
--- esConexo :: Ord a => Grafo a -> Bool
--- esConexo g = length (componentesConexas g) == 1
--- \end{code}             
+\index{\texttt{esConexo}}
+\begin{code}
+esConexo :: Ord a => Grafo a -> Bool
+esConexo g = length (componentesConexas g) == 1
+\end{code}
 
--- \begin{teorema}
---   Sea $G$ un grafo, $G=(V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
---   existe un camino entre $u$ y $v$.
--- \end{teorema}
+\begin{teorema}
+  Sea $G$ un grafo, $G=(V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
+  existe un camino entre $u$ y $v$.
+\end{teorema}
 
--- Vamos a comprobar el resultado con \texttt{quickCheck}
+Vamos a comprobar el resultado con \texttt{quickCheck}
 
--- \begin{sesion}
--- ghci>  quickCheck prop_caracterizaGrafoConexo
--- +++ OK, passed 100 tests.
--- \end{sesion}      
+\begin{sesion}
+ghci>  quickCheck prop_caracterizaGrafoConexo
++++ OK, passed 100 tests.
+\end{sesion}      
     
--- \begin{code}
--- prop_caracterizaGrafoConexo :: Grafo Int -> Property
--- prop_caracterizaGrafoConexo g =
---     esConexo g ==> and [estanConectados g u v | 
---                         u <- vertices g, v <- vertices g]
---     && and [estanConectados g u v |
---          u <- vertices g, v <- vertices g] ==> esConexo g
--- \end{code}
+\begin{code}
+prop_caracterizaGrafoConexo :: Grafo Int -> Property
+prop_caracterizaGrafoConexo g =
+    esConexo g ==> and [estanConectados g u v | 
+                        u <- vertices g, v <- vertices g]
+    && and [estanConectados g u v |
+         u <- vertices g, v <- vertices g] ==> esConexo g
+\end{code}
 
 \begin{definicion}
   Sean $G=(V,A)$ un grafo y $v \in V$. Se define la \textbf{excentricidad}
