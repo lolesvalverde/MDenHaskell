@@ -5,9 +5,10 @@ module ConectividadGrafos (esCamino
                           , verticesCamino
                           , esRecorrido
                           , esCaminoSimple
-                          , longitudCamino 
-                          , todosCaminos
-                          , prop_todosCaminos 
+                          , longitudCamino
+                          , todosCaminosBP 
+                          , todosCaminosBA 
+                          , prop_todosCaminosBA 
                           , estanConectados
                           , distancia
                           , esGeodesica
@@ -169,28 +170,62 @@ longitudCamino [2,4..10]   == 4
 longitudCamino :: Num b => [a] -> b
 longitudCamino c = genericLength c - 1
 \end{code}
-    
-La función \texttt{(todosCaminos g inicio final)} devuelve una lista con todos
+
+La función \texttt{(todosCaminosBP g inicio final)} devuelve una lista con todos
 los caminos simples posibles en el grafo \texttt{g} entre los vértices
-\texttt{inicio} y \texttt{final}, generados de forma que el primer
-camino de la lista sea de longitud mínima.
+\texttt{inicio} y \texttt{final}, utilizando una algoritmo de búsqueda
+en profundidad sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
+de izquierda a derecha y de forma al visitar un nodo, explora todos los   
+caminos que pueden continuar por él antes de pasar al siquiente. 
 
 \begin{sesion}
-ghci> todosCaminos (grafoCiclo 7) 1 6
+ghci> todosCaminosBP (grafoCiclo 7) 1 6
 [[1,7,6],[1,2,3,4,5,6]]
-ghci> todosCaminos (grafoRueda 7) 2 5
-[[2,1,5],[2,3,1,5],[2,7,1,5],[2,1,4,5],[2,3,4,5],[2,1,6,5],
- [2,7,6,5],[2,3,4,1,5],[2,7,6,1,5],[2,3,1,4,5],[2,7,1,4,5],
- [2,1,3,4,5],[2,3,1,6,5],[2,7,1,6,5],[2,1,7,6,5],[2,7,6,1,4,5],
- [2,7,1,3,4,5],[2,3,4,1,6,5],[2,3,1,7,6,5],[2,7,6,1,3,4,5],[2,3,4,1,7,6,5]]
-ghci> todosCaminos (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+ghci> todosCaminosBP (grafoRueda 7) 2 5
+[[2,1,5],[2,3,1,5],[2,3,4,1,5],[2,7,6,1,5],[2,7,1,5],[2,1,4,5],
+ [2,3,1,4,5],[2,7,6,1,4,5],[2,7,1,4,5],[2,1,3,4,5],[2,7,6,1,3,4,5],
+ [2,7,1,3,4,5],[2,3,4,5],[2,1,6,5],[2,3,1,6,5],[2,3,4,1,6,5],
+ [2,7,1,6,5],[2,1,7,6,5],[2,3,1,7,6,5],[2,3,4,1,7,6,5],[2,7,6,5]]
+ghci> todosCaminosBP (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
 []
 \end{sesion}
 
 \index{\texttt{todosCaminos}}
 \begin{code}
-todosCaminos :: Ord a => Grafo a -> a -> a -> [[a]]
-todosCaminos g x y = aux [[y]]
+todosCaminosBP :: Ord a => Grafo a -> a -> a -> [[a]]
+todosCaminosBP g x y = aux [[y]]
+  where aux []       = []
+        aux ([]:zss) = aux zss
+        aux ((z:zs):zss)
+          | z == x    = (z:zs) : aux zss
+          | otherwise = aux ([v:z:zs | v <- adyacentes g' z \\ zs] ++ zss)
+        g' = eliminaLazos g
+        eliminaLazos h = creaGrafo (vertices h)
+                                   [(x,y) | (x,y) <- aristas h, x /= y]
+\end{code}
+    
+La función \texttt{(todosCaminosBA g inicio final)} devuelve una lista con todos
+los caminos simples posibles en el grafo \texttt{g} entre los vértices
+\texttt{inicio} y \texttt{final}, utilizando una algoritmo de búsqueda
+en anchura sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
+por niveles, de forma que el primer camino de la lista es de longitud mínima. 
+
+\begin{sesion}
+ghci> todosCaminosBA (grafoCiclo 7) 1 6
+[[1,7,6],[1,2,3,4,5,6]]
+ghci> todosCaminosBA (grafoRueda 7) 2 5
+[[2,1,5],[2,3,1,5],[2,7,1,5],[2,1,4,5],[2,3,4,5],[2,1,6,5],[2,7,6,5],
+ [2,3,4,1,5],[2,7,6,1,5],[2,3,1,4,5],[2,7,1,4,5],[2,1,3,4,5],
+ [2,3,1,6,5],[2,7,1,6,5],[2,1,7,6,5],[2,7,6,1,4,5],[2,7,1,3,4,5],
+ [2,3,4,1,6,5],[2,3,1,7,6,5],[2,7,6,1,3,4,5],[2,3,4,1,7,6,5]]
+ghci> todosCaminosBA (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+[]
+\end{sesion}
+
+\index{\texttt{todosCaminos}}
+\begin{code}
+todosCaminosBA :: Ord a => Grafo a -> a -> a -> [[a]]
+todosCaminosBA g x y = aux [[y]]
   where aux []       = []
         aux ([]:zss) = aux zss
         aux ((z:zs):zss)
@@ -198,11 +233,11 @@ todosCaminos g x y = aux [[y]]
           | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\ zs])
         g' = eliminaLazos g
         eliminaLazos h = creaGrafo (vertices h)
-                               [(x,y) | (x,y) <- aristas h, x /= y]
+                                   [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
     
 Vamos a comprobar con \texttt{QuickCheck} que el primer elemento de la
-lista que devuelve la función \texttt{todosCaminos g u v)} es de longitud
+lista que devuelve la función \texttt{todosCaminosBA g u v)} es de longitud
 mínima. Para ello, vamos a utilizar la función \texttt{(parDeVertices g)}
 que es un generador de pares de vértices del grafo no nulo \texttt{g}. 
 Por ejemplo, 
@@ -239,7 +274,7 @@ comprobación sea suficientemente significativa.
 \end{nota}    
 
 \begin{sesion}
-ghci-- > quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminos
+ghci-- > quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminosBA
 +++ OK, passed 100 tests:
 23% 1
 18% 3
@@ -255,14 +290,14 @@ ghci-- > quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminos
  1% 10
 \end{sesion}
 
-\index{\texttt{prop\_todosCaminos}}    
+\index{\texttt{prop\_todosCaminosBA}}    
 \begin{code}
-prop_todosCaminos :: Grafo Int -> Property
-prop_todosCaminos g =
+prop_todosCaminosBA :: Grafo Int -> Property
+prop_todosCaminosBA g =
   not (esGrafoNulo g) ==>
   collect (orden g) $
   forAll (parDeVertices g)
-         (\(x,y) -> let zss = todosCaminos g x y
+         (\(x,y) -> let zss = todosCaminosBA g x y
                     in null zss || longitudCamino (head zss) ==
                                    minimum (map longitudCamino zss))
 \end{code}
@@ -294,7 +329,7 @@ False
 \begin{code}
 estanConectados :: Ord a => Grafo a -> a -> a -> Bool
 estanConectados g u v | esGrafoNulo g = False
-                      | otherwise = not (null (todosCaminos g u v))
+                      | otherwise = not (null (todosCaminosBA g u v))
 \end{code}
 
 \begin{nota}
@@ -328,7 +363,7 @@ distancia grafoNulo 2 3                         ==  Nothing
 \begin{code}
 distancia :: Ord a => Grafo a -> a -> a -> Maybe Int    
 distancia g u v | estanConectados g u v =
-                    Just (longitudCamino (head (todosCaminos g u v)))
+                    Just (longitudCamino (head (todosCaminosBA g u v)))
                 | otherwise = Nothing
 \end{code}
 

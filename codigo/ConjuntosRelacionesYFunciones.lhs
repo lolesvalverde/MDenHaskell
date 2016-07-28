@@ -550,7 +550,7 @@ True
 \begin{code}
 conservaAdyacencia :: (Ord a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
-conservaAdyacencia g h f 
+conservaAdyacencia g h f =
     all (aristaEn h) gs && all (aristaEn g) hs
     where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
           hs = concat [aux (x,y) | (x,y) <- aristas h]
