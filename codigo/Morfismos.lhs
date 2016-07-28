@@ -5,12 +5,10 @@ module Morfismos ( esMorfismo
                   , morfismos
                   , esIsomorfismo
                   , isomorfismos
-                  , isomorfismos2
                   , isomorfos
-                  , isomorfos2
-                  , prop_ordenInvariante
-                  , prop_tamañoInvariante
-                  , prop_secuenciaGradosInvariante
+                  -- , prop_ordenInvariante
+                  -- , prop_tamañoInvariante
+                  -- , prop_secuenciaGradosInvariante
                   , esAutomorfismo
                   , automorfismos                  
                   ) where
@@ -172,23 +170,22 @@ False
 esIsomorfismo :: (Ord a,Ord b) =>
                  Grafo a -> Grafo b -> Funcion a b -> Bool
 esIsomorfismo g h f =
-  esMorfismo g h f &&
   esBiyectiva vs1 vs2 f &&
-  esMorfismo h g (inversa f)
+  conservaAdyacencia g h f
   where vs1 = vertices g
         vs2 = vertices h      
 \end{code}
 
-La función \texttt{(isomorfismos g h)} devuelve todos los isomorfismos posibles
+La función \texttt{(isomorfismos1 g h)} devuelve todos los isomorfismos posibles
 entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
 
 \begin{sesion}
-ghci> isomorfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
+ghci> isomorfismos1 (bipartitoCompleto 1 2) (grafoCiclo 3)
 []
-ghci> isomorfismos (bipartitoCompleto 1 2) 
+ghci> isomorfismos1 (bipartitoCompleto 1 2) 
                    (creaGrafo "abc" [('a','b'),('b','c')])
 [[(1,'b'),(2,'a'),(3,'c')],[(1,'b'),(2,'c'),(3,'a')]]
-ghci> isomorfismos (grafoCiclo 4) 
+ghci> isomorfismos1 (grafoCiclo 4) 
                    (creaGrafo [5..8] [(5,7),(5,8),(6,7),(6,8)])
 [[(1,5),(2,7),(3,6),(4,8)],[(1,5),(2,8),(3,6),(4,7)],
  [(1,6),(2,7),(3,5),(4,8)],[(1,6),(2,8),(3,5),(4,7)],
@@ -198,9 +195,9 @@ ghci> isomorfismos (grafoCiclo 4)
 
 \index{\texttt{isomorfismos}}
 \begin{code}
-isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
-isomorfismos g h =
-  [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
+isomorfismos1 :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
+isomorfismos1 g h =
+  [f | f <- biyecciones vs1 vs2 , conservaAdyacencia g h f]
   where vs1 = vertices g
         vs2 = vertices h
 \end{code}
@@ -210,25 +207,31 @@ isomorfismos g h =
   entre ellos.
 \end{definicion}
 
-La función \texttt{isomorfos g h} se verifica si los grafos \texttt{g} y
+La función \texttt{isomorfos1 g h} se verifica si los grafos \texttt{g} y
 \texttt{h} son isomorfos. Por ejemplo,
 
 \begin{sesion}
-ghci> isomorfos (grafoRueda 4) (completo 4)
+ghci> isomorfos1 (grafoRueda 4) (completo 4)
 True
-ghci> isomorfos (grafoRueda 5) (completo 5)
+ghci> isomorfos1 (grafoRueda 5) (completo 5)
 False
-ghci> isomorfos (grafoEstrella 2) (bipartitoCompleto 1 2)
+ghci> isomorfos1 (grafoEstrella 2) (bipartitoCompleto 1 2)
 True
-ghci> isomorfos (grafoCiclo 5) (bipartitoCompleto 2 3)
+ghci> isomorfos1 (grafoCiclo 5) (bipartitoCompleto 2 3)
 False
 \end{sesion}
 
 \index{\texttt{isomorfos}}
 \begin{code}
-isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos g = not . null . isomorfismos g 
+isomorfos1 :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
+isomorfos1 g = not . null . isomorfismos1 g 
 \end{code}
+
+\begin{nota}
+Al tener Haskell una evaluación perezosa, la función 
+\texttt{(isomorfos g h)} no necesita generar todos los isomorfismos
+entre los grafos \texttt{g} y \texttt{h}.
+\end{nota}
 
 \begin{definicion}
   Sea $G = (V,A)$ un grafo. Un \textbf{invariante por isomorfismos} 
@@ -236,7 +239,13 @@ isomorfos g = not . null . isomorfismos g
   los grafos que son isomorfos a él.
 \end{definicion}
 
-\comentario{Ver el correo sobre generalización de invariantes.}
+\begin{code}
+esInvariantePorIsomorfismos ::
+  Eq a => (Grafo Int -> a) -> Grafo Int -> Grafo Int -> Bool
+esInvariantePorIsomorfismos p g h = 
+  isomorfos g h --> (p g == p h)
+      where (-->) = (<=)
+\end{code}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V\to V'$ un 
@@ -247,17 +256,10 @@ isomorfos g = not . null . isomorfismos g
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=7}) prop_ordenInvariante
+ghci> quickCheckWith (stdArgs {maxSize=10}) 
+                     (esInvariantePorIsomorfismos orden)
 +++ OK, passed 100 tests.
 \end{sesion}
-
-\index{\texttt{prop\_ordenInvariante}}
-\begin{code}
-prop_ordenInvariante
-  :: Grafo Int -> Grafo Int -> Bool
-prop_ordenInvariante g h =
-    not (isomorfos g h) || orden g == orden h
-\end{code}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
@@ -268,17 +270,10 @@ prop_ordenInvariante g h =
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=7}) prop_tamañoInvariante
+ghci> quickCheckWith (stdArgs {maxSize=7})
+                     (esInvariantePorIsomorfismos tamaño)
 +++ OK, passed 100 tests.
 \end{sesion}
-
-\index{\texttt{prop\_tamañoInvariante}}
-\begin{code}
-prop_tamañoInvariante
-  :: Grafo Int -> Grafo Int -> Bool
-prop_tamañoInvariante g h =
-    not (isomorfos g h) || tamaño g == tamaño h
-\end{code}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$  dos grafos y $\phi: V \to V'$ un 
@@ -289,22 +284,14 @@ prop_tamañoInvariante g h =
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=7}) prop_secuenciaGradosInvariante
+ghci> quickCheckWith (stdArgs {maxSize=7})
+                     (esInvariantePorIsomorfismos secuenciaGrados)
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop\_secuenciaGradosInvariante}}
-\begin{code}
-prop_secuenciaGradosInvariante
-  :: Grafo Int -> Grafo Int -> Bool
-prop_secuenciaGradosInvariante g h =
-    not (isomorfos g h) ||
-    secuenciaGrados g == secuenciaGrados h
-\end{code}
-
 A partir de las propiedades que hemos demostrado de los isomorfismos,
-vamos a dar otra definición de las funciones \texttt{(isomorfismos g h)}
-y \texttt{(isomorfos g h)}.
+vamos a dar otra definición equivalente de las funciones 
+\texttt{(isomorfismos1 g h)} y \texttt{(isomorfos1 g h)}.
 
 \begin{code}
 isomorfismos2 ::
@@ -313,7 +300,7 @@ isomorfismos2 g h
      | orden g  /= orden h  = []
      | tamaño g /= tamaño h = []
      | secuenciaGrados g /= secuenciaGrados h = []
-     | otherwise = [f | f <- funciones vs1 vs2 , esIsomorfismo g h f]
+     | otherwise = [f | f <- biyecciones vs1 vs2 , conservaAdyacencia g h f]
      where vs1 = vertices g
            vs2 = vertices h   
 
@@ -326,55 +313,64 @@ isomorfos2 g =
 Vamos a comparar la eficiencia entre ambas definiciones
 
 \begin{sesion}
-ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
+ghci> let n = 6 in (length (isomorfismos1 (completo n) (completo n)))
 720
-(6.97 secs, 1,352,108,184 bytes)
-ghci> let n = 6 in (length (isomorfismos (completo n) (completo n)))
+(0.29 secs, 32,272,208 bytes)
+ghci> let n = 6 in (length (isomorfismos2 (completo n) (completo n)))
 720
-(6.98 secs, 1,312,537,008 bytes)
+(0.30 secs, 36,592,648 bytes)
 
+ghci> let n = 6 in (length (isomorfismos1 (grafoCiclo n) (grafoCiclo n)))
+12
+(0.04 secs, 0 bytes)
 ghci> let n = 6 in (length (isomorfismos2 (grafoCiclo n) (grafoCiclo n)))
 12
-(4.92 secs, 970,762,480 bytes)
-ghci> let n = 6 in (length (isomorfismos (grafoCiclo n) (grafoCiclo n)))
-12
-(4.95 secs, 971,181,600 bytes)
+(0.04 secs, 0 bytes)
 
-ghci> length (isomorfismos (grafoCiclo 6) (completo 7))
+ghci> length (isomorfismos1 (grafoCiclo 6) (completo 7))
 0
-(17.45 secs, 3,312,824,240 bytes)
+(0.00 secs, 0 bytes)
 ghci> length (isomorfismos2 (grafoCiclo 6) (completo 7))
 0
 (0.01 secs, 0 bytes)
 
-ghci> let n = 6 in (isomorfos (completo n) (completo n))
+ghci> let n = 6 in (isomorfos1 (completo n) (completo n))
 True
-(0.24 secs, 28,662,496 bytes)
+(0.01 secs, 0 bytes)
 ghci> let n = 6 in (isomorfos2 (completo n) (completo n))
 True
-(0.24 secs, 28,666,528 bytes)
-
-ghci> isomorfos (grafoCiclo 6) (grafoCiclo 7)
-False
-(12.46 secs, 2,517,549,144 bytes)
-ghci> isomorfos2 (grafoCiclo 6) (grafoCiclo 7)
-False
 (0.01 secs, 0 bytes)
 
-ghci> isomorfos (grafoCiclo 6) (completo 7)
+ghci> isomorfos1 (grafoCiclo 100) (grafoRueda 100)
 False
-(17.25 secs, 3,319,442,424 bytes)
-ghci> isomorfos2 (grafoCiclo 6) (completo 7)
+
+ghci> isomorfos2 (grafoCiclo 100) (grafoRueda 100)
 False
 (0.01 secs, 0 bytes)
 \end{sesion}
 
-Cuando los grafos son isomorfos, comprobar que tienen el mismo número de
+\begin{nota}
+Cuando los grafos son , comprobar que tienen el mismo número de
 vértices, el mismo número de aristas y la misma secuencia gráfica no requiere
 mucho tiempo ni espacio, dando lugar a costes muy similares entre los dos pares
 de definiciones. Sin embargo, cuando los grafos no son isomorfos y fallan en
 alguna de las propiedades, el resultado es inmediato con las segundas
 definiciones.
+
+A partir de ahora utilizaremos la función \texttt{(isomorfismos2 g h)}  
+para calcular los isomorfismos entre dos grafos y la función     
+\texttt{(isomorfos g h)} para determinar si dos grafos son isomorfos, de
+modo que las renombraremos por \texttt{(isomorfismos g h)} y
+\texttt{(isomorfismos g h)} respectivamente.
+
+\begin{code}
+isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
+isomorfismos = isomorfismos2
+
+isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
+isomorfos = isomorfos2
+\end{code}
+\end{nota}
 
 \subsection{Automorfismos}
 
@@ -433,7 +429,7 @@ ghci> automorfismos (grafoRueda 5)
 \index{\texttt{automorfismos}}
 \begin{code}
 automorfismos :: Ord a => Grafo a -> [Funcion a a] 
-automorfismos g = isomorfismos g g 
+automorfismos g = isomorfismos1 g g 
 \end{code}
 
 \begin{nota}
