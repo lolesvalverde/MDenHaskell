@@ -23,6 +23,21 @@
   + Capítulo 5: Planaridad.
   + Capítulo 6: Coloración.
   + Capítulo 7: Grafos y grupos.
++ Apuntes de grafos por Universidades:
+  + UAM: [[https://www.uam.es/personal_pdi/ciencias/gallardo/cap10-grafos-2015.pdf][El lenguaje de los grafos]] (46 pp.)
+  + UCA: [[http://www2.uca.es/matematicas/Docencia/ESI/1710003/Apuntes/Leccion14.pdf][Apuntes de matemática discreta. Tema 14: Grafos]]. (71 pp.)
+  + UGR: [[http://www.ugr.es/~jesusgm/Curso%25202005-2006/Matematica%2520Discreta/Grafos.pdf][Capítulo 5: Introducción a la teoría de grafos]] (25 pp.)
+  + UNIOVI: [[http://www6.uniovi.es/usr/cesar/Uned/EDA/Apuntes/TAD_apUM_07.pdf][Tema 6: Grafos]] (32 pp.) [Con TAD y algoritmos].
+  + UV:  [[http://www.uv.es/benavent/apuntes-grafos.pdf][Teoría de grafos]]. (54 pp.)
+  + UVA: [[http://www.infor.uva.es/~cvaca/asigs/estr0506apg.pdf][Apuntes de grafos]]. (10 pp.)
+  + UVIGO: [[http://formella.webs.uvigo.es/doc/tc07/gt.pdf][Algoritmia avanzada: Teoría de grafos]]. (87 transp.)
+
++ Apuntes de matemática discreta por Universidades
+  + España
+    + UAM: [[http://www.uam.es/personal_pdi/ciencias/gallardo/capitulo2.pdf][Notas de matemática discreta]] de Pablo Fernández y José Luis Fernández
+    + UGR: [[http://www.ugr.es/~pedro/mdal/mdal.pdf][Matemática discreta y álgebra lineal]].
+  + Extranjero:
+    + Pontificia Universidad Católica de Chile: [[http://xa.yimg.com/kq/groups/25852549/281107871/name/grafos%2Bcomplementarios.pdf][Apuntes de matemáticas discretas]].
 
 * Recopilaciones
 + [[https://en.wikipedia.org/wiki/Graph_theory][Graph theory]] ~ Wikipedia
@@ -40,6 +55,7 @@
 + [[https://github.com/rohitjha/DiMPL/blob/master/src/Graph.hs][La librería de grafos de DiMPL]]
 + [[http://web.engr.oregonstate.edu/~erwig/fgl/haskell/old/fgl0103.pdf][Manual de FGL/Haskell (A Functional Graph Library for Haskell)]].
 + [[https://hackage.haskell.org/package/combinat][The combinat package]].
++ [[http://www.algorithmic-solutions.info/leda_guide/Graphs.html][Grafos en LEDA]],
 
 * Artículos
 + [[http://bit.ly/IzwnRC][A domain-specific language for discrete mathematics]]. ~ R. Jha et als. 
