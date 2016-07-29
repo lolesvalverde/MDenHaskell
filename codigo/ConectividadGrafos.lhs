@@ -28,10 +28,12 @@ module ConectividadGrafos (esCamino
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
-import ConjuntosRelacionesYFunciones
 import RelacionesHomogeneas
 import DefinicionesYPropiedades
 import Morfismos
+import Conjuntos
+import Relaciones
+import Funciones
     
 import Test.QuickCheck
 import Data.List
@@ -647,9 +649,8 @@ radio grafoNulo           ==  Nothing
 \begin{code}
 radio :: Ord a => Grafo a -> Maybe Int        
 radio g | esGrafoNulo g = Nothing
-        | otherwise = aux [excentricidad g v | v <- vs]
-    where vs = vertices g
-          aux [] = Nothing
+        | otherwise = aux [excentricidad g v | v <- vertices g]
+    where aux [] = Nothing
           aux xs = Just (minimum (map fromJust (filter isJust xs)))
 \end{code}
     

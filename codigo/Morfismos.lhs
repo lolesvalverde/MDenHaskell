@@ -5,9 +5,6 @@ module Morfismos ( esMorfismo
                   , esIsomorfismo
                   , isomorfismos
                   , isomorfos
-                  -- , prop_ordenInvariante
-                  -- , prop_tamañoInvariante
-                  -- , prop_secuenciaGradosInvariante
                   , esAutomorfismo
                   , automorfismos                  
                   ) where
@@ -15,7 +12,9 @@ module Morfismos ( esMorfismo
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
-import ConjuntosRelacionesYFunciones
+import Conjuntos
+import Relaciones
+import Funciones
 import DefinicionesYPropiedades 
     
 import Test.QuickCheck

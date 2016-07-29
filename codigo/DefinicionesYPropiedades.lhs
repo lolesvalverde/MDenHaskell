@@ -49,6 +49,8 @@ import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
 import Conjuntos
+import Relaciones
+import Funciones
 
 import Test.QuickCheck
 import Data.List
@@ -344,7 +346,7 @@ secuenciaGrafica ss = even (sum ss) && all p ss
   $G$ si $V' \subseteq V$ y $A' \subseteq A$.
 \end{definicion}
 
-La función \texttt{(subgrafo g' g)} se verifica si \texttt{g'} es un subgrafo
+La función \texttt{(subgrafo g g')} se verifica si \texttt{g'} es un subgrafo
 de \texttt{g}
 
 \begin{sesion}
@@ -357,9 +359,9 @@ de \texttt{g}
 \index{\texttt{esSubgrafo}}
 \begin{code}
 esSubgrafo :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafo g' g = 
-  vertices g' `esSubconjunto` vertices g &&
-  aristas  g' `esSubconjunto` aristas  g 
+esSubgrafo g g' = 
+  esSubconjunto (vertices g) (vertices g') &&
+  esSubconjunto (aristas g) (aristas g') 
 \end{code}
 
 \begin{definicion}
@@ -368,7 +370,7 @@ esSubgrafo g' g =
   \textbf{grafo de expansión} (en inglés, \emph{spanning grah}) de $G$.
 \end{definicion}
 
-La función \texttt{(esSubgrafoMax g' g)} se verifica si \texttt{g'} es un
+La función \texttt{(esSubgrafoMax g g')} se verifica si \texttt{g'} es un
 subgrafo maximal de \texttt{g}.
 
 \begin{sesion}
@@ -381,32 +383,33 @@ esSubgrafoMax (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  False
 \index{\texttt{esSubgrafoMax}}
 \begin{code}
 esSubgrafoMax :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafoMax g' g = 
-  esSubgrafo g' g && vertices g' == vertices g
+esSubgrafoMax g g' = 
+  esSubgrafo g g' && conjuntosIguales (vertices g') (vertices g)
 \end{code}
 
 \begin{definicion}
-  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \subset V$, o $A' \subset A$,
+  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \cup V$, o $A' \cup A$,
   se dice que $G'$ es un \textbf{subgrafo propio} de $G$, y se denota por
-  $G' \subset G$.
+  $G' \cup G$.
 \end{definicion}
 
-La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un
+La función \texttt{(esSubgrafoPropio g g')} se verifica si \texttt{g'} es un
 subgrafo propio de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoPropio (grafoRueda 4) (grafoRueda 3)              ==  True
-esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)              ==  False
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  True
+esSubgrafoPropio (grafoRueda 3) (grafoRueda 4)              ==  True
+esSubgrafoPropio (grafoCiclo 5) (grafoRueda 4)              ==  False
+esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
+esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  True
 \end{sesion}
 
 \index{\texttt{esSubgrafoPropio}}
 \begin{code}
 esSubgrafoPropio :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafoPropio g' g = 
-  esSubgrafo g' g &&
-  (vertices g /= vertices g' || aristas g /= aristas g')
+esSubgrafoPropio g g' = 
+  esSubgrafo g g' &&
+  (not (conjuntosIguales (vertices g) (vertices g')) ||
+   not (conjuntosIguales (aristas g) (aristas g')))
 \end{code}
 
 \subsection{Propiedades de grafos}
@@ -451,7 +454,7 @@ ghci> quickCheck prop_HavelHakimi
 prop_HavelHakimi :: [Int] -> Bool
 prop_HavelHakimi [] = True
 prop_HavelHakimi (s:ss) = 
-  not (secuenciaGrafica (s:ss) && not (null ss)) ||
+  not (secuenciaGrafica (s:ss) && not (esVacio ss)) ||
   secuenciaGrafica (map (\x -> x-1) (take s ss) ++ drop s ss) 
 \end{code}
 
@@ -547,8 +550,7 @@ G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6),(4,5)]
 \begin{code}
 sumaArista :: Ord a => Grafo a -> (a,a) -> Grafo a
 sumaArista g a = 
-  creaGrafo (vertices g)
-            (a : aristas g)
+  creaGrafo (vertices g) (a : aristas g)
 \end{code}
 
 \subsubsection{Suma de vértices}
@@ -575,8 +577,7 @@ G [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5)]
 \begin{code}
 sumaVertice :: Ord a => Grafo a -> a -> Grafo a
 sumaVertice g v =
-  creaGrafo (v : vs) 
-            (aristas g ++ [(u,v) | u <- vs]) 
+  creaGrafo (v : vs) (aristas g ++ [(u,v) | u <- vs]) 
   where vs = vertices g
 \end{code}
 
