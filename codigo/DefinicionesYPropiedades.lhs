@@ -30,7 +30,6 @@ module DefinicionesYPropiedades (orden
                                 , esSimple
                                 , secuenciaGrados
                                 , secuenciaGrafica
-                                , esSubconjunto
                                 , esSubgrafo
                                 , esSubgrafoMax
                                 , esSubgrafoPropio
@@ -49,6 +48,7 @@ module DefinicionesYPropiedades (orden
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
+import Conjuntos
 
 import Test.QuickCheck
 import Data.List
@@ -360,21 +360,6 @@ esSubgrafo :: Ord a => Grafo a -> Grafo a -> Bool
 esSubgrafo g' g = 
   vertices g' `esSubconjunto` vertices g &&
   aristas  g' `esSubconjunto` aristas  g 
-\end{code}
-
-En la definición anterior se ha usado la función \texttt{(esSubconjunto xs ys)}
-que se verifica si \texttt{xs} es un subconjunto de \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-esSubconjunto [4,2] [3,2,4]  ==  True
-esSubconjunto [5,2] [3,2,4]  ==  False
-\end{sesion}
-
-\index{\texttt{esSubconjunto}}
-\begin{code}
-esSubconjunto :: Eq a => [a] -> [a] -> Bool
-esSubconjunto xs ys =
-  all (`elem` ys) xs
 \end{code}
 
 \begin{definicion}

@@ -477,7 +477,7 @@ biyecciones2 xs ys
 
 \begin{nota}
 En lo que sigue trabajaremos con la función \texttt{biyecciones2} así  
-que la redefiniremos como \texttt{biyecciones}}.
+que la redefiniremos como \texttt{biyecciones}.
 
 \index{\texttt{biyecciones}}
 \begin{code}
