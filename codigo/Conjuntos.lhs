@@ -25,7 +25,7 @@ import Data.List
 
 \begin{definicion}
   Llamaremos \textbf{conjunto} a una colección de objetos, que llamaremos
-  \textbf{elementos}, distintos entre sí, que comparten una propiedad. 
+  \textbf{elementos}, distintos entre sí y que comparten una propiedad. 
   Para que un conjunto esté bien definido debe ser posible discernir si un 
   objeto arbitrario está o no en él.
 \end{definicion}
@@ -38,10 +38,13 @@ $\{x\in \mathbb{N} | 1 \leq x \leq 4\}$ son el mismo, definido de forma
 explicita e implícita respectivamente. 
 
 \begin{nota}
-La definición implícita es necesaria cuando el conjunto en cuestión tiene
-una cantidad infinita de elementos. En general, los conjuntos se notarán
-con letras mayúsculas: $A,B,\dots$ y los elementos con letras minúsculas. 
+  La definición implícita es necesaria cuando el conjunto en cuestión tiene
+  una cantidad infinita de elementos. En general, los conjuntos se notarán
+  con letras mayúsculas: $A,B,\dots$ y los elementos con letras    
+  minúsculas: $a,b,\dots$. 
 \end{nota}
+
+\subsection{Pertenencia a un conjunto}
 
 Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
 En caso  contrario escribiremos $a \not \in A$.
@@ -118,7 +121,7 @@ esUnitario xs = length (nub xs) == 1
 \begin{definicion}
   Dados dos conjuntos $A$ y $B$, si todo elemento de $A$ es a su vez
   elemento de $B$ diremos que $A$ es un subconjunto de $B$ y lo notaremos
-  $A \cup B$. En caso contrario se notará $A \not \cup B$.
+  $A \subset B$. En caso contrario se notará $A \not \subset B$.
 \end{definicion}
 
 La función \texttt{(esSubconjunto xs ys)} se verifica si \texttt{xs} es
@@ -142,8 +145,8 @@ esSubconjunto xs ys = all (pertenece xs) ys
 
 \begin{definicion}
   Dados dos conjuntos $A$ y $B$, diremos que son \textbf{iguales} si tienen
-  los mismos elementos, es decir, si se verifica que $A \cup B$ y 
-  $B \cup A$. Lo notaremos $A=B$.
+  los mismos elementos, es decir, si se verifica que $A \subset B$ y 
+  $B \subset A$. Lo notaremos $A=B$.
 \end{definicion}
 
 La función \texttt{(conjuntosIguales xs ys)} se verifica si los conjuntos

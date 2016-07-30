@@ -388,9 +388,9 @@ esSubgrafoMax g g' =
 \end{code}
 
 \begin{definicion}
-  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \cup V$, o $A' \cup A$,
+  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \subset V$, o $A' \subset A$,
   se dice que $G'$ es un \textbf{subgrafo propio} de $G$, y se denota por
-  $G' \cup G$.
+  $G' \subset G$.
 \end{definicion}
 
 La función \texttt{(esSubgrafoPropio g g')} se verifica si \texttt{g'} es un

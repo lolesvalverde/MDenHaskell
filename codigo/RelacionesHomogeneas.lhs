@@ -116,7 +116,7 @@ En el conjunto $\mathbb{N}$, las relaciones caracterizadas por:
 son relaciones binarias homogéneas reflexivas.
 \end{nota}
     
-\subsection{Relaciones Simétricas}
+\subsection{Relaciones simétricas}
 
 \begin{definicion}
   Sea $R$ una relación binaria homogénea en el conjunto $A$. Diremos que $R$

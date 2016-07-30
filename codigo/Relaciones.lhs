@@ -105,7 +105,7 @@ rango :: Eq b => [(a,b)] -> [b]
 rango r = nub (map snd r)  
 \end{code}
 
-\subsection{Antiimagen por una función}
+\subsection{Antiimagen por una relación}
 
 \begin{definicion}
   La \textbf{antiimagen del elemento} $y$ por una relación $r$ es el conjunto
