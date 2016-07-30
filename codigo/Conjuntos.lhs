@@ -1,5 +1,5 @@
-A la hora de trabajar con conjuntos en Haskell, utilizaremos su 
-representación como listas; es por ello que utilizaremos la librería
+A la hora de trabajar con conjuntos en Haskell, lo haremos con su 
+representación como listas; por ello, utilizaremos el paquete
 \texttt{Data.List}.
 
 \ignora{
@@ -30,6 +30,13 @@ import Data.List
   objeto arbitrario está o no en él.
 \end{definicion}
 
+\begin{nota}
+Al trabajar con la representación de conjuntos como listas en Haskell,
+hemos de cuidar que los ejemplos con los que trabajemos no tengan
+elementos repetidos. La función \texttt{(nub xs)} de la librería
+\texttt{Data.List} elimina los elementos repetidos de una lista.
+\end{nota}
+
 Los conjuntos pueden definirse de manera explícita, citando todos sus 
 elementos entre llaves, de manera implícita, dando una o varias 
 características que determinen si un objeto dado está o no en el conjunto.
@@ -43,6 +50,19 @@ explicita e implícita respectivamente.
   con letras mayúsculas: $A,B,\dots$ y los elementos con letras    
   minúsculas: $a,b,\dots$. 
 \end{nota}
+
+Cuando trabajamos con conjuntos concretos, siempre existe un contexto
+donde esos conjuntos existen. Por ejemplo, si $A= \{ -1,1,2,3,4,5\}$ y 
+$B = \{x | x \in \mathbb{N} \text{es par} \}$ el contexto donde podemos 
+considerar $A$ y $B$ es el conjunto de los números enteros, $\mathbb{Z}$.
+En general, a este conjunto se le denomina \textit{conjunto universal}.
+De una forma algo más precisa, podemos dar la siguiente definición:
+
+\begin{definicion}
+  El \textbf{conjunto universal}, que  notaremos por $U$, es un
+  conjunto del que son subconjuntos todos los posibles conjuntos
+  que originan el problema que tratamos.
+\end{definicion}
 
 \subsection{Pertenencia a un conjunto}
 
@@ -172,7 +192,7 @@ conjuntosIguales xs ys =
 \end{definicion}
 
 La función \texttt{(esSubconjuntoPropio xs ys)} se verifica si 
-\texttt{ys} es un subconjunto propio de \texttt{xs}.
+\texttt{ys} es un subconjunto propio de \texttt{xs}. Por ejemplo,
 
 \begin{sesion}
 esSubconjuntoPropio [3,2,4] [4,2]        ==  True
@@ -188,6 +208,114 @@ esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
 esSubconjuntoPropio xs ys | esVacio ys = False
                           | conjuntosIguales xs ys = False
                           | otherwise = esSubconjunto xs ys
+\end{code}
+
+\subsection{Complementario de un conjunto}
+
+\begin{definicion}
+Dado un conjunto $A$, se define el \textbf{complementario} de
+$A$, que notaremos por $\overline{A}$ como:\\
+$\overline{A} = \{x | x \in U, x \not \in A \}$
+\end{definicion}
+
+La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los 
+conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
+
+\begin{sesion}
+ghci> unionConjuntos 
+[1,3,5,7,9,11,13,15,17,19,21,23,25]
+ghci> let n = 20 in complementario [1..n] conjuntoVacio
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+ghci> let n = 20 in complementario [1..n] [1..n]
+[]
+\end{sesion}
+
+\index{\texttt{complementario}}
+\begin{code}
+complementario :: Eq a => [a] -> [a] -> [a]
+complementario u xs = u \\ xs
+\end{code}
+
+
+\subsection{Cardinal de un conjunto}
+
+\begin{definicion}
+Dado un conjunto finito $A$, denominaremos \textbf{cardinal} de $A$ al 
+número de elementos que tiene y lo notaremos $|A|$.
+\end{definicion}
+
+La función \texttt{(cardinal xs)} devuelve el cardinal del
+conjunto \texttt{xs}. Por ejemplo,
+
+\begin{sesion}
+cardinal conjuntoVacio  ==  0
+cardinal [1..10]        ==  10
+\end{sesion}
+
+\index{\texttt{cardinal}}
+\begin{code}
+cardinal :: Eq a => [a] -> Int
+cardinal = length
+\end{code}
+
+\subsection{Unión de conjuntos}
+
+\begin{definicion}
+Dados dos conjuntos $A$ y $B$ se define la \texttt{unión} de $A$ y
+$B$, notado $A \cup B$, como el conjunto formado por aquellos elementos 
+que pertenecen al menos a uno de los dos conjuntos, $A$ ó $B$, es
+decir,\\
+$A \cup B = \{ x | x \in A \lor x \in B \}$
+\end{definicion}
+
+La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los
+conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
+
+\begin{sesion}
+ghci> unionConjuntos [1,3..20] [2,4..20]
+[1,3,5,7,9,11,13,15,17,19,2,4,6,8,10,12,14,16,18,20]
+ghci> unionConjuntos "centri" "fugado"
+"centrifugado"
+\end{sesion}
+
+\index{\texttt{unionConjuntos}}
+\begin{code}
+unionConjuntos :: Eq a => [a] -> [a] -> [a]
+unionConjuntos = union 
+\end{code}
+
+\begin{nota}
+Para ahorrar en escritura, a en el futuro utilizaremos la función
+\texttt{(union xs ys)} definida en el paquete \texttt{Data.List},
+equivalente a \texttt{(unionConjuntos xs ys)}
+\end{nota}
+
+\subsection{Unión de conjuntos}
+
+\begin{definicion}
+Dados dos conjuntos $A$ y $B$ se define la \texttt{intersección} de $A$ y
+$B$, notado $A \cap B$, como el conjunto formado por aquellos elementos 
+que pertenecen a cada uno de los dos conjuntos, $A$ y $B$, es
+decir,\\
+$A \cap B = \{ x | x \in A \land x \in B \}$
+\end{definicion}
+
+La función \texttt{(interseccion xs ys)} devuelve la intersección de los
+conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
+
+\begin{sesion}
+ghci> interseccion [1,3..20] [2,4..20]
+[]
+ghci> interseccion [2,4..30] [4,8..30]
+[4,8,12,16,20,24,28]
+ghci> interseccion "noche" "dia"
+""
+\end{sesion}
+
+\index{\texttt{interseccion}}
+\begin{code}
+interseccion :: Eq a => [a] -> [a] -> [a]
+interseccion xs ys = filter (pertenece ys) xs
 \end{code}
 
 \subsection{Producto cartesiano}
