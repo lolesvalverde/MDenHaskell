@@ -395,3 +395,4 @@ variacionesR 0 _  = [[]]
 variacionesR k us =
     [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
+
