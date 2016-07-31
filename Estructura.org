@@ -1,0 +1,14 @@
+#+TITLE: Estructura del proyecto
+
+[[./texto/MD_en_Haskell.tex][MD_en_Haskell.tex]]
+
+* [[./texto/Introduccion.tex][Introduccion.tex]]: Introducción.
+
+* [[./texto/Conjuntos_Relaciones_Y_Funciones.tex][Conjuntos_Relaciones_Y_Funciones.tex]]: Conjuntos, relaciones y funciones.
+  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]].
+
+* [[./texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]]
+
+* [[./texto/Apendices.tex][Apendices.tex]]
+
+* [[./texto/MD_en_Haskell.bib][MD_en_Haskell.bib]]
