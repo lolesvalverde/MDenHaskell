@@ -9,12 +9,12 @@ module Morfismos ( esMorfismo
                   , automorfismos                  
                   ) where
   
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
 import Conjuntos
 import Relaciones
 import Funciones
+import GrafoConListaDeAristas
+import EjemplosGrafos
+import GeneradorGrafos
 import DefinicionesYPropiedades 
     
 import Test.QuickCheck
@@ -86,6 +86,34 @@ caracterísicas.
 \subsection{Morfismos}
 
 \begin{definicion}
+  Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
+  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica  
+  que si $(u,v) \in A$, entonces $(f(u),f(v)) \in A'$.
+\end{definicion}
+
+La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
+\texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las
+adyacencias. Por ejemplo,
+
+\begin{sesion}
+ghci> let g1 = creaGrafo [1..4] [(1,2),(2,3),(3,4)]
+ghci> let g2 = creaGrafo [1..4] [(1,2),(2,3),(2,4)]
+ghci> let g3 = creaGrafo [4,6..10] [(4,8),(6,8),(8,10)]
+ghci> conservaAdyacencia g1 g3 [(1,4),(2,6),(3,8),(4,10)]
+False
+ghci> conservaAdyacencia g2 g3 [(1,4),(2,8),(3,6),(4,10)]
+True
+\end{sesion}
+
+\index{\texttt{conservaAdyacencia}}
+\begin{code}
+conservaAdyacencia :: (Ord a, Ord b) =>
+                      Grafo a -> Grafo b -> Funcion a b -> Bool
+conservaAdyacencia g h f =
+  and [(imagen f x,imagen f y) `aristaEn` h | (x,y) <- aristas g]
+\end{code}
+
+\begin{definicion}
   Dados dos grafos simples $G = (V,A)$ y $G' = (V',A')$, un \textbf{morfismo}
   entre $G$ y $G'$ es una función $\phi: V \to V'$ que conserva las
   adyacencias.
@@ -113,8 +141,8 @@ esMorfismo g1 g2 f =
   conservaAdyacencia g1 g2 f
 \end{code}
 
-La función \texttt{(morfismos g h)} devuelve todos los
-posibles morfismos entre los grafos \texttt{g} y \texttt{h}.
+La función \texttt{(morfismos g h)} devuelve todos los posibles morfismos entre
+los grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
 ghci> morfismos (grafoCiclo 3)
@@ -135,6 +163,10 @@ morfismos g h =
   [f | f <- funciones (vertices g) (vertices h)
      , conservaAdyacencia g h f]
 \end{code}
+
+\comentario{Buscar definiciones más eficientes de morfismos.}
+
+\comentario{Introducir el problema de decidir si dos grafos son homomorfos.}
 
 \subsection{Isomorfismos}
 
@@ -169,8 +201,8 @@ esIsomorfismo g h f =
   esBiyectiva vs1 vs2 f      &&
   esMorfismo g h f           &&
   esMorfismo h g (inversa f)
-      where vs1 = vertices g
-            vs2 = vertices h      
+  where vs1 = vertices g
+        vs2 = vertices h      
 \end{code}
 
 La función \texttt{(isomorfismos1 g h)} devuelve todos los isomorfismos posibles
@@ -225,9 +257,9 @@ isomorfos1 g = not . null . isomorfismos1 g
 \end{code}
 
 \begin{nota}
-Al tener Haskell una evaluación perezosa, la función 
-\texttt{(isomorfos g h)} no necesita generar todos los isomorfismos
-entre los grafos \texttt{g} y \texttt{h}.
+  Al tener Haskell una evaluación perezosa, la función \texttt{(isomorfos g h)}
+  no necesita generar todos los isomorfismos entre los grafos \texttt{g} y
+  \texttt{h}.
 \end{nota}
 
 \begin{definicion}
@@ -241,11 +273,11 @@ esInvariantePorIsomorfismos ::
   Eq a => (Grafo Int -> a) -> Grafo Int -> Grafo Int -> Bool
 esInvariantePorIsomorfismos p g h = 
   isomorfos g h --> (p g == p h)
-      where (-->) = (<=)
+  where (-->) = (<=)
 \end{code}
 
 \begin{teorema}
-  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V\to V'$ un 
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
   isomorfismo. Entonces, se verifica que $|V(G)| = |V(G')|$; es decir,
   el orden de un grafo es un invariante por isomorfismos.
 \end{teorema}
@@ -291,20 +323,19 @@ vamos a dar otra definición equivalente de las funciones
 \texttt{(isomorfismos1 g h)} y \texttt{(isomorfos1 g h)}.
 
 \begin{code}
-isomorfismos2 ::
-    (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
+isomorfismos2 :: (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos2 g h
-     | orden g  /= orden h  = []
-     | tamaño g /= tamaño h = []
-     | secuenciaGrados g /= secuenciaGrados h = []
-     | otherwise = [f | f <- biyecciones vs1 vs2 , conservaAdyacencia g h f]
-     where vs1 = vertices g
-           vs2 = vertices h   
+  | orden g  /= orden h  = []
+  | tamaño g /= tamaño h = []
+  | secuenciaGrados g /= secuenciaGrados h = []
+  | otherwise = [f | f <- biyecciones vs1 vs2
+                   , conservaAdyacencia g h f]
+  where vs1 = vertices g
+        vs2 = vertices h   
 
-isomorfos2 ::
-    (Ord a, Ord b) => Grafo a -> Grafo b -> Bool
+isomorfos2 :: (Ord a, Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos2 g =
-    not. null . isomorfismos2 g
+  not. null . isomorfismos2 g
 \end{code}
 
 Vamos a comparar la eficiencia entre ambas definiciones
@@ -347,18 +378,18 @@ False
 \end{sesion}
 
 \begin{nota}
-Cuando los grafos son isomorfos, comprobar que tienen el mismo número de
-vértices, el mismo número de aristas y la misma secuencia gráfica no requiere
-mucho tiempo ni espacio, dando lugar a costes muy similares entre los dos pares
-de definiciones. Sin embargo, cuando los grafos tienen el mismo número
-de vértices y fallan en alguna de las demás propiedades, el resultado es
-muy costoso para la primera definición mientras que es inmediato con la segunda.
+  Cuando los grafos son isomorfos, comprobar que tienen el mismo número de
+  vértices, el mismo número de aristas y la misma secuencia gráfica no requiere
+  mucho tiempo ni espacio, dando lugar a costes muy similares entre los dos
+  pares de definiciones. Sin embargo, cuando los grafos tienen el mismo número
+  de vértices y fallan en alguna de las demás propiedades, el resultado es muy
+  costoso para la primera definición mientras que es inmediato con la segunda.
 
-A partir de ahora utilizaremos la función \texttt{(isomorfismos2 g h)}  
-para calcular los isomorfismos entre dos grafos y la función     
-\texttt{(isomorfos g h)} para determinar si dos grafos son isomorfos, de
-modo que las renombraremos por \texttt{(isomorfismos g h)} y
-\texttt{(isomorfismos g h)} respectivamente.
+  A partir de ahora utilizaremos la función \texttt{isomorfismos2} para
+  calcular los isomorfismos entre dos grafos y la función \texttt{isomorfos}
+  para determinar si dos grafos son isomorfos, de modo que las renombraremos
+  por \texttt{isomorfismos} y \texttt{isomorfismos}
+  respectivamente.
 
 \begin{code}
 isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
@@ -369,11 +400,13 @@ isomorfos = isomorfos2
 \end{code}
 \end{nota}
 
+\comentario{Buscar una definicion más eficiente que isomorfismos2}
+
 \subsection{Automorfismos}
 
 \begin{definicion}
-  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo}
-  de $G$ es un isomorfismo de $G$ en sí mismo.
+  Dado un grafo simple $G = (V,A)$, un \textbf{automorfismo} de $G$ es un
+  isomorfismo de $G$ en sí mismo.
 \end{definicion}
 
 La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
@@ -431,7 +464,7 @@ automorfismos g = isomorfismos1 g g
 
 \begin{nota}
   Cuando trabajamos con automorfismos, es mejor utilizar en su definición la
-  función \texttt{isomorfismos} en vez de \texttt{isomorfismos2}, pues ser
-  isomorfos es una relación reflexiva, es decir, un grafo siempre es isomorfo a
+  función \texttt{isomorfismos1} en vez de \texttt{isomorfismos2}, pues ser
+  isomorfos es una relación reflexiva; es decir, un grafo siempre es isomorfo a
   sí mismo.
 \end{nota}

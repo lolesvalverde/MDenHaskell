@@ -10,12 +10,8 @@ module Funciones ( esFuncion
                  , biyecciones  
                  , inversa
                  , imagenInversa
-                 , conservaAdyacencia
                  ) where
   
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
 import Conjuntos
 import Relaciones
     
@@ -23,9 +19,6 @@ import Test.QuickCheck
 import Data.List
 \end{code}
 }
-
-\comentario{Esta sección no debe de depender de grafos. Por tanto, habría que
-  eliminar sus importaciones.}
 
 \begin{definicion}
   Dada una relación $F$ entre $A$ y $B$, se dirá que es una \textbf{función} si
@@ -280,37 +273,4 @@ imagenInversa [(1,4),(2,4),(3,6),(3,6)] 6  ==  3
 imagenInversa :: (Eq a, Eq b) => Funcion a b -> b -> a 
 imagenInversa f = imagen (inversa f)
 \end{code}
-
-\subsection{Conservar adyacencia}
-
-\comentario{Esta sección debe de estar en el capítulo de grafos.}
-
-\begin{definicion}
-  Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
-  que \textbf{conserva la adyacencia} si $\forall u,v \in V$ se verifica  
-  que si $(u,v) \in A$, entonces $(f(u),f(v)) \in A'$.
-\end{definicion}
-
-La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
-\texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las
-adyacencias. Por ejemplo,
-
-\begin{sesion}
-ghci> let g1 = creaGrafo [1..4] [(1,2),(2,3),(3,4)]
-ghci> let g2 = creaGrafo [1..4] [(1,2),(2,3),(2,4)]
-ghci> let g3 = creaGrafo [4,6..10] [(4,8),(6,8),(8,10)]
-ghci> conservaAdyacencia g1 g3 [(1,4),(2,6),(3,8),(4,10)]
-False
-ghci> conservaAdyacencia g2 g3 [(1,4),(2,8),(3,6),(4,10)]
-True
-\end{sesion}
-
-\index{\texttt{conservaAdyacencia}}
-\begin{code}
-conservaAdyacencia :: (Ord a, Ord b) =>
-                      Grafo a -> Grafo b -> Funcion a b -> Bool
-conservaAdyacencia g h f = all (aristaEn h) gs
-  where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
-\end{code}
-
 

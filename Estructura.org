@@ -13,7 +13,11 @@
 * [[./texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]]: Introducción a la teoría de grafos.
   + [[./codigo/GrafoConListaDeAristas.lhs][GrafoConListaDeAristas.lhs]]: Grafos como listas de aristas.
   + [[./codigo/GeneradorGrafos.lhs][GeneradorGrafos.lhs]]: Generadores de grafos.
- 
+  + [[./codigo/EjemplosGrafos.lhs][EjemplosGrafos.lhs]]: Ejemplos de grafos.
+  + [[./codigo/DefinicionesYPropiedades.lhs][DefinicionesYPropiedades.lhs]]: Definiciones y propiedades.
+  + [[./codigo/Morfismos.lhs][Morfismos.lhs]]: Morfismos de grafos.
+  + [[./codigo/ConectividadGrafos.lhs][ConectividadGrafos.lhs]]: Conectividad de grafos.
+
 * [[./texto/Apendices.tex][Apendices.tex]]
 
 * [[./texto/MD_en_Haskell.bib][MD_en_Haskell.bib]]

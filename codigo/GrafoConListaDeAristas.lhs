@@ -19,7 +19,7 @@ module GrafoConListaDeAristas
     , creaGrafo  -- [a] -> [(a,a)] -> Grafo a
     , vertices   -- Grafo a -> [a]
     , adyacentes -- Grafo a -> a -> [a]
-    , aristaEn   -- Grafo a -> (a,a) -> Bool
+    , aristaEn   -- (a,a) -> Grafo a -> Bool
     , aristas    -- Grafo a -> [(a,a)]
     ) where
 \end{code}
@@ -115,18 +115,18 @@ adyacentes (G _ as) v =
   [u | (x,u) <- as, x == v] 
 \end{code}
 
-\item \texttt{(aristaEn g a)} se verifica si \texttt{a} es una arista del grafo
+\item \texttt{(aristaEn a g)} se verifica si \texttt{a} es una arista del grafo
   \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-aristaEn ejGrafo (5,1)  ==  True
-aristaEn ejGrafo (3,1)  ==  False
+(5,1) `aristaEn` ejGrafo  ==  True
+(3,1) `aristaEn` ejGrafo  ==  False
 \end{sesion}
 
 \index{\texttt{aristaEn}}
 \begin{code}
-aristaEn :: Ord a => Grafo a -> (a,a) -> Bool
-aristaEn (G _ as) a = parOrdenado a `elem` as
+aristaEn :: Ord a => (a,a) -> Grafo a -> Bool
+aristaEn a (G _ as) = parOrdenado a `elem` as
 \end{code}
 
 \item \texttt{(aristas g)} es la lista de las aristas del grafo \texttt{g}. 

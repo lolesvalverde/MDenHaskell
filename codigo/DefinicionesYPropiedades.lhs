@@ -9,6 +9,8 @@ tiddly/emptyMD1314.html#Chapter2}
 /u/15420416/tiddly/emptyMD1314.html}}
 de Matemática Discreta.
 
+\comentario{Añadir al fichero de bibliografia y citar.}
+
 \begin{nota}
   Se utilizará el tipo abstracto de grafos presentados en la sección
   \ref{sec:TAD_grafos} y se utilizarán las librerias \texttt{Data.List} y
@@ -45,12 +47,12 @@ module DefinicionesYPropiedades (orden
                                 , complementario
                                 ) where
 
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
 import Conjuntos
 import Relaciones
 import Funciones
+import GrafoConListaDeAristas
+import EjemplosGrafos
+import GeneradorGrafos
 
 import Test.QuickCheck
 import Data.List
@@ -121,7 +123,7 @@ sonIncidentes (1,2) (3,4) == False
 \begin{code}
 sonIncidentes :: Eq a => (a,a) -> (a,a) -> Bool
 sonIncidentes (u1,u2) (v1,v2) =
-   or [u1 == v1, u1 == v2, u2 == v1, u2 == v2]
+  or [u1 == v1, u1 == v2, u2 == v1, u2 == v2]
 \end{code}
 
 \begin{definicion}
@@ -233,7 +235,8 @@ esRegular g = all (==x) xs
   mínimo} de $G$ al valor $\delta(G) = \min \{grad(v) | v \in V\}$
 \end{definicion}
 
-La función \texttt{(valenciaMin g)} devuelve la valencia mínima del grafo \texttt{g}.
+La función \texttt{(valenciaMin g)} devuelve la valencia mínima del grafo
+\texttt{g}.
 
 \begin{sesion}
 valenciaMin (grafoEstrella 6)                       ==  1
@@ -253,7 +256,8 @@ valenciaMin g = minimum [grado g v | v <- vertices g]
   máximo} de $G$ al valor $\delta(G) = \max \{grad(v) | v \in V\}$
 \end{definicion}
 
-La función \texttt{(valenciaMax g)} devuelve la valencia máxima del grafo \texttt{g}.
+La función \texttt{(valenciaMax g)} devuelve la valencia máxima del grafo
+\texttt{g}.
 
 \begin{sesion}
 valenciaMax (grafoEstrella 6) == 6
@@ -285,7 +289,7 @@ esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)])  ==  True
 \begin{code}
 esSimple :: Ord a => Grafo a -> Bool
 esSimple g =
-  and [not (aristaEn g (x,x)) | x <- vertices g]
+  and [not ((x,x) `aristaEn` g) | x <- vertices g]
 \end{code}
 
 \begin{definicion}
@@ -346,22 +350,22 @@ secuenciaGrafica ss = even (sum ss) && all p ss
   $G$ si $V' \subseteq V$ y $A' \subseteq A$.
 \end{definicion}
 
-La función \texttt{(subgrafo g g')} se verifica si \texttt{g'} es un subgrafo
+La función \texttt{(subgrafo g' g)} se verifica si \texttt{g'} es un subgrafo
 de \texttt{g}
 
 \begin{sesion}
-  subgrafo (bipartitoCompleto 3 3) (bipartitoCompleto 3 2) == True
-  subgrafo (grafoEstrella 5) (grafoEstrella 4)             == True
-  subgrafo (completo 4) (completo 5)                       == False
-  subgrafo (completo 4) (completo 3)                       == True
+  subgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3) == True
+  subgrafo (grafoEstrella 4) (grafoEstrella 5)             == True
+  subgrafo (completo 5) (completo 4)                       == False
+  subgrafo (completo 3) (completo 4)                       == True
 \end{sesion}
 
 \index{\texttt{esSubgrafo}}
 \begin{code}
 esSubgrafo :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafo g g' = 
-  esSubconjunto (vertices g) (vertices g') &&
-  esSubconjunto (aristas g) (aristas g') 
+esSubgrafo g' g = 
+  vertices g' `esSubconjunto` vertices g &&
+  aristas g'  `esSubconjunto` aristas g 
 \end{code}
 
 \begin{definicion}
@@ -370,21 +374,21 @@ esSubgrafo g g' =
   \textbf{grafo de expansión} (en inglés, \emph{spanning grah}) de $G$.
 \end{definicion}
 
-La función \texttt{(esSubgrafoMax g g')} se verifica si \texttt{g'} es un
+La función \texttt{(esSubgrafoMax g' g)} se verifica si \texttt{g'} es un
 subgrafo maximal de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoMax (grafoRueda 4) (grafoRueda 3)              ==  False
-esSubgrafoMax (grafoRueda 4) (grafoCiclo 4)              ==  True
-esSubgrafoMax (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
-esSubgrafoMax (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  False
+esSubgrafoMax (grafoRueda 3)             (grafoRueda 4)  ==  False
+esSubgrafoMax (grafoCiclo 4)             (grafoRueda 4)  ==  True
+esSubgrafoMax (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
+esSubgrafoMax (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  False
 \end{sesion}
 
 \index{\texttt{esSubgrafoMax}}
 \begin{code}
 esSubgrafoMax :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafoMax g g' = 
-  esSubgrafo g g' && conjuntosIguales (vertices g') (vertices g)
+esSubgrafoMax g' g = 
+  g' `esSubgrafo` g && conjuntosIguales (vertices g') (vertices g)
 \end{code}
 
 \begin{definicion}
@@ -393,21 +397,21 @@ esSubgrafoMax g g' =
   $G' \subset G$.
 \end{definicion}
 
-La función \texttt{(esSubgrafoPropio g g')} se verifica si \texttt{g'} es un
+La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un
 subgrafo propio de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoPropio (grafoRueda 3) (grafoRueda 4)              ==  True
-esSubgrafoPropio (grafoCiclo 5) (grafoRueda 4)              ==  False
-esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
-esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  True
+esSubgrafoPropio (grafoRueda 4) (grafoRueda 3)              ==  True
+esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)              ==  False
+esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
+esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  True
 \end{sesion}
 
 \index{\texttt{esSubgrafoPropio}}
 \begin{code}
 esSubgrafoPropio :: Ord a => Grafo a -> Grafo a -> Bool
-esSubgrafoPropio g g' = 
-  esSubgrafo g g' &&
+esSubgrafoPropio g' g = 
+  esSubgrafo g' g &&
   (not (conjuntosIguales (vertices g) (vertices g')) ||
    not (conjuntosIguales (aristas g) (aristas g')))
 \end{code}
@@ -691,7 +695,7 @@ G [1,2,3,4] [(1,1),(2,2),(3,3),(4,4)]
 complementario :: Ord a => Grafo a -> Grafo a 
 complementario  g =
   creaGrafo vs
-            [(u,v)| u <- vs, v <- vs, u <= v, not (aristaEn g (u,v))]
+            [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
   where vs = vertices g
 \end{code}
 

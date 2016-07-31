@@ -13,6 +13,8 @@ En el proceso de recopilación de ejemplos, se ha trabajado con diversas fuentes
       de la Wikipedia. 
 \end{itemize}
 
+\comentario{Añadir al fichero de bibliografía y citarla.}
+
 \comentario{Ir actualizando y completando las fuentes y cambiar el formato de
   enumeración}
 
@@ -76,8 +78,7 @@ g12 = creaGrafo [1..4] [(1,1),(1,2),(3,3)]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO NULO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{definicion}
-  Un \textbf{grafo nulo} es un grafo que no tiene ni 
-  vértices ni aristas.
+  Un \textbf{grafo nulo} es un grafo que no tiene ni vértices ni aristas.
 \end{definicion}
 
 La función \texttt{(grafoNulo)} devuelve un grafo nulo.
@@ -92,8 +93,7 @@ grafoNulo :: Ord a => Grafo a
 grafoNulo = creaGrafo [] []
 \end{code}
 
-La función \texttt{(esGrafoNulo g)} se verifica si \texttt{g} es un   
-grafo nulo
+La función \texttt{(esGrafoNulo g)} se verifica si \texttt{g} es un grafo nulo
 
 \begin{sesion}
 esGrafoNulo grafoNulo                  ==  True
