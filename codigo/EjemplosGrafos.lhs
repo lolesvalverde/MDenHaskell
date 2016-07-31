@@ -13,12 +13,11 @@ En el proceso de recopilación de ejemplos, se ha trabajado con diversas fuentes
       de la Wikipedia. 
 \end{itemize}
 
-\begin{comentario}
-Ir actualizando y completando las fuentes y cambiar el formato de enumeración.
+\comentario{Ir actualizando y completando las fuentes y cambiar el formato de
+  enumeración}
 
-En este módulo hay un ejemplo de cómo dibujar un grafo cualquiera (grafo de la
-amistad)
-\end{comentario}
+\comentario{En este módulo hay un ejemplo de cómo dibujar un grafo cualquiera
+  (grafo de la amistad)}
 
 \begin{nota}
 Se utilizará la representación de los grafos como listas de aristas.
