@@ -1,7 +1,8 @@
 En el módulo \texttt{GrafoConListaDeAristas} se definen las funciones del
-TAD de los grafos dando su representación como listas de aristas; es
-decir, representando a un grafo como dos listas, la primera será la lista de
-los vértices y la segunda la de las aristas.
+TAD de los grafos dando su representación como conjuntos de aristas; es
+decir, representando a un grafo como dos conjuntos, la primera será la lista
+ordenada de los vértices y la segunda la lista ordenada de las aristas (en
+ambas listas se excluye la posibilidad de repeticiones).
 
 \begin{nota}
   Una diferencia entre vectores y listas es que en los vectores se
@@ -9,6 +10,8 @@ los vértices y la segunda la de las aristas.
   encontrar el elemento $n$--ésimo hay que recorrerla. Los vectores tienen
   acceso constante ($O(1)$) y las listas lineal ($O(n)$).
 \end{nota}
+
+\comentario{Comentar las ventajas de usar listas en lugar de vectores.}
 
 \begin{code}
 module GrafoConListaDeAristas 
@@ -37,7 +40,7 @@ un grafo a partir de la lista de sus vértices (donde los vértices son de tipo
 \index{\texttt{Grafo}}
 \begin{code}
 data Grafo a = G [a] [(a,a)]
-    deriving (Eq, Show)
+  deriving (Eq, Show)
 \end{code}
 
 Las funciones básicas que definiremos a partir de este tipo coincidirán con las
@@ -83,10 +86,6 @@ ejGrafo = creaGrafo [1..5]
 \end{code}
 \end{ejemplo}
 
-\begin{nota}
-  Con la función \texttt{generaGrafo} podemos crear el grafo nulo.
-\end{nota}
-
 \item \texttt{(vertices g)} es la lista de los vértices del grafo \texttt{g}.
   Por ejemplo,
  
@@ -127,7 +126,7 @@ aristaEn ejGrafo (3,1)  ==  False
 \index{\texttt{aristaEn}}
 \begin{code}
 aristaEn :: Ord a => Grafo a -> (a,a) -> Bool
-aristaEn (G _ as) a = elem (parOrdenado a) as
+aristaEn (G _ as) a = parOrdenado a `elem` as
 \end{code}
 
 \item \texttt{(aristas g)} es la lista de las aristas del grafo \texttt{g}. 

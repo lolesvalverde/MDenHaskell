@@ -150,6 +150,9 @@ esUnitario :: Eq a => [a] -> Bool
 esUnitario xs = length (nub xs) == 1
 \end{code}
 
+\comentario{En la definición de esUnitario se puede eliminar nub si se supone
+  que trabajamos con conjuntos.}
+
 \subsection{Subconjuntos}
 
 \begin{definicion}

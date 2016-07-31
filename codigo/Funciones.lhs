@@ -24,6 +24,9 @@ import Data.List
 \end{code}
 }
 
+\comentario{Esta sección no debe de depender de grafos. Por tanto, habría que
+  eliminar sus importaciones.}
+
 \begin{definicion}
   Dada una relación $F$ entre $A$ y $B$, se dirá que es una \textbf{función} si
   es una relación binaria, es funcional y todos los elementos de $A$ están en
@@ -44,7 +47,7 @@ esFuncion [3,1] [2,4,7] [(1,7),(3,2),(1,4)]  ==  False
 esFuncion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
 esFuncion xs ys f =
   esRelacion xs ys f &&
-  esSubconjunto (dominio f) xs &&
+  xs `esSubconjunto` dominio f &&
   esFuncional f
 \end{code}
 
@@ -98,7 +101,7 @@ imagen [(1,7),(3,2)] 3  ==  2
 
 \index{\texttt{imagen}}
 \begin{code}
-imagen :: Eq a => Funcion a b -> a -> b
+imagen :: (Eq a, Eq b) => Funcion a b -> a -> b
 imagen f x = head (imagenRelacion f x)
 \end{code}
 
@@ -127,7 +130,7 @@ esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
 \begin{code}
 esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
 esInyectiva f =
-  all (esUnitario) [antiImagenRelacion f y | y <- rango f] 
+  all esUnitario [antiImagenRelacion f y | y <- rango f] 
 \end{code}
 
 \subsection{Funciones sobreyectivas}
@@ -145,18 +148,15 @@ La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
 \texttt{f} es una función entre \texttt{xs} y \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
-ghci> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
-True
-ghci> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
-False
-ghci> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,4),(3,6),(3,6)]
-False
+esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]        ==  True
+esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]        ==  False
+esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,4),(3,6),(3,6)]  ==  False
 \end{sesion}
 
 \index{\texttt{esSobreyectiva}}
 \begin{code}
 esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
-esSobreyectiva _ ys f = esSubconjunto (rango f) ys
+esSobreyectiva _ ys f = ys `esSubconjunto` rango f 
 \end{code}
 
 \subsection{Funciones biyectivas}
@@ -173,12 +173,9 @@ La función \texttt{(esBiyectiva xs ys f)} se verifica si la función
 \texttt{f} es biyectiva.  Por ejemplo,
 
 \begin{sesion}
-ghci> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
-True
-ghci> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
-False
-ghci> esBiyectiva [1,2,3] [4,5,6,7] [(1,4),(2,5),(3,6)]
-False
+esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]  ==  True
+esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]        ==  False
+esBiyectiva [1,2,3] [4,5,6,7] [(1,4),(2,5),(3,6)]      ==  False
 \end{sesion}
 
 \index{\texttt{esSobreyectiva}}
@@ -260,6 +257,9 @@ inversa :: (Eq a, Eq b) => Funcion a b -> Funcion b a
 inversa f = [(y,x) | (x,y) <- nub f]
 \end{code}
 
+\comentario{En la definición de inversa se puede eliminar nub, suponiendo que f
+  es un conjunto.}
+
 \begin{nota}
 Para considerar la inversa de una función, esta tiene que ser
 biyectiva. Luego \texttt{(inversa f)} asigna a cada elemento del
@@ -282,6 +282,8 @@ imagenInversa f = imagen (inversa f)
 \end{code}
 
 \subsection{Conservar adyacencia}
+
+\comentario{Esta sección debe de estar en el capítulo de grafos.}
 
 \begin{definicion}
   Si $f$ es una función entre dos grafos $G = (V,A)$ y $G' = (V',A')$, diremos
@@ -308,7 +310,7 @@ True
 conservaAdyacencia :: (Ord a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
 conservaAdyacencia g h f = all (aristaEn h) gs
-    where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
+  where gs = [(imagen f x,imagen f y) | (x,y) <- aristas g]
 \end{code}
 
 

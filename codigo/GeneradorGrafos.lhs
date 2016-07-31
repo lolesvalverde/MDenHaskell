@@ -15,6 +15,8 @@ consultado las siguientes fuentes:
   \footnote{\url{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}}
 \end{itemize}
 
+\comentario{Añadir al fichero de bibliografía y poner la cita.}
+
 \ignora{
 \begin{code}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
@@ -71,12 +73,12 @@ generaGrafo s = do
 \end{code}
 
 \begin{nota}
-Los grafos están contenido en la clase de los objetos 
-generables aleatoriamente. 
+  Los grafos están contenido en la clase de los objetos generables
+  aleatoriamente.
 
 \begin{code}
 instance Arbitrary (Grafo Int) where
-    arbitrary = sized generaGrafo 
+  arbitrary = sized generaGrafo 
 \end{code}
 \end{nota}
 

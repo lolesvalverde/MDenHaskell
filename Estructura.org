@@ -5,10 +5,15 @@
 * [[./texto/Introduccion.tex][Introduccion.tex]]: Introducción.
 
 * [[./texto/Conjuntos_Relaciones_Y_Funciones.tex][Conjuntos_Relaciones_Y_Funciones.tex]]: Conjuntos, relaciones y funciones.
-  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]].
+  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]]: Conjuntos.
+  + [[./codigo/Relaciones.lhs][Relaciones.lhs]]: Relaciones binarias.
+  + [[./codigo/RelacionesHomogeneas.lhs][RelacionesHomogeneas.lhs]]: Relaciones homogéneas.
+  + [[./codigo/Funciones.lhs][Funciones.lhs]]: Funciones.
 
-* [[./texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]]
-
+* [[./texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]]: Introducción a la teoría de grafos.
+  + [[./codigo/GrafoConListaDeAristas.lhs][GrafoConListaDeAristas.lhs]]: Grafos como listas de aristas.
+  + [[./codigo/GeneradorGrafos.lhs][GeneradorGrafos.lhs]]: Generadores de grafos.
+ 
 * [[./texto/Apendices.tex][Apendices.tex]]
 
 * [[./texto/MD_en_Haskell.bib][MD_en_Haskell.bib]]

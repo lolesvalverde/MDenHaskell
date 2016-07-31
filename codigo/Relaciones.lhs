@@ -8,10 +8,7 @@ module Relaciones ( esRelacion
                   , esFuncional
                   ) where
   
-import GrafoConListaDeAristas
 import Conjuntos
-    
-import Test.QuickCheck
 import Data.List 
 \end{code}
 }
@@ -39,7 +36,7 @@ esRelacion [3,1] [2,4,7] [(3,1),(1,2)]  ==  False
 \begin{code}
 esRelacion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
 esRelacion xs ys r =
-  esSubconjunto (productoCartesiano xs ys) r
+  productoCartesiano xs ys `esSubconjunto` r
 \end{code}
 
 \subsection{Imagen por una relación}
@@ -60,9 +57,9 @@ imagenRelacion [(1,3),(2,5),(1,4)] 3  ==  []
 
 \index{\texttt{imagenRelacion}}
 \begin{code}
-imagenRelacion :: Eq a => [(a,b)] -> a -> [b]
+imagenRelacion :: (Eq a, Eq b) => [(a,b)] -> a -> [b]
 imagenRelacion r x =
-  [y | (z,y) <- r, z == x] 
+  nub [y | (z,y) <- r, z == x] 
 \end{code}
 
 \subsection{Dominio de una relación}
@@ -121,9 +118,9 @@ antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
 
 \index{\texttt{antiImagenRelacion}}
 \begin{code}
-antiImagenRelacion :: Eq b => [(a,b)] -> b -> [a]
+antiImagenRelacion :: (Eq a, Eq b) => [(a,b)] -> b -> [a]
 antiImagenRelacion r y =
-  [x | (x,z) <- r, z == y]   
+  nub [x | (x,z) <- r, z == y]   
 \end{code}
 
 \subsection{Relación funcional}
