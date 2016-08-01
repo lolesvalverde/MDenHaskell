@@ -678,3 +678,4 @@ centro g = [v | v <- vertices g, excentricidad g v == r]
   del grafo $G$ al máximo de las longitudes de los ciclos de $G$.
 \end{definicion}
 
+\comentario{Seguir revisando a partir de aquí.}
