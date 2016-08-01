@@ -85,8 +85,10 @@
 %% § Definiciones                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \newcommand{\comentario}[1]{{\colorbox{yellow}{Comentario}: {#1}}
-\newcommand{\comentario}[1]{\todo[inline]{#1}}
+\newcounter{nc}
+\newcommand{\comentario}[1]{%
+  \addtocounter{nc}{1}
+  \todo[inline]{\textbf{Comentario \arabic{nc}}: #1}}
 \newcommand{\entrada}[1]{\input{../codigo/#1.lhs}}
 \newcommand{\ignora}[1]{}
 \newcommand{\incrementaEjercicio}{\addtocounter{ejercicio}{1}}

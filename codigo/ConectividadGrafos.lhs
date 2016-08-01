@@ -551,7 +551,7 @@ esConexo g = length (componentesConexas g) == 1
 Vamos a comprobar el resultado con QuickCheck.
 
 \begin{sesion}
-λ> quickCheckWith (stdArgs {maxSize=10}) prop_caracterizaGrafoConexo
+ghci> quickCheckWith (stdArgs {maxSize=10}) prop_caracterizaGrafoConexo
 +++ OK, passed 100 tests.
 \end{sesion}      
     
