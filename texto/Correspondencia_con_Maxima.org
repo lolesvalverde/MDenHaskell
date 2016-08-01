@@ -1,0 +1,309 @@
+#+TITLE: Correspondencia entre las funciones del trabajo y las de Maxima
+
+* Funciones del trabajo
+
+** Por orden de aparición
+
+*** GrafoConListaDeAristas
+
+|-----------------+---------------------|
+| creaGrafo vs as | create_grah (vs,as) |
+| vertices g      | vertices (g)        |
+| adyacentes g v  | neighbors (v,g)     |
+| aristaEn a g    |                     |
+| aristas g       | edges (g)           |
+|-----------------+---------------------|
+
+*** EjemplosGrafos
+
+|--------------------|
+| grafoNulo          |
+| esGrafoNulo        |
+| grafoCiclo         |
+| grafoAmistad       |
+| completo           |
+| bipartitoCompleto  |
+| grafoEstrella      |
+| grafoRueda         |
+| grafoCirculante    |
+| grafoPetersenGen   |
+| grafoThomson       |
+| grafoPetersen      |
+| grafoMoebiusCantor |
+|--------------------|
+
+** Por orden alfabético
+
+|------------------------|
+| adyacentes             |
+| antiImagenRelacion     |
+| aristaEn               |
+| aristasCamino          |
+| aristas                |
+| automorfismos          |
+| bipartitoCompleto      |
+| biyecciones            |
+| cardinal               |
+| centro                 |
+| clasesEquivalencia     |
+| combinaciones          |
+| complementario         |
+| completo               |
+| componentesConexas     |
+| conjuntoVacio          |
+| conjuntosIguales       |
+| conservaAdyacencia     |
+| creaGrafo              |
+| diametro               |
+| distancia              |
+| dominio                |
+| eliminaArista          |
+| eliminaVertice         |
+| entorno                |
+| esAislado              |
+| esAntisimetrica        |
+| esAutomorfismo         |
+| esCamino               |
+| esCerrado              |
+| esCircuito             |
+| esConexo               |
+| esFuncional            |
+| esFuncion              |
+| esGeodesica            |
+| esInyectiva            |
+| esIsomorfismo          |
+| esLazo                 |
+| esReflexiva            |
+| esRegular              |
+| esRelacionEquivalencia |
+| esRelacionHomogenea    |
+| esRelacionOrden        |
+| esRelacion             |
+| esSimetrica            |
+| esSimple               |
+| esSobreyectiva         |
+| esSubconjuntoPropio    |
+| esSubconjunto          |
+| esSubgrafoMax          |
+| esSubgrafoPropio       |
+| esSubgrafo             |
+| esTransitiva           |
+| esVacio                |
+| estaRelacionado        |
+| estanConectados        |
+| excentricidad          |
+| funciones              |
+| generaGrafo            |
+| grado                  |
+| grafoAmistad           |
+| grafoCiclo             |
+| grafoCirculante        |
+| grafoEstrella          |
+| grafoMoebiusCantor     |
+| grafoNulo              |
+| grafoPetersenGen       |
+| grafoPetersen          |
+| grafoRueda             |
+| grafoThomson           |
+| imagenInversa          |
+| imagenRelacion         |
+| imagen                 |
+| interseccion           |
+| inversa                |
+| isomorfismos           |
+| isomorfos              |
+| longitudCamino         |
+| morfismos              |
+| orden                  |
+| productoCartesiano     |
+| radio                  |
+| rango                  |
+| secuenciaGrados        |
+| secuenciaGrafica       |
+| sonIncidentes          |
+| sumaArista             |
+| sumaGrafos             |
+| sumaVertice            |
+| tamaño                 |
+| todosCaminos           |
+| unionConjuntos         |
+| unitario               |
+| valenciaMax            |
+| valenciaMin            |
+| variaciones            |
+| verticesCamino         |
+| vertices               |
+|------------------------|
+
+* Funciones de Maxima
+
+** Construcción de grafos
+
+|------------------------------------+-----------------|
+| create_graph (vs,as)               | creaGrafo vs as |
+| copy_graph                         |                 |
+| circulant_graph                    |                 |
+| clebsch_graph                      |                 |
+| complement_graph                   |                 |
+| complete_bipartite_graph           |                 |
+| complete_graph                     |                 |
+| cycle_digraph                      |                 |
+| cycle_graph                        |                 |
+| cuboctahedron_graph                |                 |
+| cube_graph                         |                 |
+| dodecahedron_graph                 |                 |
+| empty_graph                        |                 |
+| flower_snark                       |                 |
+| from_adjacency_matrix              |                 |
+| frucht_graph                       |                 |
+| graph_product                      |                 |
+| graph_union                        |                 |
+| grid_graph                         |                 |
+| great_rhombicosidodecahedron_graph |                 |
+| great_rhombicuboctahedron_graph    |                 |
+| grotzch_graph                      |                 |
+| heawood_graph                      |                 |
+| icosahedron_graph                  |                 |
+| icosidodecahedron_graph            |                 |
+| induced_subgraph                   |                 |
+| line_graph                         |                 |
+| make_graph                         |                 |
+| mycielski_graph                    |                 |
+| new_graph                          |                 |
+| path_digraph                       |                 |
+| path_graph                         |                 |
+| petersen_graph                     |                 |
+| random_bipartite_graph             |                 |
+| random_digraph                     |                 |
+| random_regular_graph               |                 |
+| random_graph                       |                 |
+| random_graph1                      |                 |
+| random_network                     |                 |
+| random_tournament                  |                 |
+| random_tree                        |                 |
+| small_rhombicosidodecahedron_graph |                 |
+| small_rhombicuboctahedron_graph    |                 |
+| snub_cube_graph                    |                 |
+| snub_dodecahedron_graph            |                 |
+| truncated_cube_graph               |                 |
+| truncated_dodecahedron_graph       |                 |
+| truncated_icosahedron_graph        |                 |
+| truncated_tetrahedron_graph        |                 |
+| tutte_graph                        |                 |
+| underlying_graph                   |                 |
+| wheel_graph                        |                 |
+|------------------------------------+-----------------|
+
+** Propiedades de grafos
+
+|------------------------+----------------|
+| adjacency_matrix       |                |
+| average_degree         |                |
+| biconnected_components |                |
+| bipartition            |                |
+| chromatic_index        |                |
+| chromatic_number       |                |
+| clear_edge_weight      |                |
+| clear_vertex_label     |                |
+| connected_components   |                |
+| diameter               |                |
+| edge_coloring          |                |
+| degree_sequence        |                |
+| edge_connectivity      |                |
+| edges (g)              | aristas g      |
+| get_edge_weight        |                |
+| get_vertex_label       |                |
+| graph_charpoly         |                |
+| graph_center           |                |
+| graph_eigenvalues      |                |
+| graph_periphery        |                |
+| graph_size             |                |
+| graph_order            |                |
+| girth                  |                |
+| hamilton_cycle         |                |
+| hamilton_path          |                |
+| isomorphism            |                |
+| in_neighbors           |                |
+| is_biconnected         |                |
+| is_bipartite           |                |
+| is_connected           |                |
+| is_digraph             |                |
+| is_edge_in_graph       |                |
+| is_graph               |                |
+| is_graph_or_digraph    |                |
+| is_isomorphic          |                |
+| is_planar              |                |
+| is_sconnected          |                |
+| is_vertex_in_graph     |                |
+| is_tree                |                |
+| laplacian_matrix       |                |
+| max_clique             |                |
+| max_degree             |                |
+| max_flow               |                |
+| max_independent_set    |                |
+| max_matching           |                |
+| min_degree             |                |
+| min_edge_cut           |                |
+| min_vertex_cover       |                |
+| min_vertex_cut         |                |
+| minimum_spanning_tree  |                |
+| neighbors (v,g)        | adyacentes g v |
+| odd_girth              |                |
+| out_neighbors          |                |
+| planar_embedding       |                |
+| print_graph            |                |
+| radius                 |                |
+| set_edge_weight        |                |
+| set_vertex_label       |                |
+| shortest_path          |                |
+| shortest_weighted_path |                |
+| strong_components      |                |
+| topological_sort       |                |
+| vertex_connectivity    |                |
+| vertex_degree          |                |
+| vertex_distance        |                |
+| vertex_eccentricity    |                |
+| vertex_in_degree       |                |
+| vertex_out_degree      |                |
+| vertices (g)           | vertices g     |
+| vertex_coloring        |                |
+| wiener_index           |                |
+|------------------------+----------------|
+
+** Modificaciones de grafos
+
+|------------------|
+| add_edge         |
+| add_edges        |
+| add_vertex       |
+| add_vertices     |
+| connect_vertices |
+| contract_edge    |
+| remove_edge      |
+| remove_vertex    |
+|------------------|
+
+** Lectura y escritura de ficheros
+
+|----------------|
+| dimacs_export  |
+| dimacs_import  |
+| graph6_decode  |
+| graph6_encode  |
+| graph6_export  |
+| graph6_import  |
+| sparse6_decode |
+| sparse6_encode |
+| sparse6_export |
+| sparse6_import |
+|----------------|
+
+
+** Visualización
+
+|-------------------|
+| draw_graph        |
+| vertices_to_path  |
+| vertices_to_cycle |
+|-------------------|
+
