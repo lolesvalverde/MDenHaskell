@@ -54,6 +54,7 @@ import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
 
+import Test.Hspec
 import Test.QuickCheck
 import Data.List
 \end{code}
@@ -97,7 +98,6 @@ tamaño (grafoEstrella 4)      == 4
 tamaño grafoPetersen          == 15
 tamaño (grafoPetersenGen 2 5) == 4
 tamaño (completo 3)           == 3
-
 \end{sesion}
 
 \index{\texttt{tamaño}}
@@ -135,8 +135,8 @@ La función \texttt{(esLazo a)} se verifica si la arista \texttt{a} es un
 lazo. Por ejemplo,
 
 \begin{sesion}
-esLazo (1,2) == False
 esLazo (4,4) == True
+esLazo (1,2) == False
 \end{sesion}
 
 \index{\texttt{esLazo}}
@@ -155,8 +155,8 @@ La función \texttt{(entorno g v)} devuelve el entorno del vértice \texttt{v} e
 el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-entorno (grafoEstrella 5)       0  ==  [1,2,3,4,5]
-entorno (grafoEstrella 5)       1  ==  [0]
+entorno (grafoEstrella 5)       1  ==  [2,3,4,5,6]
+entorno (grafoEstrella 5)       2  ==  [1]
 entorno (bipartitoCompleto 2 4) 5  ==  [1,2]
 entorno grafoPetersen           4  ==  [1,2,9]
 \end{sesion}
@@ -176,9 +176,9 @@ La función \texttt{(grado g v)} devuelve el grado del vértice \texttt{v}
 en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-grado (grafoEstrella 5) 0   ==  5
-grado (grafoEstrella 5) 1   ==  1
-grado (grafoThomson)    6   ==  3
+grado (grafoEstrella 5) 1   ==  5
+grado (grafoEstrella 5) 2   ==  1
+grado grafoThomson      6   ==  3
 grado (grafoAmistad 2)  4   ==  2
 \end{sesion}
 
@@ -196,11 +196,10 @@ La función \texttt{(esAislado g v)} se verifica si el vértice \texttt{v}
 es aislado en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-esAislado (grafoEstrella 5)                      0  ==  False
+esAislado (grafoEstrella 5)                      1  ==  False
 esAislado (bipartitoCompleto 1 5)                4  ==  False
 esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 2  ==  False
 esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 3  ==  True
-
 \end{sesion}
 
 \index{\texttt{esAislado}}
@@ -217,10 +216,10 @@ La función \texttt{(esRegular g)} se verifica si el grafo \texttt{g} es regular
 Por ejemplo,
 
 \begin{sesion}
-esRegular (grafoEstrella 4)        ==  False
 esRegular (grafoCiclo 5)           ==  True
-esRegular (grafoRueda 7)           ==  False
 esRegular (bipartitoCompleto 2 2)  ==  True
+esRegular (grafoEstrella 4)        ==  False
+esRegular (grafoRueda 7)           ==  False
 \end{sesion}
 
 \index{\texttt{esRegular}}
@@ -263,7 +262,6 @@ La función \texttt{(valenciaMax g)} devuelve la valencia máxima del grafo
 valenciaMax (grafoEstrella 6) == 6
 valenciaMax (grafoCiclo 4)    == 2
 valenciaMax grafoPetersen     == 3
-valenciaMax ejGrafoD          == 3
 \end{sesion}
 
 \index{\texttt{valenciaMax}}
@@ -280,9 +278,8 @@ La función \texttt{(esSimple g)} se verifica si \texttt{g} es un grafo simple.
 
 \begin{sesion}
 esSimple (bipartitoCompleto 3 4)                 ==  True
-esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)])  ==  False
-esSimple (creaGrafo [1..3] [(1,2),(1,2),(2,3)])  ==  False
 esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)])  ==  True
+esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)])  ==  False
 \end{sesion}
 
 \index{\texttt{esSimple}}
@@ -305,7 +302,6 @@ del grafo \texttt{g} en orden decreciente.
 secuenciaGrados (grafoEstrella 6) == [6,1,1,1,1,1,1]
 secuenciaGrados (grafoCiclo 4)    == [2,2,2,2]
 secuenciaGrados grafoPetersen     == [3,3,3,3,3,3,3,3,3,3]
-secuenciaGrados ejGrafo           == [4,3,3,3,3]
 \end{sesion}
 
 \index{\texttt{secuenciaGrados}}
@@ -346,18 +342,18 @@ secuenciaGrafica ss = even (sum ss) && all p ss
 \end{code}
 
 \begin{definicion}
-  Dado un grafo $G = (V,A)$, diremos que $G' = (V',A')$ es un \textbf{subgrafo} de
-  $G$ si $V' \subseteq V$ y $A' \subseteq A$.
+  Dado un grafo $G = (V,A)$, diremos que $G' = (V',A')$ es un \textbf{subgrafo}
+  de $G$ si $V' \subseteq V$ y $A' \subseteq A$.
 \end{definicion}
 
-La función \texttt{(subgrafo g' g)} se verifica si \texttt{g'} es un subgrafo
-de \texttt{g}
+La función \texttt{(esSubgrafo g' g)} se verifica si \texttt{g'} es un
+subgrafo de \texttt{g}
 
 \begin{sesion}
-  subgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3) == True
-  subgrafo (grafoEstrella 4) (grafoEstrella 5)             == True
-  subgrafo (completo 5) (completo 4)                       == False
-  subgrafo (completo 3) (completo 4)                       == True
+esSubgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3) == True
+esSubgrafo (grafoEstrella 4) (grafoEstrella 5)             == True
+esSubgrafo (completo 5) (completo 4)                       == False
+esSubgrafo (completo 3) (completo 4)                       == True
 \end{sesion}
 
 \index{\texttt{esSubgrafo}}
@@ -392,19 +388,19 @@ esSubgrafoMax g' g =
 \end{code}
 
 \begin{definicion}
-  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \subset V$, o $A' \subset A$,
-  se dice que $G'$ es un \textbf{subgrafo propio} de $G$, y se denota por
-  $G' \subset G$.
+  Sean $G' = (V',A')$, $G = (V,A)$ dos grafos si $V' \subset V$, o
+  $A' \subset A$, se dice que $G'$ es un \textbf{subgrafo propio} de $G$, y se
+  denota por $G' \subset G$.
 \end{definicion}
 
 La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un
 subgrafo propio de \texttt{g}.
 
 \begin{sesion}
-esSubgrafoPropio (grafoRueda 4) (grafoRueda 3)              ==  True
+esSubgrafoPropio (grafoRueda 3) (grafoRueda 4)              ==  True
 esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)              ==  False
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..3] [(1,2)])  ==  True
-esSubgrafoPropio (grafoCiclo 3) (creaGrafo [1..2] [(1,2)])  ==  True
+esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
+esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  True
 \end{sesion}
 
 \index{\texttt{esSubgrafoPropio}}
@@ -426,16 +422,18 @@ Vamos a comprobar que se verifica el lema del apretón de manos utilizando la
 función \texttt{prop\_LemaApretonDeManos}.
 
 \begin{sesion}
-  ghci> quickCheck prop_LemaApretonDeManos
-  +++ OK, passed 100 tests.
+ghci> quickCheck prop_LemaApretonDeManos
++++ OK, passed 100 tests.
 \end{sesion}
 
 \index{\texttt{prop$\_$LemaApretonDeManos}}
 \begin{code}
-prop_LemaApretonDeManos :: Grafo Int -> Property
+prop_LemaApretonDeManos :: Grafo Int -> Bool
 prop_LemaApretonDeManos g =
-  esSimple g ==>
   even (length (filter odd [grado g v | v <- vertices g]))
+  where g' = creaGrafo (vertices g)
+                       [(x,y) | (x,y) <- aristas g, x /= y]
+
 \end{code}
 
 \begin{teorema}[Havel--Hakimi]
@@ -445,7 +443,7 @@ prop_LemaApretonDeManos g =
   grandes es gráfica.
 \end{teorema}
 
-Vamos a comprobar que se verifica el teorema de Havel-Hakimi utilizando la
+Vamos a comprobar que se verifica el teorema de Havel--Hakimi utilizando la
 función \texttt{prop\_HavelHakimi}.
 
 \begin{sesion}
@@ -699,3 +697,222 @@ complementario  g =
   where vs = vertices g
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Validación
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ignora{
+  Ejemplos para validación
+
+\begin{code}  
+ejemplosDefinicionesYPropiedades :: Spec
+ejemplosDefinicionesYPropiedades =
+  describe "DefinicionesYPropiedades" $ do
+    it "orden 1" $
+      orden (grafoCiclo 4) `shouldBe`
+      4
+    it "orden 2" $
+      orden (grafoEstrella 4) `shouldBe`
+      5
+    it "orden 3" $
+      orden grafoPetersen `shouldBe`
+      10
+    it "orden 4" $
+      orden (grafoPetersenGen 2 5) `shouldBe`
+      4
+    it "orden 5" $
+      orden (completo 3) `shouldBe`
+      3
+
+    it "tamaño 1" $
+      tamaño (grafoCiclo 4) `shouldBe`
+      4
+    it "tamaño 1" $
+      tamaño (grafoEstrella 4) `shouldBe` 
+      4
+    it "tamaño 1" $
+      tamaño grafoPetersen `shouldBe`
+      15
+    it "tamaño 1" $
+      tamaño (grafoPetersenGen 2 5) `shouldBe`
+      4
+    it "tamaño 1" $
+      tamaño (completo 3) `shouldBe`
+      3
+
+    it "sonIncidentes 1" $
+      sonIncidentes (1,2) (2,4) `shouldBe`
+      True
+    it "sonIncidentes 2" $
+      sonIncidentes (1,2) (3,4) `shouldBe`
+      False
+
+    it "esLazo 1" $
+      esLazo (1,2) `shouldBe`
+      False
+    it "esLazo 1" $
+      esLazo (4,4) `shouldBe`
+      True
+
+    it "entorno 1" $
+      entorno (grafoEstrella 5) 1 `shouldBe`
+      [2,3,4,5,6]
+    it "entorno 2" $
+      entorno (grafoEstrella 5) 2 `shouldBe`
+      [1]
+    it "entorno 3" $
+      entorno (bipartitoCompleto 2 4) 5 `shouldBe`
+      [1,2]
+    it "entorno 4" $
+      entorno grafoPetersen 4 `shouldBe`
+      [1,2,9]
+
+    it "grado 1" $
+      grado (grafoEstrella 5) 1 `shouldBe`
+      5
+    it "grado 2" $
+      grado (grafoEstrella 5) 2 `shouldBe`
+      1
+    it "grado 3" $
+      grado grafoThomson 6 `shouldBe`
+      3
+    it "grado 4" $
+      grado (grafoAmistad 2) 4 `shouldBe`
+      2
+
+    it "esAislado 1" $
+      esAislado (grafoEstrella 5) 1 `shouldBe`
+      False
+    it "esAislado 2" $
+      esAislado (bipartitoCompleto 1 5) 4 `shouldBe`
+      False
+    it "esAislado 3" $
+      esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 2 `shouldBe`
+      False
+    it "esAislado 4" $
+      esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 3  `shouldBe`
+      True
+
+    it "esRegular 1" $
+      esRegular (grafoCiclo 5) `shouldBe`
+      True
+    it "esRegular 2" $
+      esRegular (bipartitoCompleto 2 2) `shouldBe`
+      True
+    it "esRegular 3" $
+      esRegular (grafoEstrella 4) `shouldBe`
+      False
+    it "esRegular 4" $
+      esRegular (grafoRueda 7) `shouldBe`
+      False
+
+    it "valenciaMin 1" $
+      valenciaMin (grafoEstrella 6) `shouldBe`
+      1
+    it "valenciaMin 2" $
+      valenciaMin (grafoCiclo 4) `shouldBe`
+      2
+    it "valenciaMin 3" $
+      valenciaMin grafoPetersen `shouldBe`
+      3
+    it "valenciaMin 4" $
+      valenciaMin (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) `shouldBe`
+      0
+
+    it "valenciaMax 1" $
+      valenciaMax (grafoEstrella 6) `shouldBe`
+      6
+    it "valenciaMax 2" $
+      valenciaMax (grafoCiclo 4) `shouldBe`
+      2
+    it "valenciaMax 3" $
+      valenciaMax grafoPetersen `shouldBe`
+      3
+
+    it "esSimple 1" $
+      esSimple (bipartitoCompleto 3 4) `shouldBe`
+      True
+    it "esSimple 2" $
+      esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)]) `shouldBe`
+      True
+    it "esSimple 3" $
+      esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)]) `shouldBe`
+      False
+
+    it "secuenciaGrados 1" $
+      secuenciaGrados (grafoEstrella 6) `shouldBe`
+      [6,1,1,1,1,1,1]
+    it "secuenciaGrados 2" $
+      secuenciaGrados (grafoCiclo 4) `shouldBe`
+      [2,2,2,2]
+    it "secuenciaGrados 3" $
+      secuenciaGrados grafoPetersen `shouldBe`
+      [3,3,3,3,3,3,3,3,3,3]
+
+    it "secuenciaGrafica 1" $
+      secuenciaGrafica [2,2,2,2,2,2] `shouldBe`
+      True
+    it "secuenciaGrafica 2" $
+      secuenciaGrafica [6,1,1,1,1,1,1] `shouldBe`
+      True
+    it "secuenciaGrafica 3" $
+      secuenciaGrafica [6,1,1,1,1,1] `shouldBe`
+      False
+    it "secuenciaGrafica 4" $
+      secuenciaGrafica [5,4..1] `shouldBe`
+      False
+
+    it "esSubgrafo 1" $
+      esSubgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3) `shouldBe`
+      True
+    it "esSubgrafo 2" $
+      esSubgrafo (grafoEstrella 4) (grafoEstrella 5) `shouldBe`
+      True
+    it "esSubgrafo 3" $
+      esSubgrafo (completo 5) (completo 4) `shouldBe`
+      False
+    it "esSubgrafo 4" $
+      esSubgrafo (completo 3) (completo 4) `shouldBe`
+      True
+
+    it "esSubgrafoMax 1" $
+      esSubgrafoMax (grafoRueda 3) (grafoRueda 4) `shouldBe`
+      False
+    it "esSubgrafoMax 2" $
+      esSubgrafoMax (grafoCiclo 4) (grafoRueda 4) `shouldBe`
+      True
+    it "esSubgrafoMax 3" $
+      esSubgrafoMax (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3) `shouldBe`
+      True
+    it "esSubgrafoMax 4" $
+      esSubgrafoMax (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3) `shouldBe`
+      False
+
+    it "esSubgrafoPropio 1" $
+      esSubgrafoPropio (grafoRueda 3) (grafoRueda 4) `shouldBe`
+      True
+    it "esSubgrafoPropio 2" $
+      esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5) `shouldBe`
+      False
+    it "esSubgrafoPropio 3" $
+      esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3) `shouldBe`
+      True
+    it "esSubgrafoPropio 4" $
+      esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3) `shouldBe`
+      True
+      
+    it "Lema del apretón de manos" $ 
+      comprueba prop_LemaApretonDeManos
+
+    it "Teorema de Havel-Hakimi" $
+      comprueba prop_HavelHakimi
+
+comprueba :: Testable prop => prop -> Expectation
+comprueba p = 
+  quickCheckWith (stdArgs {chatty=False}) p `shouldReturn` ()
+  
+verificaDefinicionesYPropiedades :: IO ()
+verificaDefinicionesYPropiedades = 
+  hspec ejemplosDefinicionesYPropiedades
+\end{code}
+}
