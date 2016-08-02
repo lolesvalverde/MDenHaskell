@@ -29,7 +29,6 @@ En las definiciones del presente módulo se usarán las funciones \texttt{nub} y
 
 \ignora{
 \begin{code}
-import Test.Hspec
 import Data.List (nub, sort)
 \end{code}
 }
@@ -144,53 +143,3 @@ aristas :: Grafo a -> [(a,a)]
 aristas (G _ as) = as 
 \end{code}
 \end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Validación
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\ignora{
-  Ejemplos para validación
-
-\begin{code}  
-ejemplosGrafoConListaDeAristas :: Spec
-ejemplosGrafoConListaDeAristas =
-  describe "GrafoConListaDeAristas" $ do
-    it "vertices1" $
-      vertices ejGrafo `shouldBe` [1,2,3,4,5]
-
-    it "adyacentes1" $
-      adyacentes ejGrafo 4 `shouldBe` [1,3,5]
-
-    it "adyacentes2" $
-      adyacentes ejGrafo 3 `shouldBe` [2,4,5]
-
-    it "aristaEn1" $
-      (5,1) `aristaEn` ejGrafo `shouldBe` True
-
-    it "aristaEn2" $
-      (3,1) `aristaEn` ejGrafo `shouldBe` False
-
-    it "aristas1" $
-      aristas ejGrafo `shouldBe`
-        [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
-
-verificaGrafoConListaDeAristas :: IO ()
-verificaGrafoConListaDeAristas = 
-  hspec ejemplosGrafoConListaDeAristas
-\end{code}  
-
-La validación es
-
-\begin{sesion}
-ghci> verificaGrafoConListaDeAristas
-
-GrafoConListaDeAristas
-  vertices1
-  adyacentes1
-  adyacentes2
-
-Finished in 0.0002 seconds
-3 examples, 0 failures
-\end{sesion}
-}
