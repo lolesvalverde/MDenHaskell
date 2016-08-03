@@ -1,15 +1,19 @@
+A lo largo del trabajo, utilizaré la representación de conjuntos como
+listas ordenadas y sin duplicados, pensando en el trabajo que realizaré
+en secciones venideras.
+        
 En el módulo \texttt{ConjuntosConListasOrdenadasSinRepeticion} se   
 definen las funciones del TAD de los conjuntos dando su representación 
 como listas ordenadas sin repetición.
 
 \begin{code}
-module ConjuntosConListasOrdenadasSinRepeticion
-    (  Conj
-     , vacio      -- Conj a                         
-     , inserta    -- Eq a => a -> Conj a -> Conj a
-     , elimina    -- Eq a => a -> Conj a -> Conj a
-     , pertenece  -- Eq a => a -> Conj a -> Bool  
-     , esVacio    -- Conj a -> Bool                
+module ConjuntosConListasOrdenadasSinRepeticion (Conj
+     , vacio           -- Conj a                         
+     , inserta         -- Ord a => a -> Conj a -> Conj a
+     , elimina         -- Ord a => a -> Conj a -> Conj a
+     , pertenece       -- Ord a => Conj a -> a -> Bool  
+     , esVacio         -- Conj a -> Bool
+     , minimoElemento  -- Ord a => Conj a -> a
     ) where
 \end{code}
 
@@ -27,7 +31,7 @@ a los conjuntos como listas ordenadas sin repetición.
 
 \index{\texttt{Grafo}}
 \begin{code}
-newtype Conj a = Cj [a]
+data Conj a = Cj [a]
     deriving Eq
 \end{code}
 
@@ -99,14 +103,14 @@ es un elemento del conjunto \texttt{c}.
 \begin{sesion}
 ghci> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
 c1              ==  {0,1,2,3,5,7,9}
-pertenece 3 c1  ==  True
-pertenece 4 c1  ==  False
+pertenece c1 3  ==  True
+pertenece c1 4  ==  False
 \end{sesion}
 
 \index{\texttt{pertenece}}
 \begin{code}
-pertenece :: Ord a => a -> Conj a -> Bool 
-pertenece x (Cj ys) = elem x (takeWhile (<= x) ys)
+pertenece :: Ord a => Conj a -> a -> Bool 
+pertenece (Cj ys) x = elem x (takeWhile (<= x) ys)
 \end{code}
 
 \item \texttt{(elimina x c)} es el conjunto obtenido eliminando 
@@ -126,4 +130,22 @@ elimina x (Cj s) = Cj (elimina x s) where
    elimina x s@(y:ys) | x > y     = y : elimina x ys
                       | x < y     = s
                       | otherwise = ys
+\end{code}
+
+\item \texttt{(minimoElemento c)} devuelve el mínimo elemento del      
+conjunto \texttt{c}. Por ejemplo,
+
+\begin{sesion}
+ghci> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
+c1                 ==  {0,1,2,3,5,7,9}
+minimoElemento c1  ==  0
+ghci> let c2 = foldr inserta vacio (['a'..'e'] ++ ['A'..'E'])
+c2                 == {'A','B','C','D','E','a','b','c','d','e'}
+minimoElemento c2  == 'A'
+\end{sesion}
+
+\index{\texttt{minimoElemento}}
+\begin{code}
+minimoElemento :: Ord a => Conj a -> a
+minimoElemento (Cj (x:xs)) = x
 \end{code}

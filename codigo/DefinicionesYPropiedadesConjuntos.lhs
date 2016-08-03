@@ -1,20 +1,11 @@
+\subsection{Primeras definiciones}
+
 \ignora{
 \begin{code}
-module Conjuntos (conjuntoVacio
-                  , esVacio
-                  , esUnitario
-                  , esSubconjunto
-                  , esSubconjuntoPropio
-                  , complementario
-                  , cardinal
-                  , unionConjuntos
-                  , interseccion
-                  , productoCartesiano
-                  , combinaciones
-                  , variacionesR
-                  ) where
+module DefinicionesYOperacionesConjuntos (esUnitario) where
 
-import Test.QuickCheck
+import ConjuntosConListasOrdenadasSinRepeticion
+    
 import Data.List
 \end{code}
 }
@@ -25,6 +16,9 @@ import Data.List
   que un conjunto esté bien definido debe ser posible discernir si un objeto
   arbitrario está o no en él.
 \end{definicion}
+
+Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
+En caso  contrario escribiremos $a \not \in A$.
 
 \comentario{Comentar la consecuencia sobre los tipos de la últma frase de la
   definición de conjunto.}
@@ -62,57 +56,12 @@ forma algo más precisa, podemos dar la siguiente definición:
   tratamos.
 \end{definicion}
 
-\subsection{Pertenencia a un conjunto}
-
-Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
-En caso  contrario escribiremos $a \not \in A$.
-
-La función \texttt{(pertenece x xs)} se verifica si \texttt{x}
-pertenece al conjunto \texttt{xs}. Por elemplo,
-
-\begin{sesion}
-9   `pertenece` [1..6]  ==  False
-'c' `pertenece` "Roca"  ==  True
-\end{sesion}
-
-\begin{code}
-pertenece :: Eq a => a -> [a] -> Bool
-pertenece = elem
-\end{code}
-
-\subsection{Conjunto vacío}
-
-\begin{definicion}
-  El conjunto que carece de elementos se denomina \textbf{conjunto vacío}
-  y se denota por $\emptyset$.
-\end{definicion}
-
-La función \texttt{conjuntoVacio} devuelve el conjunto vacío y la
-función \texttt{(esVacio xs)} se verifica si el conjunto
-\texttt{xs} es vacío. Por ejemplo,
-
-\begin{sesion}
-esVacio [1..6]         ==  False
-esVacio [6..1]         ==  True
-esVacio conjuntoVacio  ==  True
-\end{sesion}
-
-\index{\texttt{conjuntoVacio}}
-\index{\texttt{esVacio}}    
-\begin{code}
-conjuntoVacio :: [a]
-conjuntoVacio = []
-
-esVacio :: [a] -> Bool
-esVacio = null
-\end{code}
-
 \subsection{Conjunto unitario}
 
 \begin{definicion}
   Un conjunto con un único elemento se denomina \textbf{unitario}.
 \end{definicion}
-    
+   
 \begin{nota}
   Notemos que, si $X=\{x\}$ es un conjunto unitario, debemos distinguir 
   entre el conjunto $X$ y el elemento $x$.
@@ -122,19 +71,20 @@ La función \texttt{(esUnitario xs)} se verifica si el conjunto
 \texttt{xs} es unitario.
 
 \begin{sesion}
-esUnitario [5]    ==  True
-esUnitario [5,3]  ==  False
-esUnitario [5,5]  ==  True
+ghci> let c1 = foldr inserta vacio (take 10 (repeat 5))
+esUnitario c1  ==  True
+ghci> let c2 = foldr inserta vacio "valverde"
+esUnitario c2  ==  False
+ghci> let c3 = foldr inserta vacio "coco"
+esUnitario c2  ==  False
 \end{sesion}
 
 \index{\texttt{unitario}}
 \begin{code}
-esUnitario :: Eq a => [a] -> Bool
-esUnitario xs = length (nub xs) == 1
+esUnitario :: Ord a => Conj a -> Bool
+esUnitario c | esVacio c = False              
+             | otherwise = esVacio (elimina (minimoElemento c) c)
 \end{code}
-
-\comentario{En la definición de esUnitario se puede eliminar nub si se supone
-  que trabajamos con conjuntos.}
 
 \subsection{Subconjuntos}
 
@@ -157,7 +107,7 @@ conjuntoVacio `esSubconjunto` [1,2]         ==  True
 
 \index{\texttt{esSubconjunto}}
 \begin{code}
-esSubconjunto :: Eq a => [a] -> [a] -> Bool
+esSubconjunto :: Ord a => [a] -> [a] -> Bool
 esSubconjunto xs ys = all (`pertenece` ys) xs
 \end{code}
 
@@ -179,9 +129,10 @@ conjuntosIguales [5,2] [3,2,4]  ==  False
 
 \index{\texttt{conjuntosIguales}}
 \begin{code}
-conjuntosIguales :: Eq a => [a] -> [a] -> Bool
-conjuntosIguales xs ys =
-    esSubconjunto xs ys && esSubconjunto ys xs
+conjuntosIguales :: Ord a => [a] -> [a] -> Bool
+conjuntosIguales = undefined
+--conjuntosIguales xs ys =
+--    esSubconjunto xs ys && esSubconjunto ys xs
 \end{code}
 
 \subsection{Subconjuntos propios}
@@ -201,9 +152,9 @@ un subconjunto propio de \texttt{ys}. Por ejemplo,
 
 \index{\texttt{esSubconjuntoPropio}}
 \begin{code}
-esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
-esSubconjuntoPropio xs ys =
-  xs `esSubconjunto` ys && not (conjuntosIguales xs ys) 
+--esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
+--esSubconjuntoPropio xs ys =
+--  xs `esSubconjunto` ys && not (conjuntosIguales xs ys) 
 \end{code}
 
 \subsection{Complementario de un conjunto}
@@ -381,4 +332,3 @@ variacionesR 0 _  = [[]]
 variacionesR k us =
     [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
-
