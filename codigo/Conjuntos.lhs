@@ -1,38 +1,71 @@
-A la hora de trabajar con conjuntos en Haskell, lo haremos con su
-representación como listas; por ello, utilizaremos el paquete
-\texttt{Data.List}.
+\subsection{El TAD de los conjuntos}
 
-\comentario{Comentar las distintas opciones de representación de conjuntos del
-  \href{https://www.cs.us.es/~jalonso/cursos/i1m/temas/tema-17.html}
-       {tema 17 de I1M}}
+En la presente sección, se defininen las operaciones básicas necesarias
+para trabajar con conjuntos en un lenguaje funcional. En nuestro caso, 
+el lenguaje que utilizaremos será Haskell. Daremos la signatura del Tipo
+Abstracto de Dato (TAD) de los conjuntos y daremos algunos ejemplos de 
+posibles representaciones de conjuntos con las que podríamos trabajar.
 
-\comentario{Comentar la representación elegida de conjunto.}
+A continuación, presentamos las operaciones definidas en el TAD de los 
+conjuntos:
 
-\comentario{Decidir si usar la misma representación que en
-  GrafoConListaDeAristas.lhs (listas ordenadas sin repeticiones))}
-     
-\comentario{Comentar la posibilidad de usar la
-  \href{https://www.cs.us.es/~jalonso/cursos/i1m/doc/manual-Data.Set.html}
-       {librería de conjuntos de Haskell (Data.Set)}}
-
-\ignora{
 \begin{code}
-module Conjuntos (  pertenece
-                  , conjuntoVacio
-                  , esVacio
-                  , esUnitario
-                  , esSubconjunto
-                  , conjuntosIguales
-                  , esSubconjuntoPropio
-                  , productoCartesiano
-                  , combinaciones
-                  , variacionesR
-                  ) where
-  
-import Test.QuickCheck
-import Data.List
+vacio      :: Cj a                         
+inserta    :: Eq a => a -> Cj a -> Cj a
+elimina    :: Eq a => a -> Cj a -> Cj a
+pertenece  :: Eq a => a -> Cj a -> Bool  
+esVacio    :: Cj a -> Bool
 \end{code}
-}
+
+donde,
+
+\begin{itemize}
+\item \texttt{(vacio)} es el conjunto vacío.
+\item \texttt{(inserta x c)} es el conjunto obtenido añadiendo el      
+      elemento \texttt{x} al conjunto \texttt{c}.
+\item \texttt{(elimina x c)} es el conjunto obtenido eliminando el
+      elemento \texttt{x} del conjunto \texttt{c}.
+\item \texttt{(pertenece x c)} se verifica si \texttt{x} pertenece al
+      conjunto \texttt{c}.
+\item \texttt{(esVacio c)} se verifica si \texttt{c} no tiene ningún
+      elemento.
+\end{itemize}
+
+Hemos de tener en cuenta que a la hora de crear un nuevo tipo de dato 
+con el que representar a los conjuntos, este debe ser compatible con 
+la entidad matemática que representa.
+
+Estas son algunas de las posibles representaciones con las que podríamos
+trabajar con conjuntos en Haskell:
+
+\begin{itemize}
+  \item en primer lugar, podemos trabajar con la librería  
+        \texttt{Data.Set}; en este caso, la implementación del tipo de 
+        dato \texttt{Set} está basado en árboles binarios balanceados.
+  \item Por otra parte, podemos definir un nuevo tipo \texttt{Cj xs} con  
+        el que trabajar con conjuntos como listas no ordenadas con        
+        duplicados, como listas no ordenadas sin duplicados o como        
+        listas ordenadas sin duplicados.
+  \item Otra opción sería trabajar directamente con conjuntos como  
+        listas, para ello, debemos cuidar que las listas no tengan        
+        duplicados.
+  \item Los conjuntos que sólo contienen números (de tipo \texttt{Int)} 
+        entre $0$ y $n-1$, se pueden representar como números binarios 
+        con $n$ bits donde el bit $i (0 ≤ i < n)$ es $1$ syss el número
+        $i$ pertenece al conjunto.
+\end{itemize}
+
+A lo largo del trabajo, utilizaré la representación de conjuntos como
+listas ordenadas y sin duplicados, pensando en el trabajo que realizaré
+en secciones venideras.
+
+\subsection{Conjuntos como listas ordenadas sin repetición}
+
+\entrada{ConjuntosConListasOrdenadasSinRepeticion}
+
+\begin{comentario}
+Falta modificar todas las definiciones en las que intervengan conjuntos
+\end{comentario}
 
 \subsection{Primeras definiciones}
 
