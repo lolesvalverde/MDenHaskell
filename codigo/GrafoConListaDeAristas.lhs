@@ -14,6 +14,8 @@ ambas listas se excluye la posibilidad de repeticiones).
 \comentario{Comentar las ventajas de usar listas en lugar de vectores.}
 
 \begin{code}
+{-# LANGUAGE DeriveGeneric #-}
+
 module GrafoConListaDeAristas 
     ( Grafo
     , creaGrafo  -- [a] -> [(a,a)] -> Grafo a
@@ -30,6 +32,8 @@ En las definiciones del presente módulo se usarán las funciones \texttt{nub} y
 \ignora{
 \begin{code}
 import Data.List (nub, sort)
+import Test.DocTest
+import Text.PrettyPrint.GenericPretty
 \end{code}
 }
 
@@ -40,7 +44,9 @@ un grafo a partir de la lista de sus vértices (donde los vértices son de tipo
 \index{\texttt{Grafo}}
 \begin{code}
 data Grafo a = G [a] [(a,a)]
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance (Out a) => Out (Grafo a)
 \end{code}
 
 Las funciones básicas que definiremos a partir de este tipo coincidirán con las
@@ -53,6 +59,9 @@ indicadas en el TAD de los grafos.
 
 \index{\texttt{creaGrafo}} 
 \begin{code}
+-- | Ejemplo
+-- >>> creaGrafo [1..5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
+-- G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
 creaGrafo :: Ord a => [a] -> [(a,a)] -> Grafo a
 creaGrafo vs as =
   G (sort vs) (nub (sort [parOrdenado a | a <- as]))
@@ -74,10 +83,7 @@ parOrdenado (x,y) | x <= y    = (x,y)
 \end{tikzpicture}
 \end{center}
 
-\begin{sesion}
-ghci> ejGrafo
- G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
-\end{sesion}
+Los ejemplos usarán el siguiente grafo
 
 \begin{code}
 ejGrafo :: Grafo Int
@@ -87,28 +93,26 @@ ejGrafo = creaGrafo [1..5]
 \end{ejemplo}
 
 \item \texttt{(vertices g)} es la lista de los vértices del grafo \texttt{g}.
-  Por ejemplo,
  
-\begin{sesion}
-vertices ejGrafo   ==  [1,2,3,4,5]
-\end{sesion}
-
 \index{\texttt{vertices}}
 \begin{code}
+-- | Ejemplo
+-- >>> vertices ejGrafo
+-- [1,2,3,4,5]
 vertices :: Grafo a -> [a]
 vertices (G vs _) = vs
 \end{code}
 
 \item \texttt{(adyacentes g v)} es la lista de los vértices adyacentes 
-  al vértice \texttt{v} en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-adyacentes ejGrafo 4  ==  [1,3,5]
-adyacentes ejGrafo 3  ==  [2,4,5]
-\end{sesion}
+  al vértice \texttt{v} en el grafo \texttt{g}. 
 
 \index{\texttt{adyacentes}}
 \begin{code}
+-- | Ejemplos
+-- >>> adyacentes ejGrafo 4
+-- [1,3,5]
+-- >>> adyacentes ejGrafo 3
+-- [2,4,5]
 adyacentes :: Eq a => Grafo a -> a -> [a]
 adyacentes (G _ as) v =
   [u | (u,x) <- as, x == v] ++
@@ -116,29 +120,26 @@ adyacentes (G _ as) v =
 \end{code}
 
 \item \texttt{(aristaEn a g)} se verifica si \texttt{a} es una arista del grafo
-  \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-(5,1) `aristaEn` ejGrafo  ==  True
-(3,1) `aristaEn` ejGrafo  ==  False
-\end{sesion}
+  \texttt{g}.
 
 \index{\texttt{aristaEn}}
 \begin{code}
+-- | Ejemplos
+-- >>> (5,1) `aristaEn` ejGrafo
+-- True
+-- >>> (3,1) `aristaEn` ejGrafo
+-- False
 aristaEn :: Ord a => (a,a) -> Grafo a -> Bool
 aristaEn a (G _ as) = parOrdenado a `elem` as
 \end{code}
 
 \item \texttt{(aristas g)} es la lista de las aristas del grafo \texttt{g}. 
-  Por ejemplo,
-
-\begin{sesion}
-ghci> aristas ejGrafo
-[(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
-\end{sesion}
 
 \index{\texttt{aristas}}
 \begin{code}
+-- | Ejemplo
+-- >>> aristas ejGrafo
+-- [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
 aristas :: Grafo a -> [(a,a)]
 aristas (G _ as) = as 
 \end{code}

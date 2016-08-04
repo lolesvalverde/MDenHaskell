@@ -42,40 +42,15 @@ module EjemplosGrafos ( grafoNulo
                       , grafoMoebiusCantor
                       ) where
 
-import GrafoConListaDeAristas
 import Data.List
+import Test.DocTest
+import Text.PrettyPrint.GenericPretty (pp)
+
+import GrafoConListaDeAristas
 \end{code}
 }
 
-\ignora{
-En primer lugar, presentamos una batería de grafos construidos a mano con la
-función \texttt{creaGrafo} del TAD que hemos introducido en la sección
-anterior.
-
-\begin{code}
-g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12 :: Grafo Int
-g1  = creaGrafo [1..5] [(1,2),(1,3),(1,5),
-                        (2,4),(2,5),
-                        (3,4),(3,5),
-                        (4,5)]
-g2  = creaGrafo [1..5] [(1,2),(1,3),(1,5),
-                        (2,4),(2,5),
-                        (4,3),(4,5)]
-g3  = creaGrafo [1..3] [(1,2),(2,2),(3,1),(3,2)]
-g4  = creaGrafo [1..4] [(1,2),(2,1)]
-g5  = creaGrafo [1..1] [(1,1)]
-g6  = creaGrafo [1..4] [(1,3),(3,1),(3,3),(4,2)]
-g7  = creaGrafo [1..4] [(1,3)]
-g8  = creaGrafo [1..5] [(1,1),(1,2),(1,3),(2,4),(3,1),
-                       (4,1),(4,2),(4,4),(4,5)]
-g9  = creaGrafo [1..5] [(4,1),(4,3),(5,1)]
-g10 = creaGrafo [1..3] [(1,2),(1,3),(2,3),(3,3)]
-g11 = creaGrafo [1..3] [(1,2),(1,3),(2,3),(3,3)]
-g12 = creaGrafo [1..4] [(1,1),(1,2),(3,3)]
-\end{code}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO NULO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Grafo nulo}
 
 \begin{definicion}
   Un \textbf{grafo nulo} es un grafo que no tiene ni vértices ni aristas.
@@ -83,32 +58,27 @@ g12 = creaGrafo [1..4] [(1,1),(1,2),(3,3)]
 
 La función \texttt{(grafoNulo)} devuelve un grafo nulo.
 
-\begin{sesion}
-grafoNulo == G [] []
-\end{sesion}
-
 \index{\texttt{grafoNulo}}
 \begin{code}
 grafoNulo :: Ord a => Grafo a
 grafoNulo = creaGrafo [] []
 \end{code}
 
-La función \texttt{(esGrafoNulo g)} se verifica si \texttt{g} es un grafo nulo
-
-\begin{sesion}
-esGrafoNulo grafoNulo                  ==  True
-esGrafoNulo (creaGrafo [] [(1,2)])     ==  False
-esGrafoNulo (creaGrafo [1,2] [(1,2)])  ==  False
-\end{sesion}
+La función \texttt{(esGrafoNulo g)} se verifica si \texttt{g} es un grafo nulo.
 
 \index{\texttt{grafoNulo}}
 \begin{code}
+-- | Ejemplos
+-- >>> esGrafoNulo grafoNulo
+-- True
+-- >>> esGrafoNulo (creaGrafo [] [(1,2)])
+-- False
+-- >>> esGrafoNulo (creaGrafo [1,2] [(1,2)])
+-- False
 esGrafoNulo :: Grafo a -> Bool
 esGrafoNulo g =
   null (vertices g) && null (aristas g)
 \end{code}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO CICLO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Grafo ciclo}
 
@@ -122,13 +92,7 @@ esGrafoNulo g =
   \allowbreak(n-1,0)\}$
 \end{definicion}
 
-La función \texttt{(grafoCiclo n)} nos genera el ciclo de orden \texttt{n}. Por
-ejemplo, 
-
-\begin{sesion}
-ghci> grafoCiclo 5
-G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
-\end{sesion}
+La función \texttt{(grafoCiclo n)} nos genera el ciclo de orden \texttt{n}. 
 
 \begin{center}
 \begin{tikzpicture}
@@ -141,6 +105,9 @@ G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
 
 \index{\texttt{grafoCiclo}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 5
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
 grafoCiclo :: Int -> Grafo Int
 grafoCiclo 0 = grafoNulo
 grafoCiclo 1 = creaGrafo [1] []              
@@ -148,9 +115,8 @@ grafoCiclo n = creaGrafo [1..n]
                          ([(u,u+1) | u <- [1..n-1]] ++ [(n,1)])
 \end{code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE LA AMISTAD %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{Grafo de la amistad}
+
 \begin{definicion}
   Un \href{https://es.wikipedia.org/wiki/Grafo_de_la_amistad}
           {\textbf{grafo de la amistad}}\
@@ -188,11 +154,6 @@ $n$.  Por ejemplo,
 \end{tikzpicture}
 \end{center}
 
-\begin{sesion}
-ghci> grafoAmistad 2
-creaGrafo [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5),(2,3),(4,5)]
-\end{sesion}
-
 \begin{center}
 \begin{tikzpicture} 
    \tikzstyle{every node} = [draw, 
@@ -219,13 +180,16 @@ creaGrafo [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5),(2,3),(4,5)]
 \end{tikzpicture}
 \end{center}
 
-\begin{sesion}
-ghci> grafoAmistad 3
-G [1,2,3,4,5,6,7] [(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(2,3),(4,5),(6,7)]
-\end{sesion}
-
 \index{\texttt{grafoAmistad}}
 \begin{code}
+-- | Ejemplos
+-- >>> pp $ grafoAmistad 2
+-- G [1,2,3,4,5]
+--   [(1, 2),(1, 3),(1, 4),(1, 5),(2, 3),(4, 5)]
+-- >>> pp $ grafoAmistad 3
+-- G [1,2,3,4,5,6,7]
+--   [(1, 2),(1, 3),(1, 4),(1, 5),(1, 6),(1, 7),(2, 3),
+--    (4, 5),(6, 7)]
 grafoAmistad :: Int -> Grafo Int 
 grafoAmistad n =
   creaGrafo [1..2*n+1]
@@ -233,8 +197,8 @@ grafoAmistad n =
              [(a,b) | (a,b) <-zip [2,4..2*n] [3,5..2*n+1]])
 \end{code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO COMPLETO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Grafo completo}
+
 \begin{definicion}
   El \href{https://es.wikipedia.org/wiki/Grafo_completo}
           {\textbf{grafo completo},}\
@@ -247,11 +211,6 @@ grafoAmistad n =
 La  función \texttt{(completo n)} nos genera el grafo completo de orden
 $n$. Por ejemplo,
 
-\begin{sesion}
-ghci> completo 4
-G [1,2,3,4] [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
-\end{sesion}
-
 \begin{center}
 \begin{tikzpicture}
   \SetVertexNoLabel
@@ -263,13 +222,14 @@ G [1,2,3,4] [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
 
 \index{\texttt{completo}}
 \begin{code}
+-- | Ejemplo
+-- >>> completo 4
+-- G [1,2,3,4] [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
 completo :: Int -> Grafo Int
 completo n =
   creaGrafo [1..n]
             [(a,b) | a <- [1..n], b <- [1..a-1]]
 \end{code}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO BIPARTITO COMPLETO %%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Grafo bipartito}
 
@@ -295,11 +255,6 @@ completo n =
 La función \texttt{(bipartitoCompleto n m)} nos genera el grafo bipartito
 $K_{n,m}$. Por ejemplo,
 
-\begin{sesion}
-ghci> bipartitoCompleto 2 3
-G [1,2,3,4,5] [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5)]
-\end{sesion}
-
 \begin{center}
 \begin{tikzpicture}
   \SetVertexNoLabel
@@ -312,15 +267,17 @@ G [1,2,3,4,5] [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5)]
 
 \index{\texttt{bipartitoCompleto}}
 \begin{code}
+-- | Ejemplo
+-- >>> bipartitoCompleto 2 3
+-- G [1,2,3,4,5] [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5)]
 bipartitoCompleto :: Int -> Int -> Grafo Int 
 bipartitoCompleto n m =
   creaGrafo [1..n+m]
             [(a,b) | a <- [1..n], b <- [n+1..n+m]]
 \end{code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO ESTRELLA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{Grafo estrella}
+
 \begin{definicion}
   Una \href{https://en.wikipedia.org/wiki/Star_(graph_theory)}
            {\textbf{estrella}}\
@@ -331,12 +288,7 @@ bipartitoCompleto n m =
 \end{definicion}
 
 La función \texttt{(grafoEstrella n)} crea un grafo circulante a partir de su
-orden $n$. Por ejemplo,
-
-\begin{sesion}
-ghci> grafoEstrella 5
-G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6)]
-\end{sesion}
+orden $n$. 
 
 \begin{center}
 \begin{tikzpicture}
@@ -349,11 +301,12 @@ G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6)]
 
 \index{\texttt{grafoEstrella}}
 \begin{code}
+-- | Ejemplo
+-- >>> grafoEstrella 5
+-- G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6)]
 grafoEstrella :: Int -> Grafo Int
 grafoEstrella = bipartitoCompleto 1 
 \end{code}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO RUEDA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Grafo rueda}
 
@@ -367,12 +320,7 @@ grafoEstrella = bipartitoCompleto 1
 \end{definicion}
 
 La función \texttt{(grafoRueda n)} crea un grafo rueda a partir de su
-orden \texttt{n}. Por ejemplo,
-
-\begin{sesion}
-ghci> grafoRueda 6
-G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6),(2,3),(2,6),(3,4),(4,5),(5,6)]
-\end{sesion}
+orden \texttt{n}. 
 
 \begin{center}
 \begin{tikzpicture}
@@ -385,14 +333,17 @@ G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6),(2,3),(2,6),(3,4),(4,5),(5,6)]
 
 \index{\texttt{grafoRueda}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoRueda 6
+-- G [1,2,3,4,5,6]
+--   [(1, 2),(1, 3),(1, 4),(1, 5),(1, 6),(2, 3),(2, 6),
+--    (3, 4),(4, 5),(5, 6)]
 grafoRueda :: Int -> Grafo Int 
 grafoRueda n =
   creaGrafo [1..n]
             ([(1,a) | a <- [2..n]] ++
              [(a,b) | (a,b) <- zip (2:[2..n-1]) (3:n:[4..n])])
 \end{code}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO CIRCULANTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Grafo circulante}
 
@@ -409,12 +360,6 @@ grafoRueda n =
 La función \texttt{(grafoCirculante n ss)} crea un grafo circulante a partir de
 su orden \texttt{n} y de la lista de sus saltos \texttt{ss}. Por ejemplo,
 
-\begin{sesion}
-ghci> grafoCirculante 6 [1,2]
-G [1,2,3,4,5,6] [(1,2),(1,3),(1,5),(1,6),(2,3),(2,4),
-                 (2,6),(3,4),(3,5),(4,5),(4,6),(5,6)]
-\end{sesion}
-
 \begin{center}
 \begin{tikzpicture}
   \SetVertexNoLabel
@@ -426,6 +371,11 @@ G [1,2,3,4,5,6] [(1,2),(1,3),(1,5),(1,6),(2,3),(2,4),
 
 \index{\texttt{grafoCirculante}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoCirculante 6 [1,2]
+-- G [1,2,3,4,5,6]
+--   [(1, 2),(1, 3),(1, 5),(1, 6),(2, 3),(2, 4),(2, 6),
+--    (3, 4),(3, 5),(4, 5),(4, 6),(5, 6)]
 grafoCirculante :: Int -> [Int] -> Grafo Int
 grafoCirculante n ss =
   creaGrafo [1..n]
@@ -437,8 +387,7 @@ grafoCirculante n ss =
         fun a b = if mod a b == 0 then b else mod a b
 \end{code}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE PETERSEN GENERALIZADO %%%%%%%%%%%%%%%%%%%%%%
+\subsection{Grafo de Petersen generalizado}
 
 El \href{https://en.wikipedia.org/wiki/Generalized_Petersen_graph}
    {\textbf{grafo de Petersen generalizado}}\
@@ -462,14 +411,13 @@ generalizado $GP_{n,k}$.
 \end{tikzpicture}
 \end{center}
 
-\begin{sesion}
-ghci> grafoPetersenGen 4 2
-G [1,2,3,4,5,6,7,8] [(1,3),(1,5),(2,4),(2,6),(3,7),
-                     (4,8),(5,6),(5,8),(6,7),(7,8)]
-\end{sesion}
-
 \index{\texttt{grafoPetersenGen}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoPetersenGen 4 2
+-- G [1,2,3,4,5,6,7,8]
+--   [(1, 3),(1, 5),(2, 4),(2, 6),(3, 7),(4, 8),(5, 6),
+--    (5, 8),(6, 7),(7, 8)]
 grafoPetersenGen :: Int -> Int -> Grafo Int
 grafoPetersenGen n k =
   creaGrafo [1..2*n]
@@ -481,7 +429,7 @@ grafoPetersenGen n k =
 
 \subsection{Otros grafos importantes}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE THOMSON %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Grafo de Thomson}
 
 \begin{definicion}
   El grafo bipartito completo $K_{3,3}$ es conocido como el \textbf{grafo de
@@ -508,19 +456,18 @@ grafoPetersenGen n k =
 
 La función \texttt{(grafoThomson)} genera el grafo de Thomson.
 
-\begin{sesion}
-ghci> grafoThomson
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
-\end{sesion}
-
 \index{\texttt{grafoThomson}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoThomson
+-- G [1,2,3,4,5,6]
+--   [(1, 4),(1, 5),(1, 6),(2, 4),(2, 5),(2, 6),(3, 4),
+--    (3, 5),(3, 6)]
 grafoThomson :: Grafo Int
 grafoThomson = bipartitoCompleto 3 3
 \end{code}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE PETERSEN %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Grafo de Petersen}
 
 El \href{https://en.wikipedia.org/wiki/Petersen_graph}
           {\textbf{grafo de Petersen}}\
@@ -547,23 +494,22 @@ ejemplo y como contraejemplo en muchos problemas de la Teoría de grafos.
 
 La función \texttt{grafoPetersen} devuelve el grafo de Petersen.
 
-\begin{sesion}
-ghci> grafoPetersen
-G [1,2,3,4,5,6,7,8,9,10]
-  [(1,3),(1,4),(1,6),(2,4),(2,5),(2,7),(3,5),(3,8),
-   (4,9),(5,10),(6,7),(6,10),(7,8),(8,9),(9,10)]
-\end{sesion}
-
 \index{\texttt{grafoPetersen}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoPetersen
+-- G [1,2,3,4,5,6,7,8,9,10]
+--   [(1, 3),(1, 4),(1, 6),(2, 4),(2, 5),(2, 7),(3, 5),
+--    (3, 8),(4, 9),(5, 10),(6, 7),(6, 10),(7, 8),(8, 9),
+--    (9, 10)]
 grafoPetersen :: Grafo Int
 grafoPetersen = grafoPetersenGen 5 2
 \end{code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% GRAFO DE MOËBIUS-CANTOR %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Grafo de Moëbius--Cantor}
 
 El \href{https://en.wikipedia.org/wiki/Moëbius-Kantor_graph}
-        {\textbf{grafo de Moëbius-Cantor}}\
+        {\textbf{grafo de Moëbius--Cantor}}\
         \footnote{\url{https://en.wikipedia.org/wiki/Moëbius-Kantor_graph}} 
 se define como el grafo de Petersen generalizado $GP_{8,3}$; es decir,
 está formado por los vértices de un octógono, conectados a los vértices
@@ -589,18 +535,17 @@ de muchos problemas de la Teoría de Grafos.
 \end{tikzpicture}
 \end{center}
 
-La función \texttt{grafoMoebiusCantor} genera el grafo de Moëbius-Cantor
-
-\begin{sesion}
-ghci> grafoMoebiusCantor
-G [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-   [(1,4),(1,6),(1,9),(2,5),(2,7),(2,10),(3,6),(3,8),(3,11),(4,7),(4,12),
-     (5,8),(5,13),(6,14),(7,15),(8,16),(9,10),(9,16),(10,11),(11,12),
-     (12,13),(13,14),(14,15),(15,16)]
-\end{sesion}
+La función \texttt{grafoMoebiusCantor} genera el grafo de Moëbius--Cantor
 
 \index{\texttt{grafoMoebiusCantor}}
 \begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoMoebiusCantor
+-- G [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+--   [(1, 4),(1, 6),(1, 9),(2, 5),(2, 7),(2, 10),(3, 6),
+--    (3, 8),(3, 11),(4, 7),(4, 12),(5, 8),(5, 13),(6, 14),
+--    (7, 15),(8, 16),(9, 10),(9, 16),(10, 11),(11, 12),
+--    (12, 13),(13, 14),(14, 15),(15, 16)]
 grafoMoebiusCantor :: Grafo Int
 grafoMoebiusCantor = grafoPetersenGen 8 3
 \end{code}

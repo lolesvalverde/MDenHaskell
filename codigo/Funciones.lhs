@@ -15,10 +15,10 @@ module Funciones ( esFuncion
 import Conjuntos
 import Relaciones
 
-import Test.DocTest       
-import Text.PrettyPrint.GenericPretty (pp)
-import Test.QuickCheck
 import Data.List
+import Test.DocTest       
+import Test.QuickCheck
+import Text.PrettyPrint.GenericPretty (pp)
 \end{code}
 }
 
