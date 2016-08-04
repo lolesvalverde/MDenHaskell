@@ -15,6 +15,7 @@ module Conjuntos (  conjuntoVacio
                   , variacionesR
                   ) where
 
+import Test.DocTest
 import Test.QuickCheck
 import Data.List
 \end{code}
@@ -69,14 +70,14 @@ Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$.
 En caso  contrario escribiremos $a \not \in A$.
 
 La función \texttt{(pertenece x xs)} se verifica si \texttt{x}
-pertenece al conjunto \texttt{xs}. Por elemplo,
-
-\begin{sesion}
-9   `pertenece` [1..6]  ==  False
-'c' `pertenece` "Roca"  ==  True
-\end{sesion}
+pertenece al conjunto \texttt{xs}. 
 
 \begin{code}
+-- | Ejemplos
+-- >>> 9 `pertenece` [1..6]
+-- False
+-- >>> 'c' `pertenece` "Roca"
+-- True
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece = elem
 \end{code}
@@ -90,17 +91,17 @@ pertenece = elem
 
 La función \texttt{conjuntoVacio} devuelve el conjunto vacío y la
 función \texttt{(esVacio xs)} se verifica si el conjunto
-\texttt{xs} es vacío. Por ejemplo,
+\texttt{xs} es vacío. 
 
-\begin{sesion}
-esVacio [1..6]         ==  False
-esVacio [6..1]         ==  True
-esVacio conjuntoVacio  ==  True
-\end{sesion}
 
 \index{\texttt{conjuntoVacio}}
 \index{\texttt{esVacio}}    
 \begin{code}
+-- | Ejemplos
+-- >>> esVacio [1..6]
+-- False
+-- >>> esVacio conjuntoVacio
+-- True
 conjuntoVacio :: [a]
 conjuntoVacio = []
 
@@ -122,14 +123,15 @@ esVacio = null
 La función \texttt{(esUnitario xs)} se verifica si el conjunto 
 \texttt{xs} es unitario.
 
-\begin{sesion}
-esUnitario [5]    ==  True
-esUnitario [5,3]  ==  False
-esUnitario [5,5]  ==  True
-\end{sesion}
-
 \index{\texttt{unitario}}
 \begin{code}
+-- | Ejemplos
+-- >>> esUnitario [5]
+-- True
+-- >>> esUnitario [5,3]
+-- False
+-- >>> esUnitario [5,5]
+-- True
 esUnitario :: Eq a => [a] -> Bool
 esUnitario xs = length (nub xs) == 1
 \end{code}
@@ -148,16 +150,20 @@ esUnitario xs = length (nub xs) == 1
 La función \texttt{(esSubconjunto xs ys)} se verifica si \texttt{xs} es
 un subconjunto de \texttt{ys}.
 
-\begin{sesion}
-[4,2]         `esSubconjunto` [3,2,4]       ==  True
-[1,2]         `esSubconjunto` conjuntoVacio ==  False
-conjuntoVacio `esSubconjunto` [1,2]         ==  True
-[4,2,1]       `esSubconjunto` [1,2,4]       ==  True
-[3,2,4]       `esSubconjunto` [5,2]         ==  False
-\end{sesion}
 
 \index{\texttt{esSubconjunto}}
 \begin{code}
+-- | Ejemplos
+-- >>> [4,2] `esSubconjunto` [3,2,4]
+-- True
+-- >>> [1,2] `esSubconjunto` conjuntoVacio
+-- False
+-- >>> conjuntoVacio `esSubconjunto` [1,2]
+-- True
+-- >>> [4,2,1] `esSubconjunto` [1,2,4]
+-- True
+-- >>> [3,2,4] `esSubconjunto` [5,2]
+-- False
 esSubconjunto :: Eq a => [a] -> [a] -> Bool
 esSubconjunto xs ys = all (`pertenece` ys) xs
 \end{code}
@@ -171,15 +177,17 @@ esSubconjunto xs ys = all (`pertenece` ys) xs
 \end{definicion}
 
 La función \texttt{(conjuntosIguales xs ys)} se verifica si los conjuntos
-\texttt{xs} y \texttt{ys} son iguales. Por ejemplo,
-
-\begin{sesion}
-conjuntosIguales [4,2] [3,2,4]  ==  True
-conjuntosIguales [5,2] [3,2,4]  ==  False
-\end{sesion}
+\texttt{xs} y \texttt{ys} son iguales.
 
 \index{\texttt{conjuntosIguales}}
 \begin{code}
+-- | Ejemplos
+-- >>> conjuntosIguales [4,2] [4,2,4]
+-- True
+-- >>> conjuntosIguales [4,2,3] [4,3,2]
+-- True
+-- >>> conjuntosIguales [5,2] [3,2,4]
+-- False
 conjuntosIguales :: Eq a => [a] -> [a] -> Bool
 conjuntosIguales xs ys =
     esSubconjunto xs ys && esSubconjunto ys xs
@@ -193,15 +201,15 @@ conjuntosIguales xs ys =
 \end{definicion}
 
 La función \texttt{(esSubconjuntoPropio xs ys)} se verifica si \texttt{xs} es
-un subconjunto propio de \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-[4,2]   `esSubconjuntoPropio` [3,2,4]  ==  True
-[4,2,1] `esSubconjuntoPropio` [1,2,4]  ==  False
-\end{sesion}
+un subconjunto propio de \texttt{ys}. 
 
 \index{\texttt{esSubconjuntoPropio}}
 \begin{code}
+-- | Ejemplos
+-- >>> [4,2] `esSubconjuntoPropio` [3,2,4]
+-- True
+-- >>> [4,2,1] `esSubconjuntoPropio` [1,2,4]
+-- False
 esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
 esSubconjuntoPropio xs ys =
   xs `esSubconjunto` ys && not (conjuntosIguales xs ys) 
@@ -215,15 +223,14 @@ esSubconjuntoPropio xs ys =
   $\overline{A} = \{x | x \in U, x \not \in A \}$
 \end{definicion}
 
-La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los conjuntos
-\texttt{xs} y \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-complementario [1..9] [3,2,5,7]  ==  [1,4,6,8,9]
-\end{sesion}
+La función \texttt{(complementario xs ys)} devuelve el complementario de
+\texttt{ys} respecto de \texttt{xs}.
 
 \index{\texttt{complementario}}
 \begin{code}
+-- | Ejemplo
+-- >>> complementario [1..9] [3,2,5,7]
+-- [1,4,6,8,9]
 complementario :: Eq a => [a] -> [a] -> [a]
 complementario = (\\)
 \end{code}
@@ -236,15 +243,15 @@ complementario = (\\)
 \end{definicion}
 
 La función \texttt{(cardinal xs)} devuelve el cardinal del conjunto
-\texttt{xs}. Por ejemplo,
-
-\begin{sesion}
-cardinal conjuntoVacio  ==  0
-cardinal [1..10]        ==  10
-\end{sesion}
+\texttt{xs}. 
 
 \index{\texttt{cardinal}}
 \begin{code}
+-- | Ejemplos
+-- >>> cardinal conjuntoVacio
+-- 0
+-- >>> cardinal [1..10]
+-- 10
 cardinal :: Eq a => [a] -> Int
 cardinal = length
 \end{code}
@@ -260,15 +267,15 @@ cardinal = length
 \end{definicion}
 
 La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los
-conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-unionConjuntos [1,3..9] [2,4..9]  ==  [1,3,5,7,9,2,4,6,8]
-unionConjuntos "centri" "fugado"  ==  "centrifugado"
-\end{sesion}
+conjuntos \texttt{xs} y \texttt{ys}.
 
 \index{\texttt{unionConjuntos}}
 \begin{code}
+-- | Ejemplos
+-- >>> unionConjuntos [1,3..9] [2,4..9]
+-- [1,3,5,7,9,2,4,6,8]
+-- >>> unionConjuntos "centri" "fugado"
+-- "centrifugado"
 unionConjuntos :: Eq a => [a] -> [a] -> [a]
 unionConjuntos = union 
 \end{code}
@@ -290,16 +297,17 @@ unionConjuntos = union
 \end{definicion}
 
 La función \texttt{(interseccion xs ys)} devuelve la intersección de los
-conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-interseccion [1,3..20] [2,4..20]  ==  []
-interseccion [2,4..30] [4,8..30]  ==  [4,8,12,16,20,24,28]
-interseccion "noche" "dia"        ==  ""
-\end{sesion}
+conjuntos \texttt{xs} y \texttt{ys}. 
 
 \index{\texttt{interseccion}}
 \begin{code}
+-- | Ejemplos
+-- >>> interseccion [1,3..20] [2,4..20]
+-- []
+-- >>> interseccion [2,4..30] [4,8..30]
+-- [4,8,12,16,20,24,28]
+-- >>> interseccion "noche" "dia"
+-- ""
 interseccion :: Eq a => [a] -> [a] -> [a]
 interseccion = intersect
 \end{code}
@@ -318,14 +326,13 @@ interseccion = intersect
 \end{definicion}
 
 La función \texttt{(productoCartesiano xs ys)} devuelve el producto cartesiano
-de xs e ys. Por ejemplo,
-
-\begin{sesion}
-productoCartesiano [3,1] [2,4,7]  ==  [(3,2),(3,4),(3,7),(1,2),(1,4),(1,7)]
-\end{sesion}
+de xs e ys. 
 
 \index{\texttt{productoCartesiano}}
 \begin{code}
+-- | Ejemplo
+-- >>> productoCartesiano [3,1] [2,4,7]
+-- [(3,2),(3,4),(3,7),(1,2),(1,4),(1,7)]
 productoCartesiano :: [a] -> [b] -> [(a,b)]
 productoCartesiano xs ys =
   [(x,y) | x <- xs, y <- ys]
@@ -339,15 +346,15 @@ productoCartesiano xs ys =
 \end{definicion}
 
 La función \texttt{(combinaciones n xs)} devuelve las combinaciones de los
-elementos de \texttt{xs} en listas de \texttt{n} elementos. Por ejemplo,
-
-\begin{sesion}
-combinaciones 3 ['a'..'d']  ==  ["abc","abd","acd","bcd"]
-combinaciones 2 [2,4..8]    ==  [[2,4],[2,6],[2,8],[4,6],[4,8],[6,8]]
-\end{sesion}
+elementos de \texttt{xs} en listas de \texttt{n} elementos.
 
 \index{\texttt{combinaciones}}
 \begin{code}
+-- | Ejemplos
+-- >>> combinaciones 3 ['a'..'d']
+-- ["abc","abd","acd","bcd"]
+-- >>> combinaciones 2 [2,4..8]
+-- [[2,4],[2,6],[2,8],[4,6],[4,8],[6,8]]
 combinaciones :: Integer -> [a] -> [[a]]
 combinaciones 0 _          = [[]]
 combinaciones _ []         = []
@@ -364,18 +371,15 @@ combinaciones k (x:xs) =
 
 La función \texttt{(variacionesR n xs)} devuelve las variaciones con con
 repetición de los elementos de \texttt{xs} en listas de \texttt{n}
-elementos. Por ejemplo,
-
-\begin{sesion}
-ghci> variacionesR 3 ['a','b']
-["aaa","aab","aba","abb","baa","bab","bba","bbb"]
-ghci> variacionesR 2 [2,4..8]
-[[2,2],[2,4],[2,6],[2,8],[4,2],[4,4],[4,6],[4,8],
- [6,2],[6,4],[6,6],[6,8],[8,2],[8,4],[8,6],[8,8]]
-\end{sesion}
+elementos.
 
 \index{\texttt{variaciones}}
 \begin{code}
+-- | Ejemplos
+-- >>> variacionesR 3 ['a','b']
+-- ["aaa","aab","aba","abb","baa","bab","bba","bbb"]
+-- >>> variacionesR 2 [2,3,5]
+-- [[2,2],[2,3],[2,5],[3,2],[3,3],[3,5],[5,2],[5,3],[5,5]]
 variacionesR :: Int -> [a] -> [[a]]
 variacionesR _ [] = [[]]
 variacionesR 0 _  = [[]] 
@@ -383,3 +387,13 @@ variacionesR k us =
     [u:vs | u <- us, vs <- variacionesR (k-1) us]
 \end{code}
 
+\ignora{
+\begin{code}
+verifica :: IO ()
+verifica = doctest ["Conjuntos"]
+\end{code}
+  La validación es
+
+  > doctest Conjuntos.lhs 
+  Examples: 31  Tried: 31  Errors: 0  Failures: 0
+}  
