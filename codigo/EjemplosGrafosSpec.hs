@@ -1,3 +1,5 @@
+module EjemplosGrafosSpec where
+
 import Test.Hspec
 import GrafoConListaDeAristas
 import EjemplosGrafos
