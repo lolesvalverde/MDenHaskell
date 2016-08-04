@@ -15,10 +15,10 @@ import Relaciones
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
-    
+
+import Test.DocTest       
 import Test.QuickCheck
 import Data.List
-import DefinicionesYPropiedades 
 \end{code}
 }
 
@@ -44,14 +44,15 @@ Para elaborar la presente sección, se han consultado los
 La función \texttt{(esRelacionHomogenea xs r)} se verifica si \texttt{r} 
 es una relación binaria homogénea en el conjunto \texttt{xs}.
 
-\begin{sesion}
-esRelacionHomogenea [1..4] [(1,2),(2,4),(3,4),(4,1)] == True
-esRelacionHomogenea [1..4] [(1,2),(2,5),(3,4),(4,1)] == False
-esRelacionHomogenea [1..4] [(1,2),(3,4),(4,1)]       == True
-\end{sesion}
-
 \index{\texttt{esRelacionHomogenea}}
 \begin{code}
+-- | Ejemplos
+-- >>> esRelacionHomogenea [1..4] [(1,2),(2,4),(3,4),(4,1)]
+-- True
+-- >>> esRelacionHomogenea [1..4] [(1,2),(2,5),(3,4),(4,1)]
+-- False
+-- >>> esRelacionHomogenea [1..4] [(1,2),(3,4),(4,1)]
+-- True
 esRelacionHomogenea :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionHomogenea xs = esRelacion xs xs
 \end{code}
@@ -63,15 +64,14 @@ esRelacionHomogenea xs = esRelacion xs xs
 
 La función \texttt{(estaRelacionado r x y)} se verifica si \texttt{x}
 está relacionado con \texttt{y} en la relación homogénea \texttt{r}.
-Por ejemplo,
-
-\begin{sesion}
-estaRelacionado [(1,3),(2,5),(4,6)] 2 5 == True
-estaRelacionado [(1,3),(2,5),(4,6)] 2 3 == False
-\end{sesion}
 
 \index{\texttt{estaRelacionado}}
 \begin{code}
+-- | Ejemplos
+-- >>> estaRelacionado [(1,3),(2,5),(4,6)] 2 5
+-- True
+-- >>> estaRelacionado [(1,3),(2,5),(4,6)] 2 3
+-- False
 estaRelacionado :: Eq a => [(a,a)] -> a -> a -> Bool
 estaRelacionado r x y = (x,y) `elem` r
 \end{code}
@@ -85,26 +85,15 @@ estaRelacionado r x y = (x,y) `elem` r
 \end{definicion}
 
 La función \texttt{(esReflexiva xs r)} se verifica si la relación \texttt{r} en
-\texttt{xs} es reflexiva. Por ejemplo,
-
-\begin{sesion}
-ghci> let n = 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esReflexiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esReflexiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esReflexiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esReflexiva [1..n] r
-False
-\end{sesion}
+\texttt{xs} es reflexiva. 
 
 \index{\texttt{esReflexiva}}
 \begin{code}
+-- | Ejemplos
+-- >>> esReflexiva [1,2] [(1,1),(1,2),(2,2)]
+-- True 
+-- >>> esReflexiva [1,2] [(1,1),(1,2)]
+-- False 
 esReflexiva :: Eq a => [a] -> [(a,a)] -> Bool
 esReflexiva xs r = zip xs xs `esSubconjunto` r 
 \end{code}
@@ -127,26 +116,15 @@ son relaciones binarias homogéneas reflexivas.
 \end{definicion}
 
 La función \texttt{(esSimetrica r)} se verifica si la relación \texttt{r} es
-simétrica. Por ejemplo,
-
-\begin{sesion}
-ghci> let n= 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esSimetrica r
-False
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esSimetrica r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esSimetrica r
-False
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esSimetrica r
-False
-\end{sesion}
+simétrica.
 
 \index{\texttt{esSimetrica}}
 \begin{code}
+-- | Ejemplos
+-- >>> esSimetrica [(1,1),(1,2),(2,1)]
+-- True
+-- >>> esSimetrica [(1,1),(1,2),(2,2)]
+-- False
 esSimetrica :: Eq a => [(a,a)] -> Bool
 esSimetrica r = [(y,x) | (x,y) <- r] `esSubconjunto` r 
 \end{code}
@@ -166,26 +144,15 @@ esSimetrica r = [(y,x) | (x,y) <- r] `esSubconjunto` r
 \end{definicion}
 
 La función \texttt{(esAntisimetrica r)} se verifica si la relación \texttt{r}
-es antisimétrica. Por ejemplo,
-
-\begin{sesion}
-ghci> let n= 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esAntisimetrica r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esAntisimetrica r
-False
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esAntisimetrica r
-True
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esAntisimetrica [1..n] r
-True
-\end{sesion}
+es antisimétrica.
 
 \index{\texttt{esAntisimetrica}}
 \begin{code}
+-- | Ejemplos
+-- >>> esAntisimetrica [(1,2),(3,1)]
+-- True
+-- >>> esAntisimetrica [(1,2),(2,1)]
+-- False
 esAntisimetrica :: Eq a => [(a,a)] -> Bool
 esAntisimetrica r = 
   and [x == y | (x,y) <- r, (y,x) `elem` r]
@@ -210,26 +177,15 @@ son relaciones binarias homogéneas antisimétricas.
 \end{definicion}
 
 La función \texttt{(esTransitiva r)} se verifica si la relación \texttt{r} es
-transitiva. Por ejemplo,
-
-\begin{sesion}
-ghci> let n= 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esTransitiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esTransitiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esTransitiva [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esTransitiva [1..n] r
-True
-\end{sesion}
+transitiva.
 
 \index{\texttt{esTransitiva}}
 \begin{code}
+-- | Ejemplos
+-- >>> esTransitiva [(1,2),(2,3),(1,3)]
+-- True
+-- >>> esTransitiva [(1,2),(2,3)]
+-- False
 esTransitiva :: Eq a => [(a,a)] -> Bool
 esTransitiva r = 
   [(x,z) | (x,y) <- r, (w,z) <- r, y == w] `esSubconjunto` r 
@@ -254,26 +210,17 @@ son relaciones binarias homogéneas transitivas.
 \end{definicion}
 
 La función \texttt{(esRelacionEquivalencia xs r)} se verifica si 
-\texttt{r} es una relación de equivalencia en \texttt{xs}. Por ejemplo,
-
-\begin{sesion}
-ghci> let n= 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esRelacionEquivalencia [1..n] r
-False
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esRelacionEquivalencia [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esRelacionEquivalencia [1..n] r
-False
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esRelacionEquivalencia [1..n] r
-False
-\end{sesion}
+\texttt{r} es una relación de equivalencia en \texttt{xs}. 
 
 \index{\texttt{esRelacionEquivalencia}}
 \begin{code}
+-- | Ejemplos
+-- >>> esRelacionEquivalencia [1..3] [(1,1),(2,2),(3,3),(1,2),(2,1)]
+-- True
+-- >>> esRelacionEquivalencia [1..3] [(2,2),(3,3),(1,2),(2,1)]
+-- False
+-- >>> esRelacionEquivalencia [1..3] [(1,1),(2,2),(3,3),(1,2)]
+-- False
 esRelacionEquivalencia :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionEquivalencia xs r =
   esReflexiva xs r   &&
@@ -294,26 +241,13 @@ esRelacionEquivalencia xs r =
 \end{definicion}
 
 La función \texttt{(esRelacionOrden xs r)} se verifica si \texttt{r} es una
-relación de orden en \texttt{xs}. Por ejemplo,
-
-\begin{sesion}
-ghci> let n= 50
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x..n]]
-ghci> esRelacionOrden [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]         
-ghci> esRelacionOrden [1..n] r
-False
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x y == 0]         
-ghci> esRelacionOrden [1..n] r
-True
-ghci> let r = [(x,y) | x <- [1..n] , y <- [x+1..n]]
-ghci> esRelacionOrden [1..n] r
-False
-\end{sesion}
+relación de orden en \texttt{xs}.
 
 \index{\texttt{esRelacionOrden}}
 \begin{code}
+-- | Ejemplo
+-- >>> esRelacionOrden [1..3] [(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)]
+-- True
 esRelacionOrden :: Eq a => [a] -> [(a,a)] -> Bool
 esRelacionOrden xs r =
   esReflexiva xs r  &&
@@ -342,24 +276,14 @@ son relaciones de orden.
 \end{definicion}
 
 La función \texttt{(clasesEquivalencia xs r)} devuelve las clases de la
-relación de equivalencia \texttt{r} en \texttt{xs}. Por ejemplo,
-
-\begin{sesion}
-ghci> let n = 50
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], even (x-y)]
-ghci> clasesEquivalencia [1..n] r
-[[1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49],
-[2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50]]
-ghci> let m = 5
-ghci> let r = [(x,y) | x <- [1..n], y <- [1..n], mod x m == mod y m]
-ghci> clasesEquivalencia [1..n] r
-[[1,6,11,16,21,26,31,36,41,46],[2,7,12,17,22,27,32,37,42,47],
- [3,8,13,18,23,28,33,38,43,48],[4,9,14,19,24,29,34,39,44,49],
- [5,10,15,20,25,30,35,40,45,50]]
-\end{sesion}
+relación de equivalencia \texttt{r} en \texttt{xs}. 
 
 \index{\texttt{clasesEquivalencia}}
 \begin{code}
+-- | Ejemplo
+-- >>> let r = [(x,y) | x <- [1..5], y <- [1..5], even (x-y)]
+-- >>> clasesEquivalencia [1..5] r
+-- [[1,3,5],[2,4]]
 clasesEquivalencia :: Eq a => [a] -> [(a,a)] -> [[a]]
 clasesEquivalencia _ [] = []
 clasesEquivalencia [] _ = []

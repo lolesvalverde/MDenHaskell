@@ -7,7 +7,8 @@ module Relaciones ( esRelacion
                   , antiImagenRelacion
                   , esFuncional
                   ) where
-  
+
+import Test.DocTest
 import Conjuntos
 import Data.List 
 \end{code}
@@ -47,16 +48,17 @@ esRelacion xs ys r =
 \end{definicion}
 
 La función \texttt{(imagenRelacion r x)} es la imagen de \texttt{x} 
-en la relación \texttt{r}. Por ejemplo, 
-
-\begin{sesion}
-imagenRelacion [(1,3),(2,5),(1,4)] 1  ==  [3,4]
-imagenRelacion [(1,3),(2,5),(1,4)] 2  ==  [5]
-imagenRelacion [(1,3),(2,5),(1,4)] 3  ==  []
-\end{sesion}
+en la relación \texttt{r}.
 
 \index{\texttt{imagenRelacion}}
 \begin{code}
+-- | Ejemplos
+-- >>> imagenRelacion [(1,3),(2,5),(1,4)] 1
+-- [3,4]
+-- >>> imagenRelacion [(1,3),(2,5),(1,4)] 2
+-- [5]
+-- >>> imagenRelacion [(1,3),(2,5),(1,4)] 3
+-- []
 imagenRelacion :: (Eq a, Eq b) => [(a,b)] -> a -> [b]
 imagenRelacion r x =
   nub [y | (z,y) <- r, z == x] 
@@ -69,15 +71,13 @@ imagenRelacion r x =
   contiene a todos los valores que se toman en la relación $R$.
 \end{definicion}
 
-La función \texttt{(dominio r)} devuelve el dominio de la relación r.  Por
-ejemplo,
-
-\begin{sesion}
-dominio [(3,2),(5,1),(3,4)]  ==  [3,5]
-\end{sesion}
+La función \texttt{(dominio r)} devuelve el dominio de la relación r.
 
 \index{\texttt{dominio}}
 \begin{code}
+-- | Ejemplo
+-- >>> dominio [(3,2),(5,1),(3,4)]
+-- [3,5]
 dominio :: Eq a => [(a,b)] -> [a]
 dominio r = nub (map fst r)
 \end{code}
@@ -90,14 +90,13 @@ dominio r = nub (map fst r)
 \end{definicion}
 
 La función \texttt{(rango r)} devuelve el rango de la relación binaria
-\texttt{r}. Por ejemplo,
-
-\begin{sesion}
-rango [(3,2),(5,2),(3,4)]  ==  [2,4]
-\end{sesion}
+\texttt{r}.
 
 \index{\texttt{rango}}
 \begin{code}
+-- | Ejemplo
+-- >>> rango [(3,2),(5,2),(3,4)]
+-- [2,4]
 rango :: Eq b => [(a,b)] -> [b]
 rango r = nub (map snd r)  
 \end{code}
@@ -110,14 +109,13 @@ rango r = nub (map snd r)
 \end{definicion}
 
 La \texttt{(antiImagenRelacion r y)} es la antiimagen del elemento y en la
-relación binaria \texttt{r}. Por ejemplo.
-
-\begin{sesion}
-antiImagenRelacion [(1,3),(2,3),(7,4)] 3  ==  [1,2]
-\end{sesion}
+relación binaria \texttt{r}.
 
 \index{\texttt{antiImagenRelacion}}
 \begin{code}
+-- | Ejemplo
+-- >>> antiImagenRelacion [(1,3),(2,3),(7,4)] 3
+-- [1,2]
 antiImagenRelacion :: (Eq a, Eq b) => [(a,b)] -> b -> [a]
 antiImagenRelacion r y =
   nub [x | (x,z) <- r, z == y]   
@@ -131,16 +129,17 @@ antiImagenRelacion r y =
 \end{definicion}
 
 La función \texttt{(esFuncional r)} se verifica si la relación 
-\texttt{r} es funcional. Por ejemplo,
-
-\begin{sesion}
-esFuncional [(3,2),(5,1),(7,9)]  ==  True
-esFuncional [(3,2),(5,1),(3,4)]  ==  False
-esFuncional [(3,2),(5,1),(3,2)]  ==  True
-\end{sesion}
+\texttt{r} es funcional.
 
 \index{\texttt{esFuncional}}
 \begin{code}
+-- | Ejemplos
+-- >>> esFuncional [(3,2),(5,1),(7,9)]
+-- True
+-- >>> esFuncional [(3,2),(5,1),(3,4)]
+-- False
+-- >>> esFuncional [(3,2),(5,1),(3,2)]
+-- True
 esFuncional :: (Eq a, Eq b) => [(a,b)] -> Bool
 esFuncional r =
   and [esUnitario (imagenRelacion r x) | x <- dominio r] 

@@ -14,7 +14,9 @@ module Funciones ( esFuncion
   
 import Conjuntos
 import Relaciones
-    
+
+import Test.DocTest       
+import Text.PrettyPrint.GenericPretty (pp)
 import Test.QuickCheck
 import Data.List
 \end{code}
@@ -27,16 +29,17 @@ import Data.List
 \end{definicion}
 
 La función \texttt{(esFuncion xs ys f)} se verifica si \texttt{f} es una
-función de \texttt{xs} en \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-esFuncion [3,1] [2,4,7] [(1,7),(3,2)]        ==  True
-esFuncion [3,1] [2,4,7] [(1,7)]              ==  False
-esFuncion [3,1] [2,4,7] [(1,7),(3,2),(1,4)]  ==  False
-\end{sesion}
+función de \texttt{xs} en \texttt{ys}. 
 
 \index{\texttt{esFuncion}}
 \begin{code}
+-- | Ejemplos
+-- >>> esFuncion [3,1] [2,4,7] [(1,7),(3,2)]
+-- True
+-- >>> esFuncion [3,1] [2,4,7] [(1,7)]
+-- False
+-- >>> esFuncion [3,1] [2,4,7] [(1,7),(3,2),(1,4)]
+-- False
 esFuncion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
 esFuncion xs ys f =
   esRelacion xs ys f &&
@@ -53,24 +56,23 @@ type Funcion a b = [(a,b)]
 \end{nota}
 
 La función \texttt{(funciones xs ys)} devuelve todas las posibles funciones del
-conjunto \texttt{xs} en \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-ghci> funciones [1,2,3] "ab"
-[[(1,'a'),(2,'a'),(3,'a')],[(1,'a'),(2,'a'),(3,'b')],
- [(1,'a'),(2,'b'),(3,'a')],[(1,'a'),(2,'b'),(3,'b')],
- [(1,'b'),(2,'a'),(3,'a')],[(1,'b'),(2,'a'),(3,'b')],
- [(1,'b'),(2,'b'),(3,'a')],[(1,'b'),(2,'b'),(3,'b')]]
-ghci> funciones [(1,2),(1,5)] "abc"
-[[((1,2),'a'),((1,5),'a')],[((1,2),'a'),((1,5),'b')],
- [((1,2),'a'),((1,5),'c')],[((1,2),'b'),((1,5),'a')],
- [((1,2),'b'),((1,5),'b')],[((1,2),'b'),((1,5),'c')],
- [((1,2),'c'),((1,5),'a')],[((1,2),'c'),((1,5),'b')],
- [((1,2),'c'),((1,5),'c')]]
-\end{sesion}
+conjunto \texttt{xs} en \texttt{ys}. 
 
 \index{\texttt{funciones}}
 \begin{code}
+-- | Ejemplos
+-- >>> pp $ funciones [1,2] [3,4]
+-- [[(1, 3),(2, 3)],[(1, 3),(2, 4)],[(1, 4),(2, 3)],
+--  [(1, 4),(2, 4)]]
+-- >>> pp $ funciones [1,2] [3,4,5]
+-- [[(1, 3),(2, 3)],[(1, 3),(2, 4)],[(1, 3),(2, 5)],
+--  [(1, 4),(2, 3)],[(1, 4),(2, 4)],[(1, 4),(2, 5)],
+--  [(1, 5),(2, 3)],[(1, 5),(2, 4)],[(1, 5),(2, 5)]]
+-- >>> pp $ funciones [0,1,2] [3,4]
+-- [[(0, 3),(1, 3),(2, 3)],[(0, 3),(1, 3),(2, 4)],
+--  [(0, 3),(1, 4),(2, 3)],[(0, 3),(1, 4),(2, 4)],
+--  [(0, 4),(1, 3),(2, 3)],[(0, 4),(1, 3),(2, 4)],
+--  [(0, 4),(1, 4),(2, 3)],[(0, 4),(1, 4),(2, 4)]]
 funciones :: [a] -> [b] -> [Funcion a b]
 funciones xs ys =
   [zip xs zs | zs <- variacionesR (length xs) ys]
@@ -85,15 +87,15 @@ funciones xs ys =
 \end{definicion}
 
 La función \texttt{(imagen f x)} es la imagen del elemento \texttt{x} en la
-función \texttt{f}. Por ejemplo,
-
-\begin{sesion}
-imagen [(1,7),(3,2)] 1  ==  7
-imagen [(1,7),(3,2)] 3  ==  2
-\end{sesion}
+función \texttt{f}.
 
 \index{\texttt{imagen}}
 \begin{code}
+-- | Ejemplos
+-- >>> imagen [(1,7),(3,2)] 1
+-- 7
+-- >>> imagen [(1,7),(3,2)] 3
+-- 2
 imagen :: (Eq a, Eq b) => Funcion a b -> a -> b
 imagen f x = head (imagenRelacion f x)
 \end{code}
@@ -111,16 +113,17 @@ imagen f x = head (imagenRelacion f x)
 \end{definicion}
 
 La función \texttt{(esInyectiva fs)} se verifica si la función \texttt{fs} es
-inyectiva. Por ejemplo,
-
-\begin{sesion}
-esInyectiva [(1,4),(2,5),(3,6)]        ==  True
-esInyectiva [(1,4),(2,5),(3,4)]        ==  False
-esInyectiva [(1,4),(2,5),(3,6),(3,6)]  ==  True
-\end{sesion}
+inyectiva.
 
 \index{\texttt{esInyectiva}}
 \begin{code}
+-- | Ejemplos
+-- >>> esInyectiva [(1,4),(2,5),(3,6)]
+-- True
+-- >>> esInyectiva [(1,4),(2,5),(3,4)]
+-- False
+-- >>> esInyectiva [(1,4),(2,5),(3,6),(3,6)]
+-- True
 esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
 esInyectiva f =
   all esUnitario [antiImagenRelacion f y | y <- rango f] 
@@ -138,16 +141,17 @@ esInyectiva f =
 
 La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
 \texttt{f} es sobreyectiva. A la hora de definirla, estamos contando con que
-\texttt{f} es una función entre \texttt{xs} y \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]        ==  True
-esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]        ==  False
-esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,4),(3,6),(3,6)]  ==  False
-\end{sesion}
+\texttt{f} es una función entre \texttt{xs} y \texttt{ys}. 
 
 \index{\texttt{esSobreyectiva}}
 \begin{code}
+-- | Ejemplos
+-- >>> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6)]
+-- True
+-- >>> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
+-- False
+-- >>> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,4),(3,6),(3,6)]
+-- False
 esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
 esSobreyectiva _ ys f = ys `esSubconjunto` rango f 
 \end{code}
@@ -163,16 +167,17 @@ esSobreyectiva _ ys f = ys `esSubconjunto` rango f
 \end{definicion}
 
 La función \texttt{(esBiyectiva xs ys f)} se verifica si la función
-\texttt{f} es biyectiva.  Por ejemplo,
-
-\begin{sesion}
-esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]  ==  True
-esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]        ==  False
-esBiyectiva [1,2,3] [4,5,6,7] [(1,4),(2,5),(3,6)]      ==  False
-\end{sesion}
+\texttt{f} es biyectiva.
 
 \index{\texttt{esSobreyectiva}}
 \begin{code}
+-- | Ejemplos
+-- >>> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,6),(3,6)]
+-- True
+-- >>> esBiyectiva [1,2,3] [4,5,6] [(1,4),(2,5),(3,4)]
+-- False
+-- >>> esBiyectiva [1,2,3] [4,5,6,7] [(1,4),(2,5),(3,6)]
+-- False
 esBiyectiva :: (Eq a, Eq b) => [a] -> [b] -> Funcion a b -> Bool
 esBiyectiva xs ys f =
   esInyectiva f && esSobreyectiva xs ys f
@@ -234,18 +239,15 @@ biyecciones = biyecciones2
   el elemento de $A$ del que es imagen en $B$.
 \end{definicion}
 
-El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.  Por
-ejemplo,
-
-\begin{sesion}
-ghci> inversa [(1,4),(2,5),(3,6)]
-[(4,1),(5,2),(6,3)]
-ghci> inversa [(1,4),(2,4),(3,6),(3,6)]
-[(4,1),(4,2),(6,3)]
-\end{sesion}
+El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.  
 
 \index{\texttt{inversa}}
 \begin{code}
+-- | Ejemplos
+-- >>> inversa [(1,4),(2,5),(3,6)]
+-- [(4,1),(5,2),(6,3)]
+-- >>> inversa [(1,4),(2,4),(3,6),(3,6)]
+-- [(4,1),(4,2),(6,3)]
 inversa :: (Eq a, Eq b) => Funcion a b -> Funcion b a
 inversa f = [(y,x) | (x,y) <- nub f]
 \end{code}
@@ -263,13 +265,13 @@ uno del conjunto de salida.
 La función \texttt{(imagenInversa f y)} devuelve el elemento del conjunto   
 de salida de la función \texttt{f} tal que su imagen es \texttt{y}.
 
-\begin{sesion}
-imagenInversa [(1,4),(2,5),(3,6)] 5        ==  2
-imagenInversa [(1,4),(2,4),(3,6),(3,6)] 6  ==  3
-\end{sesion}
-
 \index{\texttt{imagenInversa}}
 \begin{code}
+-- | Ejemplos
+-- >>> imagenInversa [(1,4),(2,5),(3,6)] 5
+-- 2
+-- >>> imagenInversa [(1,4),(2,4),(3,6),(3,6)] 6
+-- 3
 imagenInversa :: (Eq a, Eq b) => Funcion a b -> b -> a 
 imagenInversa f = imagen (inversa f)
 \end{code}
