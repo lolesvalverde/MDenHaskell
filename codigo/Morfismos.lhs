@@ -349,22 +349,35 @@ isomorfismos3 g h
   | orden g  /= orden h  = []
   | tamaño g /= tamaño h = []
   | secuenciaGrados g /= secuenciaGrados h = []
-  | otherwise = aux (vertices g) (vertices h)
-     where aux [] _ = []
-           aux [x] [y] = [[(x,y)]]
-           aux (x:xs) ys = [(x,y):f | y <- ys, f <- aux xs (ys \\ [y]),
-                                         conservaAux f]
-           conservaAux [(a,b)] = True
-           conservaAux f = and [(i f x,i f y) `aristaEn` h |(x,y) <- aristas g,
-                                         elem x (dominio f),
-                                         elem y (dominio f)]
-           i = imagen
+  | otherwise = filter (conservaAdyacencia g h) (posibles g h)
 
-isomorfos3 g = not . null . isomorfismos3 g
+verticesPorGrados g =
+    [filter (p n) (vertices g) | n <- nub (secuenciaGrados g)]
+    where p m v = grado g v == m 
+
+aux1 [] _ = []
+aux1 (xs:xss) (ys:yss) = (map (zip xs) (permutations ys)):aux1 xss yss
+
+aux2 [] = []
+aux2 (xss:[]) = xss
+aux2 (xss:yss:[]) = [xs ++ ys | xs <- xss, ys <- yss]
+aux2 (xss:yss:xsss) =
+    aux2 ([xs ++ ys | xs <- xss, ys <- yss]:xsss)
+         
+posibles g h =
+    aux2 (aux1 (verticesPorGrados g) (verticesPorGrados h))  
 
 \end{code}
 
 Vamos a comparar la eficiencia entre ambas definiciones
+
+\begin{comentario}
+La nueva definición de \texttt{(isomorfismos3 g h)} es la más eficiente
+con grafos "poco regulares", sin embargo, cuando todos los vértices    
+tienen el mismo grado, \texttt{(isomorfismos2 g h)} sigue siendo mejor       
+opción (aunque no hay mucha diferencia en el coste computacional).
+Falta comentarlo y seguir buscando definiciones más eficientes.
+\end{comentario}
 
 \begin{sesion}
 ghci> let n = 6 in (length (isomorfismos1 (completo n) (completo n)))
@@ -375,7 +388,7 @@ ghci> let n = 6 in (length (isomorfismos2 (completo n) (completo n)))
 (0.18 secs, 0 bytes)
 ghci> let n = 6 in (length (isomorfismos3 (completo n) (completo n)))
 720
-(0.34 secs, 63,621,712 bytes)
+(0.18 secs, 26,123,800 bytes)
 
 ghci> let n = 6 in (length (isomorfismos1 (grafoCiclo n) (grafoCiclo n)))
 12
@@ -385,7 +398,7 @@ ghci> let n = 6 in (length (isomorfismos2 (grafoCiclo n) (grafoCiclo n)))
 (0.04 secs, 0 bytes)
 ghci> let n = 6 in (length (isomorfismos3 (grafoCiclo n) (grafoCiclo n)))
 12
-(0.08 secs, 0 bytes)
+(0.04 secs, 0 bytes)
 
 ghci> length (isomorfismos1 (grafoCiclo 6) (completo 7))
 0
@@ -413,6 +426,16 @@ False
 ghci> isomorfos2 (grafoCiclo 100) (grafoRueda 100)
 False
 (0.00 secs, 0 bytes)
+ghci> isomorfos3 (grafoCiclo 100) (grafoRueda 100)
+False
+(0.00 secs, 0 bytes)
+
+ghci> length (isomorfismos2 (grafoRueda 10) (grafoRueda 10))
+18
+(101.12 secs, 23,237,139,992 bytes)
+ghci> length (isomorfismos3 (grafoRueda 10) (grafoRueda 10))
+18
+(44.67 secs, 9,021,442,440 bytes)
 \end{sesion}
 
 \begin{nota}
