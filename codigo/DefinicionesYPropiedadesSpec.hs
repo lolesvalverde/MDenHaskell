@@ -1,3 +1,5 @@
+module DefinicionesYPropiedadesSpec where
+
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
@@ -220,14 +222,192 @@ ejemplosDefinicionesYPropiedades =
 
   describe "Propiedades" $ do
     it "Lema del apretón de manos" $ 
-      comprueba prop_LemaApretonDeManos
+      property $ prop_LemaApretonDeManos
     it "Teorema de Havel-Hakimi" $
-      comprueba prop_HavelHakimi
+      property $ prop_HavelHakimi
 
-comprueba :: Testable prop => prop -> Expectation
-comprueba p = 
-  quickCheckWith (stdArgs {chatty=False}) p `shouldReturn` ()
+  describe "eliminaArista" $ do
+    it "e1" $
+      eliminaArista grafoThomson (3,4) `shouldBe`
+      creaGrafo [1..6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,5),(3,6)]
+    it "e2" $
+      eliminaArista grafoThomson (4,3) `shouldBe`
+      creaGrafo [1..6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,5),(3,6)]
+    it "e3" $
+      eliminaArista grafoThomson (1,3) `shouldBe`
+      creaGrafo [1..6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
+
+  describe "eliminaVertice" $ do
+    it "e1" $
+      eliminaVertice grafoThomson 3 `shouldBe`
+      creaGrafo [1,2,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6)]
+    it "e2" $
+      eliminaVertice grafoThomson 2 `shouldBe`
+      creaGrafo [1,3,4,5,6] [(1,4),(1,5),(1,6),(3,4),(3,5),(3,6)]
+    it "e3" $
+      eliminaVertice grafoThomson 8 `shouldBe` 
+      creaGrafo [1..6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,4),(3,5),(3,6)]
+    
+  describe "sumaArista" $ do
+    it "e1" $
+      sumaArista (grafoCiclo 5) (1,3) `shouldBe`
+      creaGrafo [1..5] [(1,2),(1,3),(1,5),(2,3),(3,4),(4,5)]
+    it "e2" $
+      sumaArista (grafoEstrella 5) (4,5) `shouldBe`
+      creaGrafo [1..6] [(1,2),(1,3),(1,4),(1,5),(1,6),(4,5)]
+
+  describe "sumaVertice" $ do
+    it "e1" $
+      sumaVertice (completo 5) 6 `shouldBe`
+      creaGrafo [1..6] [(1,2),(1,3),(1,4),(1,5),(1,6),
+                        (2,3),(2,4),(2,5),(2,6),(3,4),
+                        (3,5),(3,6),(4,5),(4,6),(5,6)]
+    it "e2" $
+      sumaVertice (creaGrafo [2..5] []) 1 `shouldBe`
+      creaGrafo [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5)]
+
+  describe "Suma de vértices de grafos completos" $ do
+    it "prop_completos" $ 
+      property $ prop_completos
+
+  describe "sumaGrafos" $ do
+    it "e1" $
+      sumaGrafos (grafoCiclo 3) (grafoCiclo 3) `shouldBe`
+      creaGrafo [1,2,3] [(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)]
+    it "e2" $
+      sumaGrafos (grafoRueda 3) (grafoEstrella 4) `shouldBe`
+      creaGrafo [1..5] [(1,1),(1,2),(1,3),(1,4),(1,5),(2,2),
+                        (2,3),(2,4),(2,5),(3,3),(3,4),(3,5)]
+
+  describe "unionGrafos" $ do
+    it "e1" $
+      unionGrafos (grafoCiclo 3) (grafoCiclo 3) `shouldBe`
+      creaGrafo [1,2,3] [(1,2),(1,3),(2,3)]
+    it "e2" $
+      unionGrafos (grafoRueda 3) (grafoEstrella 4) `shouldBe`
+      creaGrafo [1..5] [(1,2),(1,3),(1,4),(1,5),(2,3),(2,3)]
   
+  describe "complementario" $ do
+    it "e1" $
+      complementario (grafoEstrella 5) `shouldBe`
+      creaGrafo [1..6] [(1,1),(2,2),(2,3),(2,4),(2,5),(2,6),
+                        (3,3),(3,4),(3,5),(3,6),(4,4),(4,5),
+                        (4,6),(5,5),(5,6),(6,6)]
+    it "e2" $
+      complementario (completo 4) `shouldBe`
+      creaGrafo [1..4] [(1,1),(2,2),(3,3),(4,4)]
+
 verificaDefinicionesYPropiedades :: IO ()
 verificaDefinicionesYPropiedades = 
   hspec ejemplosDefinicionesYPropiedades
+
+-- La validación es
+--    ghci> verificaDefinicionesYPropiedades
+--    
+--    DefinicionesYPropiedades
+--      orden
+--        e1
+--        e2
+--        e3
+--        e4
+--        e5
+--      tamaño
+--        e1
+--        e2
+--        e3
+--        e4
+--        e5
+--      sonIncidentes
+--        e1
+--        e2
+--      esLazo
+--        e1
+--        e2
+--      entorno
+--        e1
+--        e2
+--        e3
+--        e4
+--      grado
+--        e1
+--        e2
+--        e3
+--        e4
+--      esAislado
+--        e1
+--        e2
+--        e3
+--        e4
+--      esRegular
+--        e1
+--        e2
+--        e3
+--        e4
+--      valenciaMin
+--        e1
+--        e2
+--        e3
+--        e4
+--      valenciaMax
+--        e1
+--        e2
+--        e3
+--      esSimple
+--        e1
+--        e2
+--        e3
+--      secuenciaGrados
+--        e1
+--        e2
+--        e3
+--      secuenciaGrafica
+--        e1
+--        e2
+--        e3
+--        e4
+--      esSubgrafo
+--        e1
+--        e2
+--        e3
+--        e4
+--      esSubgrafoMax
+--        e1
+--        e2
+--        e3
+--        e4
+--      esSubgrafoPropio
+--        e1
+--        e2
+--        e3
+--        e4
+--      Propiedades
+--        Lema del apretón de manos
+--        Teorema de Havel-Hakimi
+--      eliminaArista
+--        e1
+--        e2
+--        e3
+--      eliminaVertice
+--        e1
+--        e2
+--        e3
+--      sumaArista
+--        e1
+--        e2
+--      sumaVertice
+--        e1
+--        e2
+--      Suma de vértices de grafos completos
+--        prop_completos
+--      sumaGrafos
+--        e1
+--        e2
+--      unionGrafos
+--        e1
+--        e2
+--      complementario
+--        e1
+--        e2
+--    
+--    Finished in 4.8628 seconds
+--    78 examples, 0 failures
