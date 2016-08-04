@@ -1,6 +1,6 @@
 \ignora{
 \begin{code}
-module ConectividadGrafos (esCamino
+module ConectividadGrafos ( esCamino
                           , aristasCamino
                           , verticesCamino
                           , esRecorrido
@@ -14,7 +14,8 @@ module ConectividadGrafos (esCamino
                           , esGeodesica
                           , esCerrado
                           , esCircuito
-                          , esCiclo 
+                          , esCiclo
+                          , estarConectadosCamino
                           , prop_conectadosRelEqui
                           , componentesConexas
                           , esConexo
@@ -77,16 +78,14 @@ recorridas en el camino \texttt{c}.
 
 \begin{sesion}
 ghci> aristasCamino [1,2,3,4,5,1]
-[(1,2),(2,3),(3,4),(4,5),(5,1)]
+[(1,2),(2,3),(3,4),(4,5),(1,5)]
 ghci> aristasCamino [1,2,4,5,3,1]
-[(1,2),(2,4),(4,5),(5,3),(3,1)]
+[(1,2),(2,4),(4,5),(3,5),(1,3)]
 ghci> aristasCamino [1,2,3]
 [(1,2),(2,3)]
 ghci> aristasCamino [1,4,2,5,3,6]
-[(1,4),(4,2),(2,5),(5,3),(3,6)]
+[(1,4),(2,4),(2,5),(3,5),(3,6)]
 \end{sesion}
-
-\comentario{Revisar los ejemplos de aristasCamino.}
 
 \index{\texttt{aristasCamino}}
 \begin{code}
@@ -122,10 +121,8 @@ La función \texttt{(esRecorrido g c)} se verifica si el camino \texttt{c} es un
 recorrido en el grafo \texttt{g}. Por ejemplo,
 
 \begin{sesion}
-esRecorrido (grafoRueda 5) [1,2,3,4,1,2,5]  ==  False
-esRecorrido ['a'..'z']       ==  True
-esRecorrido [1,2,4,6,4]      ==  True
-esRecorrido [1,2,1,3,4]      ==  True       
+esRecorrido (completo 5) [1,2,3]    ==  True
+esRecorrido (completo 5) [1,2,3,2]  ==  False
 \end{sesion}
        
 \begin{code}
@@ -148,13 +145,11 @@ La función \texttt{(esCaminoSimple g c)} se verifica si el camino \texttt{c} es
 un arco. Por ejemplo,
 
 \begin{sesion}
-esCaminoSimple [1..4]       ==  True
-esCaminoSimple [1,2,6,1]    ==  True
-esCaminoSimple [1,2,3,1,4]  ==  False
-esCaminoSimple ['a'..'f']   ==  True
+esCaminoSimple (completo 5) [1,2,3]      ==  True
+esCaminoSimple (completo 5) [1,2,3,1]    ==  True
+esCaminoSimple (completo 5) [1,2,3,4,2]  ==  False
+esRecorrido (completo 5) [1,2,3,4,2]     ==  True
 \end{sesion}
-
-\comentario{Corregir ejemplos de esCaminoSimple.}
 
 \begin{code}
 esCaminoSimple :: Ord a => Grafo a -> [a] -> Bool
@@ -298,7 +293,7 @@ prop_todosCaminosBA g =
 La comprobación es
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=15}) prop_todosCaminosBA
+ghci> quickCheck prop_todosCaminosBA
 +++ OK, passed 100 tests:
 \end{sesion}
 
@@ -314,12 +309,9 @@ La función \texttt{(estanConectados g u v)} se verifica si los vértices
 \texttt{u} y \texttt{v} están conectados en el grafo \texttt{g}.
 
 \begin{sesion}
-ghci> estanConectados (grafoCiclo 7) 1 6
-True
-ghci> estanConectados (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
-False
-ghci> estanConectados grafoNulo 1 4
-False
+estanConectados (grafoCiclo 7) 1 6                    ==  True
+estanConectados (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  False
+estanConectados grafoNulo 1 4                         ==  False
 \end{sesion}
 
 \index{\texttt{estanConectados}}
@@ -348,11 +340,10 @@ La función \texttt{(distancia g u v)} devuelve la distancia entre los vértices
 estén conectados devuelve el valor \texttt{Nothing}. Por ejemplo,
 
 \begin{sesion}
-distancia (grafoCiclo 7) 1 4                    ==  Just 3
-distancia (grafoRueda 7) 2 5                    ==  Just 2
-distancia (grafoEstrella 4) 1 3                 ==  Just 1
+distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 1  ==  Just 0
+distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 2  ==  Just 1
+distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 3  ==  Just 2
 distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Nothing
-distancia grafoNulo 2 3                         ==  Nothing
 \end{sesion}
 
 \index{\texttt{distancia}}
@@ -374,8 +365,8 @@ La función \texttt{(esGeodesica g c)} se verifica si el camino \texttt{c} es
 una geodésica entre sus extremos en el grafo \texttt{g}.
 
 \begin{sesion}
-esGeodesica (grafoCiclo 7) [1,2,3,4,5,6]            == False
 esGeodesica (grafoCiclo 7) [1,7,6]                  == True            
+esGeodesica (grafoCiclo 7) [1,2,3,4,5,6]            == False
 esGeodesica (grafoRueda 7) [2,1,5]                  == True
 esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4]  == False
 esGeodesica grafoNulo [1,4]                         == False
@@ -467,7 +458,12 @@ esCiclo g c =
 
 La función \texttt{(estarConectadosCamino g)} devuelve la relación entre   
 los vértices del grafo \texttt{g} de estar conectados por un camino en    
-él.
+él. Por ejemplo,
+
+\begin{sesion}
+ghci> estarConectadosCamino (creaGrafo [1..4] [(1,2),(2,4)])
+[(1,1),(1,2),(1,4),(2,1),(2,2),(2,4),(3,3),(4,1),(4,2),(4,4)]
+\end{sesion}
 
 \begin{code}
 estarConectadosCamino :: Ord a => Grafo a -> [(a,a)]
@@ -479,7 +475,7 @@ estarConectadosCamino g =
 A continuación, comprobaremos el resultado con QuickCheck.
   
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=10}) prop_conectadosRelEqui
+ghci> quickCheck prop_conectadosRelEqui
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -551,7 +547,7 @@ esConexo g = length (componentesConexas g) == 1
 Vamos a comprobar el resultado con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=10}) prop_caracterizaGrafoConexo
+ghci> quickCheck prop_caracterizaGrafoConexo
 +++ OK, passed 100 tests.
 \end{sesion}      
     
@@ -602,12 +598,11 @@ La función \texttt{(diametro g)} devuelve el diámetro del grafo \texttt{g}. Po
 ejemplo,
 
 \begin{sesion}
-diametro (grafoCiclo 8)      ==  Just 4
-diametro (grafoRueda 7)      ==  Just 2
-diametro grafoPetersen       ==  Just 2
-let g = creaGrafo [1,2,3] [(1,2)]
-diametro g                   ==  Just 1
-diametro grafoNulo           ==  Nothing       
+diametro (grafoCiclo 8)                      ==  Just 4
+diametro (grafoRueda 7)                      ==  Just 2
+diametro grafoPetersen                       ==  Just 2
+diametro (creaGrafo [1,2,3] [(1,2),(2,3)])   ==  Just 2
+diametro grafoNulo                           ==  Nothing       
 \end{sesion}
 
 \index{\texttt{diametro}}
@@ -631,12 +626,11 @@ La función \texttt{(radio g)} devuelve el radio del grafo \texttt{g}. Por
 ejemplo,
 
 \begin{sesion}
-radio (grafoCiclo 8)      ==  Just 4
-radio (grafoRueda 7)      ==  Just 1
-radio grafoPetersen       ==  Just 2
-let g = creaGrafo [1,2,3] [(1,2)]
-radio g                   ==  Just 1
-radio grafoNulo           ==  Nothing
+radio (grafoCiclo 8)                     ==  Just 4
+radio (grafoRueda 7)                     ==  Just 1
+radio grafoPetersen                      ==  Just 2
+radio (creaGrafo [1,2,3] [(1,2),(2,3)])  ==  Just 1
+radio grafoNulo                          ==  Nothing
 \end{sesion}
 
 \index{\texttt{radio}}

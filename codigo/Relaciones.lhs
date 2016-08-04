@@ -36,7 +36,7 @@ esRelacion [3,1] [2,4,7] [(3,1),(1,2)]  ==  False
 \begin{code}
 esRelacion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
 esRelacion xs ys r =
-  productoCartesiano xs ys `esSubconjunto` r
+  r `esSubconjunto` productoCartesiano xs ys 
 \end{code}
 
 \subsection{Imagen por una relación}

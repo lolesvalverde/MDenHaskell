@@ -1,13 +1,19 @@
 \ignora{
 \begin{code}
-module Morfismos ( esMorfismo
-                  , morfismos
-                  , esIsomorfismo
-                  , isomorfismos
-                  , isomorfos
-                  , esAutomorfismo
-                  , automorfismos                  
-                  ) where
+module Morfismos ( conservaAdyacencia
+                 , esMorfismo
+                 , morfismos
+                 , esIsomorfismo
+                 , isomorfismos1
+                 , isomorfos1
+                 , isomorfismos2
+                 , isomorfos2
+                 , esInvariantePorIsomorfismos
+                 , isomorfismos
+                 , isomorfos
+                 , esAutomorfismo
+                 , automorfismos                  
+                 ) where
   
 import Conjuntos
 import Relaciones
@@ -123,7 +129,7 @@ La función \texttt{(esMorfismo g h vvs)} se verifica si la función representad
 por \texttt{vvs} es un morfismo entre los grafos \texttt{g} y \texttt{h}.
 
 \begin{sesion}
-ghci> let g1 = creaGrafo [1,2,3] [(1,2),(2,3)]
+ghci> let g1 = creaGrafo [1,2,3] [(1,2),(3,2)]
 ghci> let g2 = creaGrafo [4,5,6] [(4,6),(5,6)]
 ghci> esMorfismo g1 g2 [(1,4),(2,6),(3,5)]
 True
@@ -216,17 +222,19 @@ ghci> isomorfismos1 (bipartitoCompleto 1 2)
 [[(1,'b'),(2,'a'),(3,'c')],[(1,'b'),(2,'c'),(3,'a')]]
 ghci> isomorfismos1 (grafoCiclo 4) 
                    (creaGrafo [5..8] [(5,7),(5,8),(6,7),(6,8)])
-[[(1,5),(2,7),(3,6),(4,8)],[(1,5),(2,8),(3,6),(4,7)],
- [(1,6),(2,7),(3,5),(4,8)],[(1,6),(2,8),(3,5),(4,7)],
- [(1,7),(2,5),(3,8),(4,6)],[(1,7),(2,6),(3,8),(4,5)],
- [(1,8),(2,5),(3,7),(4,6)],[(1,8),(2,6),(3,7),(4,5)]
+[[(1,6),(2,7),(3,5),(4,8)],[(1,5),(2,7),(3,6),(4,8)],
+ [(1,7),(2,6),(3,8),(4,5)],[(1,8),(2,6),(3,7),(4,5)],
+ [(1,5),(2,8),(3,6),(4,7)],[(1,6),(2,8),(3,5),(4,7)],
+ [(1,8),(2,5),(3,7),(4,6)],[(1,7),(2,5),(3,8),(4,6)]]
 \end{sesion}
 
 \index{\texttt{isomorfismos}}
 \begin{code}
 isomorfismos1 :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos1 g h =
-  [f | f <- biyecciones vs1 vs2 , conservaAdyacencia g h f]
+  [f | f <- biyecciones vs1 vs2
+     , conservaAdyacencia g h f
+     , conservaAdyacencia h g (inversa f)]
   where vs1 = vertices g
         vs2 = vertices h
 \end{code}
@@ -285,8 +293,7 @@ esInvariantePorIsomorfismos p g h =
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=10}) 
-                     (esInvariantePorIsomorfismos orden)
+ghci> quickCheck (esInvariantePorIsomorfismos orden)
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -299,8 +306,7 @@ ghci> quickCheckWith (stdArgs {maxSize=10})
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=7})
-                     (esInvariantePorIsomorfismos tamaño)
+ghci> quickChec (esInvariantePorIsomorfismos tamaño)
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -313,8 +319,7 @@ ghci> quickCheckWith (stdArgs {maxSize=7})
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickCheckWith (stdArgs {maxSize=7})
-                     (esInvariantePorIsomorfismos secuenciaGrados)
+ghci> quickCheck (esInvariantePorIsomorfismos secuenciaGrados)
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -432,28 +437,28 @@ automorfismos en \texttt{g}. Por ejemplo,
 
 \begin{sesion}
 ghci> automorfismos (grafoCiclo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,4),(3,3),(4,2)],
- [(1,2),(2,1),(3,4),(4,3)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,4),(3,1),(4,2)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,3),(3,2),(4,1)]]
+[[(1,1),(2,2),(3,3),(4,4)],[(1,3),(2,2),(3,1),(4,4)],
+ [(1,4),(2,3),(3,2),(4,1)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,2),(2,1),(3,4),(4,3)],
+ [(1,1),(2,4),(3,3),(4,2)],[(1,3),(2,4),(3,1),(4,2)]]
 ghci> automorfismos (completo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,1),(2,2),(3,4),(4,3)],
- [(1,1),(2,3),(3,2),(4,4)],[(1,1),(2,3),(3,4),(4,2)],
- [(1,1),(2,4),(3,2),(4,3)],[(1,1),(2,4),(3,3),(4,2)],
- [(1,2),(2,1),(3,3),(4,4)],[(1,2),(2,1),(3,4),(4,3)],
- [(1,2),(2,3),(3,1),(4,4)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,4),(3,3),(4,1)],
- [(1,3),(2,1),(3,2),(4,4)],[(1,3),(2,1),(3,4),(4,2)],
- [(1,3),(2,2),(3,1),(4,4)],[(1,3),(2,2),(3,4),(4,1)],
- [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,4),(3,2),(4,1)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,4),(2,1),(3,3),(4,2)],
- [(1,4),(2,2),(3,1),(4,3)],[(1,4),(2,2),(3,3),(4,1)],
- [(1,4),(2,3),(3,1),(4,2)],[(1,4),(2,3),(3,2),(4,1)]]
+[[(1,1),(2,2),(3,3),(4,4)],[(1,2),(2,1),(3,3),(4,4)],
+ [(1,3),(2,2),(3,1),(4,4)],[(1,2),(2,3),(3,1),(4,4)],
+ [(1,3),(2,1),(3,2),(4,4)],[(1,1),(2,3),(3,2),(4,4)],
+ [(1,4),(2,3),(3,2),(4,1)],[(1,3),(2,4),(3,2),(4,1)],
+ [(1,3),(2,2),(3,4),(4,1)],[(1,4),(2,2),(3,3),(4,1)],
+ [(1,2),(2,4),(3,3),(4,1)],[(1,2),(2,3),(3,4),(4,1)],
+ [(1,4),(2,1),(3,2),(4,3)],[(1,1),(2,4),(3,2),(4,3)],
+ [(1,1),(2,2),(3,4),(4,3)],[(1,4),(2,2),(3,1),(4,3)],
+ [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,1),(3,4),(4,3)],
+ [(1,4),(2,1),(3,3),(4,2)],[(1,1),(2,4),(3,3),(4,2)],
+ [(1,1),(2,3),(3,4),(4,2)],[(1,4),(2,3),(3,1),(4,2)],
+ [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,1),(3,4),(4,2)]]
 ghci> automorfismos (grafoRueda 5)
-[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,2),(3,5),(4,4),(5,3)],
- [(1,1),(2,3),(3,2),(4,5),(5,4)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
- [(1,1),(2,4),(3,3),(4,2),(5,5)],[(1,1),(2,4),(3,5),(4,2),(5,3)],
- [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,5),(3,4),(4,3),(5,2)]]
+[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,4),(3,3),(4,2),(5,5)],
+ [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,3),(3,2),(4,5),(5,4)],
+ [(1,1),(2,5),(3,4),(4,3),(5,2)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
+ [(1,1),(2,4),(3,5),(4,2),(5,3)],[(1,1),(2,2),(3,5),(4,4),(5,3)]]
 \end{sesion}
 
 \index{\texttt{automorfismos}}

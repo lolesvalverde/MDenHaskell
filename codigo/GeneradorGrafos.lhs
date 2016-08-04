@@ -67,7 +67,8 @@ G [] []
 \begin{code}
 generaGrafo :: Int -> Gen (Grafo Int)
 generaGrafo s = do
-  n  <- choose (0,s)
+  let m = s  `mod` 11
+  n  <- choose (0,m)
   as <- sublistOf [(x,y) | x <- [1..n], y <- [x..n]] 
   return (creaGrafo [1..n] as)
 \end{code}
@@ -87,10 +88,14 @@ En el siguiente ejemplo se pueden observar algunos grafos generados
 \begin{sesion}
 ghci> sample (arbitrary :: Gen (Grafo Int))
 G [] []
-G [1,2] [(1,2)]
+G [1,2] [(1,1),(2,2)]
+G [1] [(1,1)]
 G [] []
-G [1,2,3,4,5] [(1,3),(1,5),(2,3),(2,4),(3,4),(4,5),(5,5)]
-G [1,2,3,4,5,6] [(1,2),(1,5),(3,3),(4,5),(4,6),(5,5),(5,6)]
-G [1,2,3,4] [(1,1),(1,2),(1,3),(1,4),(2,3),(3,3)]
-G [1,2,3,4,5,6,7,8,9,10,11,12,13,14] [(1,1),(1,3),(2,5),(3,4),(9,11)]
+G [] []
+G [1,2,3] [(1,3),(3,3)]
+G [1,2,3] [(1,1),(1,2),(1,3),(3,3)]
+G [1,2] [(2,2)]
+G [1] []
+G [1,2] [(1,1),(1,2),(2,2)]
+G [1] [(1,1)]
 \end{sesion}
