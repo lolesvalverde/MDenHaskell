@@ -499,8 +499,8 @@ eliminaArista g (a,b) =
 \begin{definicion}
   Sea $G = (V,A)$ un grafo y sea $v \in V$. Definimos el grafo $G \setminus v$
   como el subgrafo de $G$, $G' = (V',A')$, con $V' = V \setminus \{v\}$ y
-  $A' = A \setminus \{a \in A | v \text{ es un extremo de }a\}$.  Esta operación se
-  denomina \textbf{eliminar un vértice}.
+  $A' = A \setminus \{a \in A | v \text{ es un extremo de }a\}$.  Esta
+  operación se denomina \textbf{eliminar un vértice}.
 \end{definicion}
 
 La función \texttt{(eliminaVertice g v)} elimina el vértice \texttt{v}
@@ -557,9 +557,10 @@ sumaArista g a =
 \subsubsection{Suma de vértices}
 
 \begin{definicion}
-  Sea $G = (V,A)$ un grafo y sea $v \not\in V$. Definimos el grafo $G + v$ como el
-  grafo $G' = (V',A')$, donde $V'= V \cup \{v\}$, $A'=A \cup \{(u,v) | u \in V\}$.
-  Esta operación se denomina \textbf{suma de un vértice}.
+  Sea $G = (V,A)$ un grafo y sea $v \not\in V$. Definimos el grafo $G + v$ como
+  el grafo $G' = (V',A')$, donde $V'= V \cup \{v\}$,
+  $A'=A \cup \{(u,v) | u \in V\}$.  Esta operación se denomina \textbf{suma de
+    un vértice}.
 \end{definicion}
 
 La función \texttt{(sumaVertice g a)} suma el vértice \texttt{a} al grafo

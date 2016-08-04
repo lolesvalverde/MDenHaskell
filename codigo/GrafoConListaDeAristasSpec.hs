@@ -1,3 +1,5 @@
+module GrafoConListaDeAristasSpec where
+
 import Test.Hspec
 import GrafoConListaDeAristas
 
