@@ -4,6 +4,7 @@ module Conjuntos (conjuntoVacio
                   , esVacio
                   , esUnitario
                   , esSubconjunto
+                  , conjuntosIguales
                   , esSubconjuntoPropio
                   , complementario
                   , cardinal

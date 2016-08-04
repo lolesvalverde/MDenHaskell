@@ -44,7 +44,7 @@ module DefinicionesYPropiedades (orden
                                 , prop_completos
                                 , sumaGrafos
                                 , unionGrafos
-                                , complementario
+                                , grafoComplementario
                                 ) where
 
 import Conjuntos
@@ -676,22 +676,22 @@ unionGrafos g1 g2 =
   $\overline{A} = \{(u,v)| u,v \in V,(u,v) \not\in A\}$.
 \end{definicion}
 
-La función \texttt{(complementario g)} devuelve el grafo complementario de
+La función \texttt{(grafoComplementario g)} devuelve el grafo complementario de
 \texttt{g}.
 
 \begin{sesion}
-ghci> complementario (grafoEstrella 5)
+ghci> grafoComplementario (grafoEstrella 5)
 G [1,2,3,4,5,6] [(1,1),(2,2),(2,3),(2,4),(2,5),(2,6),
                  (3,3),(3,4),(3,5),(3,6),(4,4),(4,5),
                  (4,6),(5,5),(5,6),(6,6)]
-ghci> complementario (completo 4)
+ghci> grafoComplementario (completo 4)
 G [1,2,3,4] [(1,1),(2,2),(3,3),(4,4)]
 \end{sesion}
 
-\index{\texttt{complementario}}
+\index{\texttt{grafoComplementario}}
 \begin{code}
-complementario :: Ord a => Grafo a -> Grafo a 
-complementario  g =
+grafoComplementario :: Ord a => Grafo a -> Grafo a 
+grafoComplementario  g =
   creaGrafo vs
             [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
   where vs = vertices g

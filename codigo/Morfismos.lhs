@@ -338,15 +338,39 @@ isomorfos2 g =
   not. null . isomorfismos2 g
 \end{code}
 
+\begin{code}
+isomorfismos3 :: (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
+isomorfismos3 g h
+  | orden g  /= orden h  = []
+  | tamaño g /= tamaño h = []
+  | secuenciaGrados g /= secuenciaGrados h = []
+  | otherwise = aux (vertices g) (vertices h)
+     where aux [] _ = []
+           aux [x] [y] = [[(x,y)]]
+           aux (x:xs) ys = [(x,y):f | y <- ys, f <- aux xs (ys \\ [y]),
+                                         conservaAux f]
+           conservaAux [(a,b)] = True
+           conservaAux f = and [(i f x,i f y) `aristaEn` h |(x,y) <- aristas g,
+                                         elem x (dominio f),
+                                         elem y (dominio f)]
+           i = imagen
+
+isomorfos3 g = not . null . isomorfismos3 g
+
+\end{code}
+
 Vamos a comparar la eficiencia entre ambas definiciones
 
 \begin{sesion}
 ghci> let n = 6 in (length (isomorfismos1 (completo n) (completo n)))
 720
-(0.29 secs, 32,272,208 bytes)
+(0.18 secs, 0 bytes)
 ghci> let n = 6 in (length (isomorfismos2 (completo n) (completo n)))
 720
-(0.30 secs, 36,592,648 bytes)
+(0.18 secs, 0 bytes)
+ghci> let n = 6 in (length (isomorfismos3 (completo n) (completo n)))
+720
+(0.34 secs, 63,621,712 bytes)
 
 ghci> let n = 6 in (length (isomorfismos1 (grafoCiclo n) (grafoCiclo n)))
 12
@@ -354,6 +378,9 @@ ghci> let n = 6 in (length (isomorfismos1 (grafoCiclo n) (grafoCiclo n)))
 ghci> let n = 6 in (length (isomorfismos2 (grafoCiclo n) (grafoCiclo n)))
 12
 (0.04 secs, 0 bytes)
+ghci> let n = 6 in (length (isomorfismos3 (grafoCiclo n) (grafoCiclo n)))
+12
+(0.08 secs, 0 bytes)
 
 ghci> length (isomorfismos1 (grafoCiclo 6) (completo 7))
 0
@@ -361,11 +388,17 @@ ghci> length (isomorfismos1 (grafoCiclo 6) (completo 7))
 ghci> length (isomorfismos2 (grafoCiclo 6) (completo 7))
 0
 (0.01 secs, 0 bytes)
+ghci> length (isomorfismos3 (grafoCiclo 6) (completo 7))
+0
+(0.00 secs, 0 bytes)
 
 ghci> isomorfos1 (completo 10) (grafoCiclo 10)
 False
 (51.90 secs, 12,841,861,176 bytes)
 ghci> isomorfos2 (completo 10) (grafoCiclo 10)
+False
+(0.00 secs, 0 bytes)
+ghci> isomorfos3 (completo 10) (grafoCiclo 10)
 False
 (0.00 secs, 0 bytes)
 
