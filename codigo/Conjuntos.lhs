@@ -1,6 +1,6 @@
 \ignora{
 \begin{code}
-module Conjuntos (conjuntoVacio
+module Conjuntos (  conjuntoVacio
                   , esVacio
                   , esUnitario
                   , esSubconjunto

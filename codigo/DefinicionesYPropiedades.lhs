@@ -47,7 +47,7 @@ module DefinicionesYPropiedades (orden
                                 , grafoComplementario
                                 ) where
 
-import Conjuntos
+import Conjuntos hiding (complementario)
 import Relaciones
 import Funciones
 import GrafoConListaDeAristas
