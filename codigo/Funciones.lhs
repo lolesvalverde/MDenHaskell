@@ -15,6 +15,12 @@ module Funciones ( esFuncion
 import Conjuntos
 import Relaciones
 
+<<<<<<< HEAD
+=======
+import Test.DocTest       
+import Text.PrettyPrint.GenericPretty (pp)
+import Test.QuickCheck
+>>>>>>> Rev-4-Ago
 import Data.List
 import Test.DocTest       
 import Test.QuickCheck
