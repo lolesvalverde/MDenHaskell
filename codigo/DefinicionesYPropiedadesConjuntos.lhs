@@ -2,7 +2,15 @@
 
 \ignora{
 \begin{code}
-module DefinicionesYOperacionesConjuntos (esUnitario) where
+module DefinicionesYOperacionesConjuntos ( esUnitario
+                                         , esSubconjunto
+                                         , esSubconjuntoPropio
+                                         , complementario
+                                         , cardinal
+                                         , unionConjuntos
+                                         , interseccion
+                                         , productoCartesiano
+                                         ) where
 
 import ConjuntosConListasOrdenadasSinRepeticion
     
@@ -67,15 +75,15 @@ forma algo más precisa, podemos dar la siguiente definición:
   entre el conjunto $X$ y el elemento $x$.
 \end{nota}
 
-La función \texttt{(esUnitario xs)} se verifica si el conjunto 
-\texttt{xs} es unitario.
+La función \texttt{(esUnitario c)} se verifica si el conjunto 
+\texttt{c} es unitario.
 
 \begin{sesion}
 ghci> let c1 = foldr inserta vacio (take 10 (repeat 5))
-esUnitario c1  ==  True
 ghci> let c2 = foldr inserta vacio "valverde"
-esUnitario c2  ==  False
 ghci> let c3 = foldr inserta vacio "coco"
+esUnitario c1  ==  True
+esUnitario c2  ==  False
 esUnitario c2  ==  False
 \end{sesion}
 
@@ -94,21 +102,29 @@ esUnitario c | esVacio c = False
   $A \subseteq B$. En caso contrario se notará $A \not \subseteq B$.
 \end{definicion}
 
-La función \texttt{(esSubconjunto xs ys)} se verifica si \texttt{xs} es
-un subconjunto de \texttt{ys}.
+La función \texttt{(esSubconjunto c1 c2)} se verifica si \texttt{c1} es
+un subconjunto de \texttt{c2}.
 
 \begin{sesion}
-[4,2]         `esSubconjunto` [3,2,4]       ==  True
-[1,2]         `esSubconjunto` conjuntoVacio ==  False
-conjuntoVacio `esSubconjunto` [1,2]         ==  True
-[4,2,1]       `esSubconjunto` [1,2,4]       ==  True
-[3,2,4]       `esSubconjunto` [5,2]         ==  False
+ghci> let c1 = foldr inserta vacio [4,2]
+ghci> let c2 = foldr inserta vacio [3,2,4]
+ghci> let c3 = foldr inserta vacio [4,2,1]
+ghci> let c4 = foldr inserta vacio [1,2,4]
+c1 `esSubconjunto` c2     ==  True
+c1 `esSubconjunto` vacio  ==  False
+vacio `esSubconjunto` c2  ==  True
+c3 `esSubconjunto` c4     ==  True
+c2 `esSubconjunto` c1     ==  False
 \end{sesion}
 
 \index{\texttt{esSubconjunto}}
 \begin{code}
-esSubconjunto :: Ord a => [a] -> [a] -> Bool
-esSubconjunto xs ys = all (`pertenece` ys) xs
+esSubconjunto :: Ord a => Conj a -> Conj a -> Bool
+esSubconjunto c1 c2
+    | esVacio c1             = True
+    | pertenece c2 (min c1)  = esSubconjunto (elimina (min c1) c1) c2
+    | otherwise              = False
+      where min = minimoElemento
 \end{code}
 
 \subsection{Igualdad de conjuntos}
@@ -119,20 +135,25 @@ esSubconjunto xs ys = all (`pertenece` ys) xs
   $B \subseteq A$. Lo notaremos $A = B$.
 \end{definicion}
 
-La función \texttt{(conjuntosIguales xs ys)} se verifica si los conjuntos
+La función \texttt{(conjuntosIguales c1 c2)} se verifica si los conjuntos
 \texttt{xs} y \texttt{ys} son iguales. Por ejemplo,
 
 \begin{sesion}
-conjuntosIguales [4,2] [3,2,4]  ==  True
-conjuntosIguales [5,2] [3,2,4]  ==  False
+ghci> let c1 = foldr inserta vacio [4,2]
+ghci> let c2 = foldr inserta vacio [3,2,4]
+ghci> let c3 = foldr inserta vacio [4,2,1]
+ghci> let c4 = foldr inserta vacio [1,2,4]
+ghci> let c5 = foldr inserta vacio [4,4,4,4,4,4,2]
+conjuntosIguales c1 c2  ==  False
+conjuntosIguales c3 c4  ==  True
+conjuntosIguales c1 c5  ==  True
 \end{sesion}
 
 \index{\texttt{conjuntosIguales}}
 \begin{code}
-conjuntosIguales :: Ord a => [a] -> [a] -> Bool
-conjuntosIguales = undefined
---conjuntosIguales xs ys =
---    esSubconjunto xs ys && esSubconjunto ys xs
+conjuntosIguales :: Ord a => Conj a -> Conj a -> Bool
+conjuntosIguales c1 c2 = 
+    esSubconjunto c1 c2 && esSubconjunto c2 c1
 \end{code}
 
 \subsection{Subconjuntos propios}
@@ -142,8 +163,8 @@ conjuntosIguales = undefined
   denominan \textbf{subconjuntos propios} de $A$.
 \end{definicion}
 
-La función \texttt{(esSubconjuntoPropio xs ys)} se verifica si \texttt{xs} es
-un subconjunto propio de \texttt{ys}. Por ejemplo,
+La función \texttt{(esSubconjuntoPropio c1 c2)} se verifica si \texttt{c1} es
+un subconjunto propio de \texttt{c2}. Por ejemplo,
 
 \begin{sesion}
 [4,2]   `esSubconjuntoPropio` [3,2,4]  ==  True
@@ -152,9 +173,11 @@ un subconjunto propio de \texttt{ys}. Por ejemplo,
 
 \index{\texttt{esSubconjuntoPropio}}
 \begin{code}
---esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
---esSubconjuntoPropio xs ys =
---  xs `esSubconjunto` ys && not (conjuntosIguales xs ys) 
+esSubconjuntoPropio :: Ord a => Conj a -> Conj a -> Bool
+esSubconjuntoPropio c1 c2
+    | esVacio c1 = False
+    | conjuntosIguales c1 c2 = False
+    | otherwise = esSubconjunto c1 c2
 \end{code}
 
 \subsection{Complementario de un conjunto}
@@ -165,17 +188,27 @@ un subconjunto propio de \texttt{ys}. Por ejemplo,
   $\overline{A} = \{x | x \in U, x \not \in A \}$
 \end{definicion}
 
-La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los conjuntos
-\texttt{xs} y \texttt{ys}. Por ejemplo,
+La función \texttt{(complementario u c)} devuelve el complementario del 
+conjunto \texttt{c} y en el universo \texttt{u}. Por ejemplo,
 
 \begin{sesion}
-complementario [1..9] [3,2,5,7]  ==  [1,4,6,8,9]
+ghci> let u  = foldr inserta vacio [1..9]
+ghci> let c1 = foldr inserta vacio [3,2,5,7]
+ghci> let c2 = foldr inserta vacio [1,4,6,8,9]
+complementario u c1     ==  {1,4,6,8,9}
+complementario u u      ==  {}
+complementario u vacio  ==  {1,2,3,4,5,6,7,8,9}
+complementario u c2     ==  {2,3,5,7}
 \end{sesion}
 
 \index{\texttt{complementario}}
 \begin{code}
-complementario :: Eq a => [a] -> [a] -> [a]
-complementario = (\\)
+complementario :: Ord a => Conj a -> Conj a -> Conj a
+complementario u c
+    | esVacio c = u
+    | otherwise =
+        complementario (elimina (min c) u) (elimina (min c) c)
+        where min = minimoElemento
 \end{code}
 
 \subsection{Cardinal de un conjunto}
@@ -189,14 +222,17 @@ La función \texttt{(cardinal xs)} devuelve el cardinal del conjunto
 \texttt{xs}. Por ejemplo,
 
 \begin{sesion}
-cardinal conjuntoVacio  ==  0
-cardinal [1..10]        ==  10
+cardinal vacio                              ==  0
+cardinal (foldr inserta vacio [1..10])      ==  10
+cardinal (foldr inserta vacio "chocolate")  ==  7
 \end{sesion}
 
 \index{\texttt{cardinal}}
 \begin{code}
-cardinal :: Eq a => [a] -> Int
-cardinal = length
+cardinal :: Ord a => Conj a -> Int
+cardinal c | esVacio c = 0
+           | otherwise = 1 + cardinal (elimina (min c) c)
+     where min = minimoElemento
 \end{code}
 
 \subsection{Unión de conjuntos}
@@ -209,25 +245,30 @@ cardinal = length
   $A \cup B = \{ x | x \in A \lor x \in B \}$
 \end{definicion}
 
-La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los
+La función \texttt{(unionConjuntos c1 c2)} devuelve la unión de los
 conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
 
 \begin{sesion}
-unionConjuntos [1,3..9] [2,4..9]  ==  [1,3,5,7,9,2,4,6,8]
-unionConjuntos "centri" "fugado"  ==  "centrifugado"
+ghci> let c1 = foldr inserta vacio [1,3..9]
+ghci> let c2 = foldr inserta vacio [2,4..9]
+ghci> let c3 = foldr inserta vacio "centri"
+ghci> let c4 = foldr inserta vacio "fugado"
+ghci> unionConjuntos c1 c2
+{1,3,5,7,9,2,4,6,8}
+ghci> unionConjuntos c3 c4
+{'a','c','d','e','f','g','i','n','o','r','t','u'}
 \end{sesion}
 
 \index{\texttt{unionConjuntos}}
 \begin{code}
-unionConjuntos :: Eq a => [a] -> [a] -> [a]
-unionConjuntos = union 
+unionConjuntos :: Ord a => Conj a  -> Conj a -> Conj a
+unionConjuntos c1 c2
+    | esVacio c1 = c2
+    | esVacio c2 = c1
+    | otherwise =
+        unionConjuntos (elimina (min c1) c1) (inserta (min c1) c2)
+        where min = minimoElemento
 \end{code}
-
-\begin{nota}
-  Para ahorrar en escritura, en el futuro utilizaremos la función
-  \texttt{(union xs ys)} definida en el módulo \texttt{Data.List}, equivalente
-  a \texttt{(unionConjuntos xs ys)}
-\end{nota}
 
 \subsection{Intersección de conjuntos}
 
@@ -239,19 +280,33 @@ unionConjuntos = union
   $A \cap B = \{ x | x \in A \land x \in B \}$
 \end{definicion}
 
-La función \texttt{(interseccion xs ys)} devuelve la intersección de los
-conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
+La función \texttt{(interseccion c1 c2)} devuelve la intersección de los
+conjuntos \texttt{c1} y \texttt{c2}. Por ejemplo,
 
 \begin{sesion}
-interseccion [1,3..20] [2,4..20]  ==  []
-interseccion [2,4..30] [4,8..30]  ==  [4,8,12,16,20,24,28]
-interseccion "noche" "dia"        ==  ""
+ghci> let c1 = foldr inserta vacio [1,3..20]
+ghci> let c2 = foldr inserta vacio [2,4..20]
+ghci> let c3 = foldr inserta vacio [2,4..30]
+ghci> let c4 = foldr inserta vacio [4,8..30]
+ghci> let c5 = foldr inserta vacio "noche"
+ghci> let c6 = foldr inserta vacio "dia"
+interseccion c1 c2  ==  {}
+interseccion c3 c4  ==  {4,8,12,16,20,24,28}
+interseccion c5 c6  ==  {}
 \end{sesion}
 
 \index{\texttt{interseccion}}
 \begin{code}
-interseccion :: Eq a => [a] -> [a] -> [a]
-interseccion = intersect
+interseccion :: Ord a => Conj a -> Conj a -> Conj a
+interseccion c1 c2
+    | esVacio c1 || esVacio c2 =  vacio
+    | m1 < m2 = interseccion (elimina m1 c1) c2
+    | m1 > m2 = interseccion c1 (elimina (m2) c2)
+    | otherwise =
+        inserta m1 (interseccion (elimina m1 c1) (elimina m2 c2))
+             where m1 = minimoElemento c1
+                   m2 = minimoElemento c2
+                        
 \end{code}
 
 \subsection{Producto cartesiano}
@@ -267,18 +322,35 @@ interseccion = intersect
   a $B$; es decir, $A \times B = \{(a,b) | a \in A, b \in B \}$.
 \end{definicion}
 
-La función \texttt{(productoCartesiano xs ys)} devuelve el producto cartesiano
+La función \texttt{(productoCartesiano c1 c2)} devuelve el producto cartesiano
 de xs e ys. Por ejemplo,
 
 \begin{sesion}
-productoCartesiano [3,1] [2,4,7]  ==  [(3,2),(3,4),(3,7),(1,2),(1,4),(1,7)]
+ghci> let c1 = foldr inserta vacio [3,1]
+ghci> let c2 = foldr inserta vacio [2,4,7]
+ghci> productoCartesiano c1 c2
+{(1,2),(1,4),(1,7),(3,2),(3,4),(3,7)}
+ghci> productoCartesiano c2 c1
+{(2,1),(2,3),(4,1),(4,3),(7,1),(7,3)}
 \end{sesion}
 
 \index{\texttt{productoCartesiano}}
 \begin{code}
-productoCartesiano :: [a] -> [b] -> [(a,b)]
-productoCartesiano xs ys =
-  [(x,y) | x <- xs, y <- ys]
+productoCartesiano :: (Ord a, Ord b) => Conj a -> Conj b -> Conj (a,b)
+productoCartesiano c1 c2  
+    | esVacio c1 || esVacio c2 = vacio
+    | otherwise =
+        u (productoUnitario m1 c2) (productoCartesiano (elimina m1 c1) c2)
+    where u = unionConjuntos
+          m1 = minimoElemento c1
+          m2 = minimoElemento c2
+
+productoUnitario :: (Ord a, Ord b) => a -> Conj b -> Conj (a,b)
+productoUnitario a c
+    | esVacio c = vacio
+    | otherwise =
+        inserta (a, min c) (productoUnitario a (elimina (min c) c))
+    where min = minimoElemento
 \end{code}
 
 \subsection{Combinaciones}
