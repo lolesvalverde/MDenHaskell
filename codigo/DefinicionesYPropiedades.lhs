@@ -47,15 +47,16 @@ module DefinicionesYPropiedades (orden
                                 , grafoComplementario
                                 ) where
 
-import Conjuntos hiding (complementario)
+import Conjuntos
 import Relaciones
 import Funciones
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
 
-import Test.QuickCheck
 import Data.List
+import Test.DocTest
+import Test.QuickCheck
 \end{code}
 }
 
@@ -67,40 +68,32 @@ import Data.List
 \end{definicion}
 
 La función \texttt{(orden g)} devuelve el orden del grafo \texttt{g}.
-Por ejemplo,
-
-\begin{sesion}
-orden (grafoCiclo 4)         == 4
-orden (grafoEstrella 4)      == 5
-orden grafoPetersen          == 10
-orden (grafoPetersenGen 2 5) == 4
-orden (completo 3)           == 3
-\end{sesion}
 
 \index{\texttt{orden}}
 \begin{code}
+-- | Ejemplos
+-- >>> orden (grafoCiclo 4)
+-- 4
+-- >>> orden (grafoEstrella 4)
+-- 5
 orden :: Grafo a -> Int
 orden = length . vertices 
 \end{code}
 
 \begin{definicion}
-  El \textbf{tamaño} de un grafo $G=(V,A)$ se define como su número de 
+  El \textbf{tamaño} de un grafo $G = (V,A)$ se define como su número de 
   aristas. Lo denotaremos por $|A(G)|$.
 \end{definicion}
 
 La función \texttt{(tamaño g)} devuelve el orden del grafo \texttt{g}.
-Por ejemplo,
-
-\begin{sesion}
-tamaño (grafoCiclo 4)         == 4
-tamaño (grafoEstrella 4)      == 4
-tamaño grafoPetersen          == 15
-tamaño (grafoPetersenGen 2 5) == 4
-tamaño (completo 3)           == 3
-\end{sesion}
 
 \index{\texttt{tamaño}}
 \begin{code}
+-- | Ejempolos
+-- >>> tamaño (grafoCiclo 4)
+-- 4
+-- >>> tamaño grafoPetersen
+-- 15
 tamaño :: Grafo a -> Int
 tamaño = length . aristas 
 \end{code}
@@ -111,15 +104,14 @@ tamaño = length . aristas
 \end{definicion}
 
 La función \texttt{(sonIncidentes a a')} se verifica si las aristas 
-\texttt{a} y \texttt{a'} son incidentes. Por ejemplo,
-
-\begin{sesion}
-sonIncidentes (1,2) (2,4) == True
-sonIncidentes (1,2) (3,4) == False
-\end{sesion}
-
+\texttt{a} y \texttt{a'} son incidentes. 
 \index{\texttt{sonIncidentes}}
 \begin{code}
+-- | Ejemplos
+-- >>> sonIncidentes (1,2) (2,4)
+-- True
+-- >>> sonIncidentes (1,2) (3,4)
+-- False
 sonIncidentes :: Eq a => (a,a) -> (a,a) -> Bool
 sonIncidentes (u1,u2) (v1,v2) =
   or [u1 == v1, u1 == v2, u2 == v1, u2 == v2]
@@ -131,15 +123,15 @@ sonIncidentes (u1,u2) (v1,v2) =
 \end{definicion}
 
 La función \texttt{(esLazo a)} se verifica si la arista \texttt{a} es un
-lazo. Por ejemplo,
-
-\begin{sesion}
-esLazo (4,4) == True
-esLazo (1,2) == False
-\end{sesion}
+lazo. 
 
 \index{\texttt{esLazo}}
 \begin{code}
+-- | Ejemplos
+-- >>> esLazo (4,4)
+-- True
+-- >>> esLazo (1,2)
+-- False
 esLazo :: Eq a => (a,a) -> Bool
 esLazo (u,v) = u == v
 \end{code}
@@ -151,17 +143,13 @@ esLazo (u,v) = u == v
 \end{definicion}
 
 La función \texttt{(entorno g v)} devuelve el entorno del vértice \texttt{v} en
-el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-entorno (grafoEstrella 5)       1  ==  [2,3,4,5,6]
-entorno (grafoEstrella 5)       2  ==  [1]
-entorno (bipartitoCompleto 2 4) 5  ==  [1,2]
-entorno grafoPetersen           4  ==  [1,2,9]
-\end{sesion}
+el grafo \texttt{g}. 
 
 \index{\texttt{entorno}}
 \begin{code}
+-- | Ejemplo
+-- >>> entorno (creaGrafo [1..5] [(1,2),(1,3),(2,3)]) 2
+-- [1,3]
 entorno :: Eq a => Grafo a -> a -> [a]
 entorno = adyacentes
 \end{code}
@@ -172,17 +160,16 @@ entorno = adyacentes
 \end{definicion}
 
 La función \texttt{(grado g v)} devuelve el grado del vértice \texttt{v} 
-en el grafo \texttt{g}. Por ejemplo,
+en el grafo \texttt{g}.
 
-\begin{sesion}
-grado (grafoEstrella 5) 1   ==  5
-grado (grafoEstrella 5) 2   ==  1
-grado grafoThomson      6   ==  3
-grado (grafoAmistad 2)  4   ==  2
-\end{sesion}
 
 \index{\texttt{grado}}
 \begin{code}
+-- | Ejemplos
+-- >>> grado (creaGrafo [1..5] [(1,2),(1,3),(2,3)]) 2
+-- 2
+-- >>> grado (grafoEstrella 5) 1
+-- 5
 grado :: Eq a => Grafo a -> a -> Int
 grado g v = length (entorno g v)
 \end{code}
@@ -192,17 +179,15 @@ grado g v = length (entorno g v)
 \end{definicion}
 
 La función \texttt{(esAislado g v)} se verifica si el vértice \texttt{v} 
-es aislado en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-esAislado (grafoEstrella 5)                      1  ==  False
-esAislado (bipartitoCompleto 1 5)                4  ==  False
-esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 2  ==  False
-esAislado (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 3  ==  True
-\end{sesion}
+es aislado en el grafo \texttt{g}. 
 
 \index{\texttt{esAislado}}
 \begin{code}
+-- | Ejemplos
+-- >>> esAislado (creaGrafo [1..5] [(1,2),(1,3),(2,3)]) 4
+-- True
+-- >>> esAislado (creaGrafo [1..5] [(1,2),(1,3),(2,3)]) 3
+-- False
 esAislado :: Eq a => Grafo a -> a -> Bool
 esAislado g v = grado g v == 0
 \end{code}
@@ -212,59 +197,49 @@ esAislado g v = grado g v == 0
 \end{definicion}
 
 La función \texttt{(esRegular g)} se verifica si el grafo \texttt{g} es regular.
-Por ejemplo,
-
-\begin{sesion}
-esRegular (grafoCiclo 5)           ==  True
-esRegular (bipartitoCompleto 2 2)  ==  True
-esRegular (grafoEstrella 4)        ==  False
-esRegular (grafoRueda 7)           ==  False
-\end{sesion}
 
 \index{\texttt{esRegular}}
 \begin{code}
+-- | Ejemplos
+-- >>> esRegular (creaGrafo [1..3] [(1,2),(1,3),(2,3)]) 
+-- True
+-- >>> esRegular (creaGrafo [1..4] [(1,2),(1,3),(2,4)]) 
+-- False
 esRegular :: Eq a => Grafo a -> Bool
 esRegular g = all (==x) xs
   where (x:xs) = [grado g v | v <- vertices g]
 \end{code}
 
 \begin{definicion}
-  Dado un grafo $G=(V,A)$ llamamos \textbf{valencia mínima} o \textbf{grado
+  Dado un grafo $G = (V,A)$ llamamos \textbf{valencia mínima} o \textbf{grado
   mínimo} de $G$ al valor $\delta(G) = \min \{grad(v) | v \in V\}$
 \end{definicion}
 
 La función \texttt{(valenciaMin g)} devuelve la valencia mínima del grafo
 \texttt{g}.
 
-\begin{sesion}
-valenciaMin (grafoEstrella 6)                       ==  1
-valenciaMin (grafoCiclo 4)                          ==  2
-valenciaMin grafoPetersen                           ==  3
-valenciaMin (creaGrafo [1..4] [(1,2),(1,4),(2,4)])  ==  0
-\end{sesion}
-
 \index{\texttt{valenciaMin}}
 \begin{code}
+-- | Ejemplo
+-- >>> valenciaMin (creaGrafo [1..4] [(1,2),(1,3),(2,4)]) 
+-- 1
 valenciaMin :: Ord a => Grafo a -> Int
 valenciaMin g = minimum [grado g v | v <- vertices g]
 \end{code}
 
 \begin{definicion}
-  Dado un grafo $G=(V,A)$ llamamos \textbf{valencia máxima} o \textbf{grado
+  Dado un grafo $G = (V,A)$ llamamos \textbf{valencia máxima} o \textbf{grado
   máximo} de $G$ al valor $\delta(G) = \max \{grad(v) | v \in V\}$
 \end{definicion}
 
 La función \texttt{(valenciaMax g)} devuelve la valencia máxima del grafo
 \texttt{g}.
 
-\begin{sesion}
-valenciaMax (grafoEstrella 6) == 6
-valenciaMax (grafoCiclo 4)    == 2
-valenciaMax grafoPetersen     == 3
-\end{sesion}
-
 \index{\texttt{valenciaMax}}
 \begin{code}
+-- | Ejemplo
+-- >>> valenciaMax (creaGrafo [1..4] [(1,2),(1,3),(2,4)]) 
+-- 2
 valenciaMax :: Ord a => Grafo a -> Int
 valenciaMax g = maximum [grado g v | v <- vertices g]
 \end{code}
@@ -275,14 +250,13 @@ valenciaMax g = maximum [grado g v | v <- vertices g]
 
 La función \texttt{(esSimple g)} se verifica si \texttt{g} es un grafo simple.
 
-\begin{sesion}
-esSimple (bipartitoCompleto 3 4)                 ==  True
-esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)])  ==  True
-esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)])  ==  False
-\end{sesion}
-
 \index{\texttt{esSimple}}
 \begin{code}
+-- | Ejemplos
+-- >>> esSimple (creaGrafo [1..3] [(1,2),(1,3),(2,3)])
+-- True
+-- >>> esSimple (creaGrafo [1..3] [(1,1),(1,2),(2,3)])
+-- False
 esSimple :: Ord a => Grafo a -> Bool
 esSimple g =
   and [not ((x,x) `aristaEn` g) | x <- vertices g]
