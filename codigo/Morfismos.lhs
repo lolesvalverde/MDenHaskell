@@ -182,8 +182,6 @@ morfismos g h =
      , conservaAdyacencia g h f]
 \end{code}
 
-\comentario{Buscar definiciones más eficientes de morfismos.}
-
 \comentario{Introducir el problema de decidir si dos grafos son homomorfos.}
 
 \subsection{Isomorfismos}
@@ -399,13 +397,15 @@ posibles g h =
 
 Vamos a comparar la eficiencia entre ambas definiciones
 
-\begin{comentario}
+\begin{nota}
 La nueva definición de \texttt{(isomorfismos3 g h)} es la más eficiente
 con grafos "poco regulares", sin embargo, cuando todos los vértices    
 tienen el mismo grado, \texttt{(isomorfismos2 g h)} sigue siendo mejor       
 opción (aunque no hay mucha diferencia en el coste computacional).
-Falta comentarlo y seguir buscando definiciones más eficientes.
-\end{comentario}
+\end{nota}
+
+\comentario{Buscar definiciones más eficientes que isomorfismos3.}
+
 
 \begin{sesion}
 ghci> let n = 6 in (length (isomorfismos1 (completo n) (completo n)))
@@ -488,8 +488,6 @@ isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos = isomorfos2
 \end{code}
 \end{nota}
-
-\comentario{Buscar una definicion más eficiente que isomorfismos2}
 
 \subsection{Automorfismos}
 

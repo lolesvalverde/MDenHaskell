@@ -20,9 +20,6 @@ import Data.List  ( (\\)
 \end{code}
 }
 
-\comentario{La sección de relaciones homogéneas no debe de depender de
-  grafo. Por tanto, hay que eliminar sus importaciones.}
-
 Para elaborar la presente sección, se han consultado los
   \href{https://rodas5.us.es/file/a774213d-a15a-41df-816c-e633fb1a5876/1/01-Conjuntos.pdf}
   {\textbf{apuntes de Álgebra Básica}},\
