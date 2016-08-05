@@ -42,11 +42,13 @@ module EjemplosGrafos ( grafoNulo
                       , grafoMoebiusCantor
                       ) where
 
-import Data.List
-import Test.DocTest
+import Data.List ( sort )
 import Text.PrettyPrint.GenericPretty (pp)
-
-import GrafoConListaDeAristas
+import GrafoConListaDeAristas ( Grafo
+                              , aristas
+                              , creaGrafo
+                              , vertices
+                              )
 \end{code}
 }
 
@@ -549,3 +551,10 @@ La función \texttt{grafoMoebiusCantor} genera el grafo de Moëbius--Cantor
 grafoMoebiusCantor :: Grafo Int
 grafoMoebiusCantor = grafoPetersenGen 8 3
 \end{code}
+
+\ignora{
+  La validación es
+
+  > doctest EjemplosGrafos.lhs
+  Examples: 22  Tried: 22  Errors: 0  Failures: 0
+}

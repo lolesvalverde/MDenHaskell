@@ -8,17 +8,15 @@ module RelacionesHomogeneas ( esRelacionHomogenea
                             , esTransitiva
                             , esRelacionEquivalencia
                             , esRelacionOrden
-                            , clasesEquivalencia) where
+                            , clasesEquivalencia
+                            ) where
 
-import Conjuntos
-import Relaciones
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
-
-import Test.DocTest       
-import Test.QuickCheck
-import Data.List
+import Conjuntos  ( esSubconjunto
+                  )
+import Relaciones ( esRelacion
+                  )
+import Data.List  ( (\\)
+                  )
 \end{code}
 }
 
@@ -290,3 +288,10 @@ clasesEquivalencia [] _ = []
 clasesEquivalencia (x:xs) r = (x:c) : clasesEquivalencia (xs \\ c) r
   where c = filter (estaRelacionado r x) xs
 \end{code}
+
+\ignora{
+  La validación es
+
+  > doctest RelacionesHomogeneas.lhs
+  Examples: 58  Tried: 58  Errors: 0  Failures: 0
+}

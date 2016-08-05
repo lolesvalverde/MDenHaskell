@@ -15,9 +15,10 @@ module Conjuntos (  conjuntoVacio
                   , variacionesR
                   ) where
 
-import Test.DocTest
-import Test.QuickCheck
-import Data.List
+import Data.List ( (\\)
+                 , intersect
+                 , nub
+                 , union)
 \end{code}
 }
 
@@ -388,12 +389,8 @@ variacionesR k us =
 \end{code}
 
 \ignora{
-\begin{code}
-verifica :: IO ()
-verifica = doctest ["Conjuntos"]
-\end{code}
   La validación es
 
   > doctest Conjuntos.lhs 
-  Examples: 31  Tried: 31  Errors: 0  Failures: 0
+  Examples: 30  Tried: 30  Errors: 0  Failures: 0
 }  

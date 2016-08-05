@@ -15,16 +15,36 @@ module Morfismos ( conservaAdyacencia
                  , automorfismos                  
                  ) where
   
-import Conjuntos
-import Relaciones
-import Funciones
-import GrafoConListaDeAristas
-import EjemplosGrafos
+import Data.List                      ( nub
+                                      , permutations
+                                      )
+import Test.QuickCheck                ( quickCheck
+                                      )
+import Text.PrettyPrint.GenericPretty ( pp
+                                      )
+import Funciones                      ( Funcion
+                                      , biyecciones
+                                      , esBiyectiva
+                                      , esFuncion
+                                      , funciones
+                                      , imagen
+                                      , inversa
+                                      )
+import GrafoConListaDeAristas         ( Grafo
+                                      , aristas
+                                      , aristaEn
+                                      , creaGrafo
+                                      , vertices
+                                      )
+import EjemplosGrafos                 ( grafoCiclo
+                                      )
 import GeneradorGrafos
-import DefinicionesYPropiedades 
-    
-import Test.QuickCheck
-import Data.List
+import DefinicionesYPropiedades       ( orden
+                                      , grado
+                                      , secuenciaGrados
+                                      , tamaño
+                                      )
+
 \end{code}
 }
 
@@ -99,20 +119,18 @@ caracterísicas.
 
 La función \texttt{(conservaAdyacencia g h f)} se verifica si la función
 \texttt{f} entre los grafos \texttt{g} y \texttt{h} conserva las
-adyacencias. Por ejemplo,
-
-\begin{sesion}
-ghci> let g1 = creaGrafo [1..4] [(1,2),(2,3),(3,4)]
-ghci> let g2 = creaGrafo [1..4] [(1,2),(2,3),(2,4)]
-ghci> let g3 = creaGrafo [4,6..10] [(4,8),(6,8),(8,10)]
-ghci> conservaAdyacencia g1 g3 [(1,4),(2,6),(3,8),(4,10)]
-False
-ghci> conservaAdyacencia g2 g3 [(1,4),(2,8),(3,6),(4,10)]
-True
-\end{sesion}
+adyacencias. 
 
 \index{\texttt{conservaAdyacencia}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1..4] [(1,2),(2,3),(3,4)]
+-- >>> let g2 = creaGrafo [1..4] [(1,2),(2,3),(2,4)]
+-- >>> let g3 = creaGrafo [4,6..10] [(4,8),(6,8),(8,10)]
+-- >>> conservaAdyacencia g1 g3 [(1,4),(2,6),(3,8),(4,10)]
+-- False
+-- >>> conservaAdyacencia g2 g3 [(1,4),(2,8),(3,6),(4,10)]
+-- True
 conservaAdyacencia :: (Ord a, Ord b) =>
                       Grafo a -> Grafo b -> Funcion a b -> Bool
 conservaAdyacencia g h f =
@@ -128,18 +146,16 @@ conservaAdyacencia g h f =
 La función \texttt{(esMorfismo g h vvs)} se verifica si la función representada
 por \texttt{vvs} es un morfismo entre los grafos \texttt{g} y \texttt{h}.
 
-\begin{sesion}
-ghci> let g1 = creaGrafo [1,2,3] [(1,2),(3,2)]
-ghci> let g2 = creaGrafo [4,5,6] [(4,6),(5,6)]
-ghci> esMorfismo g1 g2 [(1,4),(2,6),(3,5)]
-True
-ghci> esMorfismo g1 g2 [(1,4),(2,5),(3,6)]
-False
-ghci> esMorfismo g1 g2 [(1,4),(2,6),(3,5),(7,9)]
-False
-\end{sesion}
-
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,2),(3,2)]
+-- >>> let g2 = creaGrafo [4,5,6] [(4,6),(5,6)]
+-- >>> esMorfismo g1 g2 [(1,4),(2,6),(3,5)]
+-- True
+-- >>> esMorfismo g1 g2 [(1,4),(2,5),(3,6)]
+-- False
+-- >>> esMorfismo g1 g2 [(1,4),(2,6),(3,5),(7,9)]
+-- False
 esMorfismo :: (Ord a,Ord b) => Grafo a -> Grafo b ->
               Funcion a b -> Bool
 esMorfismo g1 g2 f =
@@ -150,20 +166,16 @@ esMorfismo g1 g2 f =
 La función \texttt{(morfismos g h)} devuelve todos los posibles morfismos entre
 los grafos \texttt{g} y \texttt{h}.
 
-\begin{sesion}
-ghci> morfismos (grafoCiclo 3)
-                (creaGrafo [4..6] [(4,5),(4,6),(5,6)])
-[[(1,4),(2,5),(3,6)],[(1,4),(2,6),(3,5)],[(1,5),(2,4),(3,6)],
- [(1,5),(2,6),(3,4)],[(1,6),(2,4),(3,5)],[(1,6),(2,5),(3,4)]]
-ghci> morfismos (bipartitoCompleto 1 2) (grafoCiclo 3)
-[[(1,1),(2,2),(3,2)],[(1,1),(2,2),(3,3)],[(1,1),(2,3),(3,2)],
- [(1,1),(2,3),(3,3)],[(1,2),(2,1),(3,1)],[(1,2),(2,1),(3,3)],
- [(1,2),(2,3),(3,1)],[(1,2),(2,3),(3,3)],[(1,3),(2,1),(3,1)],
- [(1,3),(2,1),(3,2)],[(1,3),(2,2),(3,1)],[(1,3),(2,2),(3,2)]]
-\end{sesion}
-
 \index{\texttt{morfismos}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 3
+-- G [1,2,3] [(1,2),(1,3),(2,3)]
+-- >>> let g = creaGrafo [4,6] [(4,4),(6,6)]
+-- >>> morfismos (grafoCiclo 3) g
+-- [[(1,4),(2,4),(3,4)],[(1,6),(2,6),(3,6)]]
+-- >>> morfismos g (grafoCiclo 3) 
+-- []
 morfismos :: (Ord a, Ord b) => Grafo a -> Grafo b -> [[(a,b)]]
 morfismos g h =
   [f | f <- funciones (vertices g) (vertices h)
@@ -185,22 +197,15 @@ morfismos g h =
 La función \texttt{(esIsomorfismo g h f)} se verifica si la aplicación
 \texttt{f} es un isomorfismo entre los grafos \texttt{g} y \texttt{h}.
 
-\begin{sesion}
-ghci> esIsomorfismo (grafoCiclo 3)
-                    (creaGrafo ['a'..'c']
-                               [('a','b'),('a','c'),('b','c')])
-                    [(1,'a'),(2,'b'),(3,'c')]
-True
-ghci> esIsomorfismo (bipartitoCompleto 1 2) (grafoCiclo 3)
-                    [(1,1),(2,3),(3,2)]
-False
-ghci> esIsomorfismo (bipartitoCompleto 1 2) (grafoCiclo 3)
-                    [(1,3),(2,2),(2,2)] 
-False
-\end{sesion}
-
 \index{\texttt{esIsomorfismo}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,1),(1,2),(2,3)]
+-- >>> let g2 = creaGrafo [2,4,6] [(2,2),(2,4),(4,6)]
+-- >>> esIsomorfismo g1 g2 [(1,2),(2,4),(3,6)]
+-- True
+-- >>> esIsomorfismo g1 g2 [(1,2),(2,2),(3,6)]
+-- False
 esIsomorfismo :: (Ord a,Ord b) =>
                  Grafo a -> Grafo b -> Funcion a b -> Bool
 esIsomorfismo g h f =
@@ -212,24 +217,25 @@ esIsomorfismo g h f =
 \end{code}
 
 La función \texttt{(isomorfismos1 g h)} devuelve todos los isomorfismos posibles
-entre los grafos \texttt{g} y \texttt{h}. Por ejemplo,
-
-\begin{sesion}
-ghci> isomorfismos1 (bipartitoCompleto 1 2) (grafoCiclo 3)
-[]
-ghci> isomorfismos1 (bipartitoCompleto 1 2) 
-                   (creaGrafo "abc" [('a','b'),('b','c')])
-[[(1,'b'),(2,'a'),(3,'c')],[(1,'b'),(2,'c'),(3,'a')]]
-ghci> isomorfismos1 (grafoCiclo 4) 
-                   (creaGrafo [5..8] [(5,7),(5,8),(6,7),(6,8)])
-[[(1,6),(2,7),(3,5),(4,8)],[(1,5),(2,7),(3,6),(4,8)],
- [(1,7),(2,6),(3,8),(4,5)],[(1,8),(2,6),(3,7),(4,5)],
- [(1,5),(2,8),(3,6),(4,7)],[(1,6),(2,8),(3,5),(4,7)],
- [(1,8),(2,5),(3,7),(4,6)],[(1,7),(2,5),(3,8),(4,6)]]
-\end{sesion}
+entre los grafos \texttt{g} y \texttt{h}. 
 
 \index{\texttt{isomorfismos}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,1),(1,2),(2,3)]
+-- >>> let g2 = creaGrafo [2,4,6] [(2,2),(2,4),(4,6)]
+-- >>> isomorfismos1 g1 g2
+-- [[(1,2),(2,4),(3,6)]]
+-- >>> let g3 = creaGrafo [1,2,3] [(1,1),(1,2),(1,3)]
+-- >>> let g4 = creaGrafo [2,4,6] [(2,2),(4,4),(2,6)]
+-- >>> isomorfismos1 g3 g4
+-- []
+-- >>> let g5 = creaGrafo [1,2,3] [(1,1),(2,2),(3,3)]
+-- >>> let g6 = creaGrafo [2,4,6] [(2,2),(4,4),(6,6)]
+-- >>> pp $ isomorfismos1 g5 g6
+-- [[(1, 2),(2, 4),(3, 6)],[(1, 4),(2, 2),(3, 6)],
+--  [(1, 6),(2, 4),(3, 2)],[(1, 4),(2, 6),(3, 2)],
+--  [(1, 6),(2, 2),(3, 4)],[(1, 2),(2, 6),(3, 4)]]
 isomorfismos1 :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos1 g h =
   [f | f <- biyecciones vs1 vs2
@@ -245,21 +251,19 @@ isomorfismos1 g h =
 \end{definicion}
 
 La función \texttt{isomorfos1 g h} se verifica si los grafos \texttt{g} y
-\texttt{h} son isomorfos. Por ejemplo,
-
-\begin{sesion}
-ghci> isomorfos1 (grafoRueda 4) (completo 4)
-True
-ghci> isomorfos1 (grafoRueda 5) (completo 5)
-False
-ghci> isomorfos1 (grafoEstrella 2) (bipartitoCompleto 1 2)
-True
-ghci> isomorfos1 (grafoCiclo 5) (bipartitoCompleto 2 3)
-False
-\end{sesion}
+\texttt{h} son isomorfos. 
 
 \index{\texttt{isomorfos}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,1),(1,2),(2,3)]
+-- >>> let g2 = creaGrafo [2,4,6] [(2,2),(2,4),(4,6)]
+-- >>> isomorfos1 g1 g2
+-- True
+-- >>> let g3 = creaGrafo [1,2,3] [(1,1),(1,2),(1,3)]
+-- >>> let g4 = creaGrafo [2,4,6] [(2,2),(4,4),(2,6)]
+-- >>> isomorfos1 g3 g4
+-- False
 isomorfos1 :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos1 g = not . null . isomorfismos1 g 
 \end{code}
@@ -306,7 +310,7 @@ ghci> quickCheck (esInvariantePorIsomorfismos orden)
 Vamos a comprobar el teorema anterior con QuickCheck.
 
 \begin{sesion}
-ghci> quickChec (esInvariantePorIsomorfismos tamaño)
+ghci> quickCheck (esInvariantePorIsomorfismos tamaño)
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -328,6 +332,21 @@ vamos a dar otra definición equivalente de las funciones
 \texttt{(isomorfismos1 g h)} y \texttt{(isomorfos1 g h)}.
 
 \begin{code}
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,1),(1,2),(2,3)]
+-- >>> let g2 = creaGrafo [2,4,6] [(2,2),(2,4),(4,6)]
+-- >>> isomorfismos2 g1 g2
+-- [[(1,2),(2,4),(3,6)]]
+-- >>> let g3 = creaGrafo [1,2,3] [(1,1),(1,2),(1,3)]
+-- >>> let g4 = creaGrafo [2,4,6] [(2,2),(4,4),(2,6)]
+-- >>> isomorfismos2 g3 g4
+-- []
+-- >>> let g5 = creaGrafo [1,2,3] [(1,1),(2,2),(3,3)]
+-- >>> let g6 = creaGrafo [2,4,6] [(2,2),(4,4),(6,6)]
+-- >>> pp $ isomorfismos2 g5 g6
+-- [[(1, 2),(2, 4),(3, 6)],[(1, 4),(2, 2),(3, 6)],
+--  [(1, 6),(2, 4),(3, 2)],[(1, 4),(2, 6),(3, 2)],
+--  [(1, 6),(2, 2),(3, 4)],[(1, 2),(2, 6),(3, 4)]]
 isomorfismos2 :: (Ord a, Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos2 g h
   | orden g  /= orden h  = []
@@ -338,6 +357,15 @@ isomorfismos2 g h
   where vs1 = vertices g
         vs2 = vertices h   
 
+-- | Ejemplos
+-- >>> let g1 = creaGrafo [1,2,3] [(1,1),(1,2),(2,3)]
+-- >>> let g2 = creaGrafo [2,4,6] [(2,2),(2,4),(4,6)]
+-- >>> isomorfos2 g1 g2
+-- True
+-- >>> let g3 = creaGrafo [1,2,3] [(1,1),(1,2),(1,3)]
+-- >>> let g4 = creaGrafo [2,4,6] [(2,2),(4,4),(2,6)]
+-- >>> isomorfos2 g3 g4
+-- False
 isomorfos2 :: (Ord a, Ord b) => Grafo a -> Grafo b -> Bool
 isomorfos2 g =
   not. null . isomorfismos2 g
@@ -473,52 +501,26 @@ isomorfos = isomorfos2
 La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
 \texttt{f} es un automorfismo de \texttt{g}.
 
-\begin{sesion}
-ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,2),(2,3),(3,1)]
-False
-ghci> esAutomorfismo (bipartitoCompleto 1 2) [(1,1),(2,3),(3,2)]
-True
-ghci> esAutomorfismo (grafoCiclo 4) [(1,2),(2,3),(3,4),(4,1)]
-True
-\end{sesion}
-
 \index{\texttt{esAutomorfismo}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g = creaGrafo [1,2,3] [(1,2),(1,3)]
+-- >>> esAutomorfismo g [(1,1),(2,3),(3,2)]
+-- True
+-- >>> esAutomorfismo g [(1,2),(2,3),(3,1)]
+-- False
 esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
 esAutomorfismo g = esIsomorfismo g g 
 \end{code}
 
 La función \texttt{(automorfismos g)} devuelve la lista de todos los posibles
-automorfismos en \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-ghci> automorfismos (grafoCiclo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,3),(2,2),(3,1),(4,4)],
- [(1,4),(2,3),(3,2),(4,1)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,2),(2,1),(3,4),(4,3)],
- [(1,1),(2,4),(3,3),(4,2)],[(1,3),(2,4),(3,1),(4,2)]]
-ghci> automorfismos (completo 4)
-[[(1,1),(2,2),(3,3),(4,4)],[(1,2),(2,1),(3,3),(4,4)],
- [(1,3),(2,2),(3,1),(4,4)],[(1,2),(2,3),(3,1),(4,4)],
- [(1,3),(2,1),(3,2),(4,4)],[(1,1),(2,3),(3,2),(4,4)],
- [(1,4),(2,3),(3,2),(4,1)],[(1,3),(2,4),(3,2),(4,1)],
- [(1,3),(2,2),(3,4),(4,1)],[(1,4),(2,2),(3,3),(4,1)],
- [(1,2),(2,4),(3,3),(4,1)],[(1,2),(2,3),(3,4),(4,1)],
- [(1,4),(2,1),(3,2),(4,3)],[(1,1),(2,4),(3,2),(4,3)],
- [(1,1),(2,2),(3,4),(4,3)],[(1,4),(2,2),(3,1),(4,3)],
- [(1,2),(2,4),(3,1),(4,3)],[(1,2),(2,1),(3,4),(4,3)],
- [(1,4),(2,1),(3,3),(4,2)],[(1,1),(2,4),(3,3),(4,2)],
- [(1,1),(2,3),(3,4),(4,2)],[(1,4),(2,3),(3,1),(4,2)],
- [(1,3),(2,4),(3,1),(4,2)],[(1,3),(2,1),(3,4),(4,2)]]
-ghci> automorfismos (grafoRueda 5)
-[[(1,1),(2,2),(3,3),(4,4),(5,5)],[(1,1),(2,4),(3,3),(4,2),(5,5)],
- [(1,1),(2,5),(3,2),(4,3),(5,4)],[(1,1),(2,3),(3,2),(4,5),(5,4)],
- [(1,1),(2,5),(3,4),(4,3),(5,2)],[(1,1),(2,3),(3,4),(4,5),(5,2)],
- [(1,1),(2,4),(3,5),(4,2),(5,3)],[(1,1),(2,2),(3,5),(4,4),(5,3)]]
-\end{sesion}
+automorfismos en \texttt{g}. 
 
 \index{\texttt{automorfismos}}
 \begin{code}
+-- | Ejemplo
+-- >>> automorfismos (creaGrafo [1,2,3] [(1,2),(1,3)])
+-- [[(1,1),(2,2),(3,3)],[(1,1),(2,3),(3,2)]]
 automorfismos :: Ord a => Grafo a -> [Funcion a a] 
 automorfismos g = isomorfismos1 g g 
 \end{code}
@@ -529,3 +531,10 @@ automorfismos g = isomorfismos1 g g
   isomorfos es una relación reflexiva; es decir, un grafo siempre es isomorfo a
   sí mismo.
 \end{nota}
+
+\ignora{
+  La validación es
+
+  > doctest Morfismos.lhs
+  Examples: 186  Tried: 186  Errors: 0  Failures: 0
+}

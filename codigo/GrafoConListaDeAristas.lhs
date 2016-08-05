@@ -31,9 +31,12 @@ En las definiciones del presente módulo se usarán las funciones \texttt{nub} y
 
 \ignora{
 \begin{code}
-import Data.List (nub, sort)
-import Test.DocTest
-import Text.PrettyPrint.GenericPretty
+import Data.List ( nub
+                 , sort
+                 )
+import Text.PrettyPrint.GenericPretty ( Generic
+                                      , Out
+                                      )
 \end{code}
 }
 
@@ -144,3 +147,10 @@ aristas :: Grafo a -> [(a,a)]
 aristas (G _ as) = as 
 \end{code}
 \end{itemize}
+
+\ignora{
+  La validación es
+
+  > doctest GrafoConListaDeAristas.lhs
+  Examples: 7  Tried: 7  Errors: 0  Failures: 0
+}

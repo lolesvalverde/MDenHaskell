@@ -26,19 +26,30 @@ module ConectividadGrafos ( esCamino
                           , centro 
                           ) where
   
-import Conjuntos
-import Relaciones
-import RelacionesHomogeneas
-import Funciones
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
-import DefinicionesYPropiedades
-import Morfismos
-    
-import Test.QuickCheck
-import Data.List
-import Data.Maybe
+import Data.List              ( (\\)
+                              , nub
+                              )
+import Data.Maybe             ( fromJust)
+import Test.QuickCheck        ( Gen
+                              , Property
+                              , (==>)
+                              , elements
+                              , forAll
+                              , quickCheck
+                              )
+import RelacionesHomogeneas   ( esRelacionEquivalencia
+                              , clasesEquivalencia
+                              )
+import GrafoConListaDeAristas ( Grafo
+                              , adyacentes
+                              , aristas
+                              , aristaEn
+                              , creaGrafo
+                              , vertices
+                              )
+import EjemplosGrafos         ( esGrafoNulo
+                              , grafoCiclo
+                              )
 \end{code}
 }
 
@@ -58,17 +69,17 @@ problema de encontrar la ruta más ventajosa en cada caso.
 \end{definicion}
 
 La función \texttt{(esCamino g c)} se verifica si la sucesión de vértices
-\texttt{c} es un camino en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-esCamino (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
-esCamino (grafoCiclo 5) [1,2,4,5,3,1]  ==  False
-esCamino grafoThomson [1,2,3]          ==  False
-esCamino grafoThomson [1,4,2,5,3,6]    ==  True
-\end{sesion}
+\texttt{c} es un camino en el grafo \texttt{g}. 
 
 \index{\texttt{esCamino}}
 \begin{code}
+-- | Ejemplo
+-- >>> grafoCiclo 5
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
+-- >>> esCamino (grafoCiclo 5) [1,2,3,4,5,1]
+-- True
+-- >>> esCamino (grafoCiclo 5) [1,2,4,5,3,1]
+-- False
 esCamino :: Ord a => Grafo a -> [a] -> Bool
 esCamino g c = all (`aristaEn` g) (zip c (tail c))
 \end{code}
@@ -76,19 +87,15 @@ esCamino g c = all (`aristaEn` g) (zip c (tail c))
 La función \texttt{(aristasCamino c)} devuelve la lista de las aristas
 recorridas en el camino \texttt{c}.
 
-\begin{sesion}
-ghci> aristasCamino [1,2,3,4,5,1]
-[(1,2),(2,3),(3,4),(4,5),(1,5)]
-ghci> aristasCamino [1,2,4,5,3,1]
-[(1,2),(2,4),(4,5),(3,5),(1,3)]
-ghci> aristasCamino [1,2,3]
-[(1,2),(2,3)]
-ghci> aristasCamino [1,4,2,5,3,6]
-[(1,4),(2,4),(2,5),(3,5),(3,6)]
-\end{sesion}
-
 \index{\texttt{aristasCamino}}
 \begin{code}
+-- | Ejemplos
+-- >>> aristasCamino [1,2,3]
+-- [(1,2),(2,3)]
+-- >>> aristasCamino [1,2,3,1]
+-- [(1,2),(2,3),(1,3)]
+-- >>> aristasCamino [1,2,3,2]
+-- [(1,2),(2,3),(2,3)]
 aristasCamino :: Ord a => [a] -> [(a,a)]
 aristasCamino c =
   map parOrdenado (zip c (tail c))
@@ -99,15 +106,11 @@ aristasCamino c =
 La función \texttt{(verticesCamino c)} devuelve la lista de las 
 vertices recorridas en el camino \texttt{c}.
 
-\begin{sesion}
-verticesCamino [1,2,3,4,5,1]  ==  [1,2,3,4,5]
-verticesCamino [1,2,4,5,3,1]  ==  [1,2,4,5,3]
-verticesCamino [1,2,3]        ==  [1,2,3]
-verticesCamino []             ==  []
-\end{sesion}
-
 \index{\texttt{verticesCamino}}
 \begin{code}
+-- | Ejemplo
+-- >>> verticesCamino [1,2,3,1]
+-- [1,2,3]
 verticesCamino :: Ord a => [a] -> [a]
 verticesCamino c = nub c
 \end{code}
@@ -118,14 +121,16 @@ verticesCamino c = nub c
 \end{definicion}
 
 La función \texttt{(esRecorrido g c)} se verifica si el camino \texttt{c} es un
-recorrido en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-esRecorrido (completo 5) [1,2,3]    ==  True
-esRecorrido (completo 5) [1,2,3,2]  ==  False
-\end{sesion}
+recorrido en el grafo \texttt{g}. 
        
 \begin{code}
+-- | Ejemplo
+-- >>> esRecorrido (grafoCiclo 4) [2,1,4]
+-- True
+-- >>> esRecorrido (grafoCiclo 4) [2,1,4,1]
+-- False
+-- >>> esRecorrido (grafoCiclo 4) [2,1,3]
+-- False
 esRecorrido :: Ord a => Grafo a -> [a] -> Bool      
 esRecorrido g c =
   esCamino g c && 
@@ -142,16 +147,18 @@ esRecorrido g c =
 \end{definicion}
 
 La función \texttt{(esCaminoSimple g c)} se verifica si el camino \texttt{c} es
-un arco. Por ejemplo,
-
-\begin{sesion}
-esCaminoSimple (completo 5) [1,2,3]      ==  True
-esCaminoSimple (completo 5) [1,2,3,1]    ==  True
-esCaminoSimple (completo 5) [1,2,3,4,2]  ==  False
-esRecorrido (completo 5) [1,2,3,4,2]     ==  True
-\end{sesion}
+un arco. 
 
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 4
+-- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
+-- >>> esCaminoSimple (grafoCiclo 4) [2,1,4]
+-- True
+-- >>> esCaminoSimple (grafoCiclo 4) [1,4,3,2,1]
+-- True
+-- >>> esCaminoSimple (grafoCiclo 4) [4,3,2,1,2]
+-- False
 esCaminoSimple :: Ord a => Grafo a -> [a] -> Bool
 esCaminoSimple g (v:vs) =
   esCamino g (v:vs) && 
@@ -167,16 +174,13 @@ esCaminoSimple g (v:vs) =
 \end{definicion}
 
 La función \texttt{(longitudCamino c)} devuelve la longitud del camino
-\texttt{c}. Por ejemplo,
-
-\begin{sesion}
-longitudCamino [1,2,3,4]   == 3
-longitudCamino ['a'..'z']  == 25
-longitudCamino [2,4..10]   == 4            
-\end{sesion}
+\texttt{c}. 
 
 \index{\texttt{longitudCamino}}
 \begin{code}
+-- | Ejemplo
+-- >>> longitudCamino [4,2,7]
+-- 2
 longitudCamino :: [a] -> Int
 longitudCamino c = length c - 1
 \end{code}
@@ -188,20 +192,17 @@ en profundidad sobre el grafo \texttt{g}. Este algoritmo recorre el grafo
 de izquierda a derecha y de forma al visitar un nodo, explora todos los   
 caminos que pueden continuar por él antes de pasar al siquiente. 
 
-\begin{sesion}
-ghci> todosCaminosBP (grafoCiclo 7) 1 6
-[[1,2,3,4,5,6],[1,7,6]]
-ghci> todosCaminosBP (grafoRueda 7) 2 5
-[[2,1,5],[2,3,1,5],[2,3,4,1,5],[2,7,6,1,5],[2,7,1,5],[2,1,4,5],
- [2,3,1,4,5],[2,7,6,1,4,5],[2,7,1,4,5],[2,1,3,4,5],[2,7,6,1,3,4,5],
- [2,7,1,3,4,5],[2,3,4,5],[2,1,6,5],[2,3,1,6,5],[2,3,4,1,6,5],
- [2,7,1,6,5],[2,1,7,6,5],[2,3,1,7,6,5],[2,3,4,1,7,6,5],[2,7,6,5]]
-ghci> todosCaminosBP (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
-[]
-\end{sesion}
-
 \index{\texttt{todosCaminos}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 4
+-- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
+-- >>> todosCaminosBP (grafoCiclo 4) 1 4
+-- [[1,4],[1,2,3,4]]
+-- >>> todosCaminosBP (grafoCiclo 4) 4 1
+-- [[4,3,2,1],[4,1]]
+-- >>> todosCaminosBP (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
+-- []
 todosCaminosBP :: Ord a => Grafo a -> a -> a -> [[a]]
 todosCaminosBP g x y = aux [[y]]
   where aux []       = []
@@ -220,20 +221,17 @@ los caminos simples posibles en el grafo \texttt{g} entre los vértices
 en anchura sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
 por niveles, de forma que el primer camino de la lista es de longitud mínima. 
 
-\begin{sesion}
-ghci> todosCaminosBA (grafoCiclo 7) 1 6
-[[1,7,6],[1,2,3,4,5,6]]
-ghci> todosCaminosBA (grafoRueda 7) 2 5
-[[2,1,5],[2,3,1,5],[2,7,1,5],[2,1,4,5],[2,3,4,5],[2,1,6,5],[2,7,6,5],
- [2,3,4,1,5],[2,7,6,1,5],[2,3,1,4,5],[2,7,1,4,5],[2,1,3,4,5],
- [2,3,1,6,5],[2,7,1,6,5],[2,1,7,6,5],[2,7,6,1,4,5],[2,7,1,3,4,5],
- [2,3,4,1,6,5],[2,3,1,7,6,5],[2,7,6,1,3,4,5],[2,3,4,1,7,6,5]]
-ghci> todosCaminosBA (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
-[]
-\end{sesion}
-
 \index{\texttt{todosCaminos}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 4
+-- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
+-- >>> todosCaminosBA (grafoCiclo 4) 1 4
+-- [[1,4],[1,2,3,4]]
+-- >>> todosCaminosBA (grafoCiclo 4) 4 1
+-- [[4,1],[4,3,2,1]]
+-- >>> todosCaminosBA (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
+-- []
 todosCaminosBA :: Ord a => Grafo a -> a -> a -> [[a]]
 todosCaminosBA g x y = aux [[y]]
   where aux []       = []
@@ -308,14 +306,13 @@ ghci> quickCheck prop_todosCaminosBA
 La función \texttt{(estanConectados g u v)} se verifica si los vértices
 \texttt{u} y \texttt{v} están conectados en el grafo \texttt{g}.
 
-\begin{sesion}
-estanConectados (grafoCiclo 7) 1 6                    ==  True
-estanConectados (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  False
-estanConectados grafoNulo 1 4                         ==  False
-\end{sesion}
-
 \index{\texttt{estanConectados}}
 \begin{code}
+-- | Ejemplos
+-- >>> estanConectados (creaGrafo [1..4] [(1,2),(2,4)]) 1 4
+-- True
+-- >>> estanConectados (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
+-- False
 estanConectados :: Ord a => Grafo a -> a -> a -> Bool
 estanConectados g u v
   | esGrafoNulo g = False
@@ -337,17 +334,19 @@ estanConectados g u v
 
 La función \texttt{(distancia g u v)} devuelve la distancia entre los vértices
 \texttt{u} y \texttt{v} en el grafo \texttt{g}. En caso de que los vértices no
-estén conectados devuelve el valor \texttt{Nothing}. Por ejemplo,
-
-\begin{sesion}
-distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 1  ==  Just 0
-distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 2  ==  Just 1
-distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 3  ==  Just 2
-distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4  ==  Nothing
-\end{sesion}
+estén conectados devuelve el valor \texttt{Nothing}. 
 
 \index{\texttt{distancia}}
 \begin{code}
+-- | Ejemplos
+-- >>> distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 1
+-- Just 0
+-- >>> distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 2
+-- Just 1
+-- >>> distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 3
+-- Just 2
+-- >>> distancia (creaGrafo [1..4] [(1,2),(2,3)]) 1 4
+-- Nothing
 distancia :: Ord a => Grafo a -> a -> a -> Maybe Int    
 distancia g u v
   | estanConectados g u v =
@@ -364,16 +363,14 @@ distancia g u v
 La función \texttt{(esGeodesica g c)} se verifica si el camino \texttt{c} es
 una geodésica entre sus extremos en el grafo \texttt{g}.
 
-\begin{sesion}
-esGeodesica (grafoCiclo 7) [1,7,6]                  == True            
-esGeodesica (grafoCiclo 7) [1,2,3,4,5,6]            == False
-esGeodesica (grafoRueda 7) [2,1,5]                  == True
-esGeodesica (creaGrafo [1..4] [(1,2),(2,3)]) [1,4]  == False
-esGeodesica grafoNulo [1,4]                         == False
-\end{sesion}
-
 \index{\texttt{esGeodesica}}    
 \begin{code}
+-- | Ejemplos
+-- >>> let g = creaGrafo [1..4] [(1,2),(1,3),(2,3),(3,4)]
+-- >>> esGeodesica g [1,3,4]
+-- True
+-- >>> esGeodesica g [1,2,3,4]
+-- False
 esGeodesica :: Ord a => Grafo a -> [a] -> Bool
 esGeodesica g c =
   esCamino g c && 
@@ -390,16 +387,16 @@ esGeodesica g c =
 La función \texttt{(esCerrado g c)} se verifica si el camino \texttt{c} es
 cerrado en el grafo \texttt{g}. Por ejemplo,
 
-\begin{sesion}
-esCerrado (grafoCiclo 5) [1,2,3,4,5,1]  ==  True
-esCerrado (grafoCiclo 5) [1,2,4,5,3,1]  ==  False
-esCerrado grafoThomson [1,4,2,5,3,6]    ==  False
-esCerrado grafoThomson [1,4,2,5,3,6,1]  ==  True
-esCerrado grafoNulo [1,2,1]             ==  False
-\end{sesion}
-
 \index{\texttt{esCerrado}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g = creaGrafo [1..4] [(1,2),(1,3),(2,3),(3,4)]
+-- >>> esCerrado g [1,2,3,1]
+-- True
+-- >>> esCerrado g [1,2,3]
+-- False
+-- >>> esCerrado g [1,2,4,1]
+-- False
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
 esCerrado g c =
   esCamino g c && head c == last c
@@ -411,41 +408,41 @@ esCerrado g c =
 \end{definicion}
 
 La función \texttt{(esCircuito g c)} se verifica si la sucesión de vértices
-\texttt{c} es un circuito en el grafo \texttt{g}.  Por ejemplo,
-
-\begin{sesion}
-esCircuito (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
-esCircuito (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
-esCircuito grafoThomson [1,4,2,5,3,6]      ==  False
-esCircuito grafoThomson [1,4,2,5,3,6,1]    ==  True
-esCircuito grafoNulo [1,2,1]               ==  False     
-\end{sesion}
+\texttt{c} es un circuito en el grafo \texttt{g}.
 
 \index{\texttt{esCircuito}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 4
+-- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
+-- >>> esCircuito (grafoCiclo 4) [1,2,3,4,1]
+-- True
+-- >>> esCircuito (grafoCiclo 4) [1,2,3,4]
+-- False
+-- >>> esCircuito (grafoCiclo 4) [1,2,3,4,1,4,1]
+-- False
 esCircuito :: (Ord a) => Grafo a -> [a] -> Bool
 esCircuito g c =
-    esRecorrido g c && esCerrado g c
+  esRecorrido g c && esCerrado g c
 \end{code}
 
 \begin{definicion}
-  Un camino simple en un grafo $G$ se dice que es un \textbf{circuito} si 
+  Un camino simple en un grafo $G$ se dice que es un \textbf{ciclo} si 
   sus extremos son iguales.
 \end{definicion}
 
 La función \texttt{(esCiclo g c)} se verifica si el camino \texttt{c} es un
-ciclo en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-esCiclo (grafoCiclo 5) [1,2,3,4,5,1]    ==  True
-esCiclo (grafoCiclo 3) [1,2,3,1,2,4,1]  ==  False
-esCiclo grafoThomson [1,4,2,5,3,6]      ==  False
-esCiclo grafoThomson [1,4,2,5,3,6,1]    ==  True
-esCiclo grafoNulo [1,2,1]               ==  False
-\end{sesion}
+ciclo en el grafo \texttt{g}. 
 
 \index{\texttt{esCircuito}}
 \begin{code}
+-- | Ejemplos
+-- >>> esCiclo (grafoCiclo 4) [1,2,3,4,1]
+-- True
+-- >>> esCiclo (grafoCiclo 4) [1,2,3,4]
+-- False
+-- >>> esCiclo (grafoCiclo 4) [1,2,3,4,1,4,1]
+-- False
 esCiclo :: (Ord a) => Grafo a -> [a] -> Bool
 esCiclo g c =
   esCaminoSimple g c && esCerrado g c
@@ -458,14 +455,12 @@ esCiclo g c =
 
 La función \texttt{(estarConectadosCamino g)} devuelve la relación entre   
 los vértices del grafo \texttt{g} de estar conectados por un camino en    
-él. Por ejemplo,
-
-\begin{sesion}
-ghci> estarConectadosCamino (creaGrafo [1..4] [(1,2),(2,4)])
-[(1,1),(1,2),(1,4),(2,1),(2,2),(2,4),(3,3),(4,1),(4,2),(4,4)]
-\end{sesion}
+él. 
 
 \begin{code}
+-- | Ejemplo
+-- >>> estarConectadosCamino (creaGrafo [1..4] [(1,2),(2,4)])
+-- [(1,1),(1,2),(1,4),(2,1),(2,2),(2,4),(3,3),(4,1),(4,2),(4,4)]
 estarConectadosCamino :: Ord a => Grafo a -> [(a,a)]
 estarConectadosCamino g =
   [(u,v) | u <- vs, v <- vs , estanConectados g u v]
@@ -494,21 +489,17 @@ prop_conectadosRelEqui g =
 \end{definicion}
 
 La función \texttt{(componentesConexas g)} devuelve las componentes conexas por
-caminos del grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-ghci> componentesConexas grafoPetersen
-[[1,2,3,4,5,6,7,8,9,10]]
-ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
-[[1,2,3],[4],[5]]
-ghci> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
-[[1,2,3],[4,5]]
-ghci> componentesConexas grafoNulo
-[]
-\end{sesion}
+caminos del grafo \texttt{g}. 
       
 \index{\texttt{componentesConexas}}
 \begin{code}
+-- | Ejemplos
+-- >>> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
+-- [[1,2,3],[4],[5]]
+-- >>> componentesConexas (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+-- [[1,2,3],[4,5]]
+-- >>> componentesConexas (creaGrafo [1..3] [(1,2),(2,3)])
+-- [[1,2,3]]
 componentesConexas :: Ord a => Grafo a -> [[a]]
 componentesConexas g =
   clasesEquivalencia (vertices g) (estarConectadosCamino g)
@@ -521,23 +512,20 @@ componentesConexas g =
 \end{definicion}
 
 La función \texttt{(esConexo g)} se verifica si el grafo \texttt{g}
-es conexo. Por ejemplo,
-
-\begin{sesion}
-esConexo (completo 5)                      == True
-esConexo (creaGrafo [1..5] [(1,2),(2,3)])  == False
-esConexo (creaGrafo [1..3] [(1,2),(2,3)])  == True
-esConexo grafoNulo                         == False    
-\end{sesion}
+es conexo. 
 
 \index{\texttt{esConexo}}
 \begin{code}
+-- Ejemplos
+-- >>> esConexo (creaGrafo [1..3] [(1,2),(2,3)])
+-- True
+-- >>> esConexo (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+-- False
 esConexo :: Ord a => Grafo a -> Bool
 esConexo g = length (componentesConexas g) == 1
 \end{code}
 
-\comentario{Comentar la complejidad de esConexo y posibles mejoras de la
-  definición.} 
+\comentario{Buscar definiciones más eficientes de esConexo.}
 
 \begin{teorema}
   Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
@@ -566,20 +554,18 @@ prop_caracterizaGrafoConexo g =
 \end{definicion}
 
 La función \texttt{(excentricidad g v)} devuelve la excentricidad del vértice
-\texttt{v} en el grafo \texttt{g}. Por ejemplo,
-
-\begin{sesion}
-excentricidad (grafoCiclo 8) 5      ==  Just 4
-excentricidad (grafoRueda 7) 4      ==  Just 2
-excentricidad (grafoRueda 7) 1      ==  Just 1
-excentricidad grafoPetersen  6      ==  Just 2
-let g = creaGrafo [1,2,3] [(1,2)]
-excentricidad g 3                   ==  Nothing
-excentricidad grafoNulo 3           ==  Nothing
-\end{sesion}
+\texttt{v} en el grafo \texttt{g}. 
 
 \index{\texttt{excentricidad}}
 \begin{code}
+-- | Ejemplos
+-- >>> let g = creaGrafo [1..3] [(1,2),(2,3),(3,3)]
+-- >>> excentricidad g 1
+-- Just 2
+-- >>> excentricidad g 2
+-- Just 1
+-- >>> excentricidad (creaGrafo [1..3] [(1,2),(3,3)]) 1
+-- Nothing
 excentricidad :: Ord a => Grafo a -> a -> Maybe Int
 excentricidad g u
   | esGrafoNulo g             = Nothing
@@ -594,19 +580,15 @@ excentricidad g u
   $d(G)$.
 \end{definicion}
 
-La función \texttt{(diametro g)} devuelve el diámetro del grafo \texttt{g}. Por
-ejemplo,
-
-\begin{sesion}
-diametro (grafoCiclo 8)                      ==  Just 4
-diametro (grafoRueda 7)                      ==  Just 2
-diametro grafoPetersen                       ==  Just 2
-diametro (creaGrafo [1,2,3] [(1,2),(2,3)])   ==  Just 2
-diametro grafoNulo                           ==  Nothing       
-\end{sesion}
+La función \texttt{(diametro g)} devuelve el diámetro del grafo \texttt{g}. 
 
 \index{\texttt{diametro}}
 \begin{code}
+-- | Ejemplos
+-- >>> diametro (creaGrafo [1..3] [(1,2),(2,3),(3,3)])
+-- Just 2
+-- >>> diametro (creaGrafo [1..3] [(1,2),(3,3)])
+-- Nothing
 diametro :: Ord a => Grafo a -> Maybe Int
 diametro g 
   | esGrafoNulo g             = Nothing
@@ -622,19 +604,15 @@ diametro g
   $r(G)$.
 \end{definicion}
 
-La función \texttt{(radio g)} devuelve el radio del grafo \texttt{g}. Por
-ejemplo,
-
-\begin{sesion}
-radio (grafoCiclo 8)                     ==  Just 4
-radio (grafoRueda 7)                     ==  Just 1
-radio grafoPetersen                      ==  Just 2
-radio (creaGrafo [1,2,3] [(1,2),(2,3)])  ==  Just 1
-radio grafoNulo                          ==  Nothing
-\end{sesion}
+La función \texttt{(radio g)} devuelve el radio del grafo \texttt{g}. 
 
 \index{\texttt{radio}}
 \begin{code}
+-- | Ejemplos
+-- >>> radio (creaGrafo [1..3] [(1,2),(2,3),(3,3)])
+-- Just 1
+-- >>> radio (creaGrafo [1..3] [(1,2),(3,3)])
+-- Nothing
 radio :: Ord a => Grafo a -> Maybe Int        
 radio g
   | esGrafoNulo g     = Nothing
@@ -652,16 +630,15 @@ radio g
 La función \texttt{(centro g)} devuelve el centro del grafo \texttt{g}. Por
 ejemplo,
 
-\begin{sesion}
-centro (grafoEstrella 5)  ==  [1]
-centro (grafoCiclo 4)     ==  [1,2,3,4]
-centro grafoPetersen      ==  [1,2,3,4,5,6,7,8,9,10]
-centro (grafoRueda 5)     ==  [1]
-centro grafoNulo          ==  []
-\end{sesion}      
-
 \index{\texttt{centro}}
 \begin{code}
+-- | Ejemplos
+-- >>> centro (creaGrafo [1..3] [(1,2),(2,3),(3,3)])
+-- [2]
+-- >>> centro (creaGrafo [1..3] [(1,2),(1,3),(2,3)])
+-- [1,2,3]
+-- >>> centro (creaGrafo [1..3] [(1,2),(3,3)])
+-- [1,2,3]
 centro :: Ord a => Grafo a -> [a]
 centro g = [v | v <- vertices g, excentricidad g v == r]
   where r = radio g
@@ -673,3 +650,10 @@ centro g = [v | v <- vertices g, excentricidad g v == r]
 \end{definicion}
 
 \comentario{Seguir revisando a partir de aquí.}
+
+\ignora{
+  La validación es
+
+  > doctest ConectividadGrafos.lhs 
+  Examples: 138  Tried: 138  Errors: 0  Failures: 0
+}

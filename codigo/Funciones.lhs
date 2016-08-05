@@ -12,18 +12,20 @@ module Funciones ( esFuncion
                  , imagenInversa
                  ) where
   
-import Conjuntos
-import Relaciones
-
-<<<<<<< HEAD
-=======
-import Test.DocTest       
-import Text.PrettyPrint.GenericPretty (pp)
-import Test.QuickCheck
->>>>>>> Rev-4-Ago
-import Data.List
-import Test.DocTest       
-import Test.QuickCheck
+import Conjuntos  ( esSubconjunto
+                  , esUnitario
+                  , variacionesR
+                  )
+import Relaciones ( antiImagenRelacion
+                  , esFuncional
+                  , esRelacion
+                  , dominio
+                  , imagenRelacion
+                  , rango
+                  )
+import Data.List  ( nub
+                  , permutations
+                  )
 import Text.PrettyPrint.GenericPretty (pp)
 \end{code}
 }
@@ -282,3 +284,9 @@ imagenInversa :: (Eq a, Eq b) => Funcion a b -> b -> a
 imagenInversa f = imagen (inversa f)
 \end{code}
 
+\ignora{
+  La validación es
+
+  > doctest Funciones.lhs
+  Examples: 60  Tried: 60  Errors: 0  Failures: 0
+}

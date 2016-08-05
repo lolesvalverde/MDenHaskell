@@ -47,16 +47,35 @@ module DefinicionesYPropiedades (orden
                                 , grafoComplementario
                                 ) where
 
-import Conjuntos
-import Relaciones
-import Funciones
-import GrafoConListaDeAristas
-import EjemplosGrafos
-import GeneradorGrafos
-
-import Data.List
-import Test.DocTest
-import Test.QuickCheck
+import Data.List                      ( (\\)
+                                      , sortBy
+                                      , union
+                                      )
+import Test.QuickCheck                ( Property
+                                      , (==>)
+                                      , quickCheck
+                                      )
+import Text.PrettyPrint.GenericPretty ( pp
+                                      )
+import Conjuntos                      ( esSubconjunto
+                                      , esVacio
+                                      , conjuntosIguales
+                                      )
+import GrafoConListaDeAristas         ( Grafo
+                                      , adyacentes
+                                      , aristas
+                                      , aristaEn
+                                      , creaGrafo
+                                      , vertices
+                                      )
+import EjemplosGrafos                 ( bipartitoCompleto
+                                      , completo
+                                      , grafoCiclo
+                                      , grafoEstrella
+                                      , grafoRueda
+                                      , grafoPetersen
+                                      )
+import GeneradorGrafos 
 \end{code}
 }
 
@@ -271,14 +290,11 @@ esSimple g =
 La función \texttt{(secuenciaGrados g)} devuelve la secuencia de los grados 
 del grafo \texttt{g} en orden decreciente.
 
-\begin{sesion}
-secuenciaGrados (grafoEstrella 6) == [6,1,1,1,1,1,1]
-secuenciaGrados (grafoCiclo 4)    == [2,2,2,2]
-secuenciaGrados grafoPetersen     == [3,3,3,3,3,3,3,3,3,3]
-\end{sesion}
-
 \index{\texttt{secuenciaGrados}}
 \begin{code}
+-- | Ejemplo
+-- >>> secuenciaGrados (creaGrafo [1..5] [(1,2),(1,3),(1,4),(2,4)]) 
+-- [3,2,2,1,0]
 secuenciaGrados :: Eq a => Grafo a -> [Int]
 secuenciaGrados g = sortBy (flip compare) [grado g v | v <- vertices g]
 \end{code}
@@ -300,15 +316,13 @@ secuenciaGrados g = sortBy (flip compare) [grado g v | v <- vertices g]
 La función \texttt{(secuenciaGrafica ss)} se verifica si existe algún 
 grafo con la secuencia de grados \texttt{ss}.
 
-\begin{sesion}
-secuenciaGrafica [2,2,2,2,2,2]    ==  True
-secuenciaGrafica [6,1,1,1,1,1,1]  ==  True
-secuenciaGrafica [6,1,1,1,1,1]    ==  False
-secuenciaGrafica [5,4..1]         ==  False
-\end{sesion}
-
 \index{\texttt{secuenciaGrafica}}
 \begin{code}
+-- | Ejemplos
+-- >>> secuenciaGrafica [3,2,2,1,0]
+-- True
+-- >>> secuenciaGrafica [3,2,2,2]
+-- False
 secuenciaGrafica :: [Int] -> Bool
 secuenciaGrafica ss = even (sum ss) && all p ss
   where p s = s >= 0 && s <= length ss
@@ -320,17 +334,19 @@ secuenciaGrafica ss = even (sum ss) && all p ss
 \end{definicion}
 
 La función \texttt{(esSubgrafo g' g)} se verifica si \texttt{g'} es un
-subgrafo de \texttt{g}
-
-\begin{sesion}
-esSubgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3) == True
-esSubgrafo (grafoEstrella 4) (grafoEstrella 5)             == True
-esSubgrafo (completo 5) (completo 4)                       == False
-esSubgrafo (completo 3) (completo 4)                       == True
-\end{sesion}
+subgrafo de \texttt{g}.
 
 \index{\texttt{esSubgrafo}}
 \begin{code}
+-- |Ejemplos
+-- >>> esSubgrafo (bipartitoCompleto 3 2) (bipartitoCompleto 3 3)
+-- True
+-- >>> esSubgrafo (grafoEstrella 4) (grafoEstrella 5)
+-- True
+-- >>> esSubgrafo (completo 5) (completo 4)
+-- False
+-- >>> esSubgrafo (completo 3) (completo 4)
+-- True
 esSubgrafo :: Ord a => Grafo a -> Grafo a -> Bool
 esSubgrafo g' g = 
   vertices g' `esSubconjunto` vertices g &&
@@ -346,15 +362,17 @@ esSubgrafo g' g =
 La función \texttt{(esSubgrafoMax g' g)} se verifica si \texttt{g'} es un
 subgrafo maximal de \texttt{g}.
 
-\begin{sesion}
-esSubgrafoMax (grafoRueda 3)             (grafoRueda 4)  ==  False
-esSubgrafoMax (grafoCiclo 4)             (grafoRueda 4)  ==  True
-esSubgrafoMax (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
-esSubgrafoMax (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  False
-\end{sesion}
-
 \index{\texttt{esSubgrafoMax}}
 \begin{code}
+-- | Ejemplos
+-- >>> esSubgrafoMax (grafoRueda 3) (grafoRueda 4)
+-- False
+-- >>> esSubgrafoMax (grafoCiclo 4) (grafoRueda 4)
+-- True
+-- >>> esSubgrafoMax (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)
+-- True
+-- >>> esSubgrafoMax (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)
+-- False
 esSubgrafoMax :: Ord a => Grafo a -> Grafo a -> Bool
 esSubgrafoMax g' g = 
   g' `esSubgrafo` g && conjuntosIguales (vertices g') (vertices g)
@@ -369,15 +387,17 @@ esSubgrafoMax g' g =
 La función \texttt{(esSubgrafoPropio g' g)} se verifica si \texttt{g'} es un
 subgrafo propio de \texttt{g}.
 
-\begin{sesion}
-esSubgrafoPropio (grafoRueda 3) (grafoRueda 4)              ==  True
-esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)              ==  False
-esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)  ==  True
-esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)  ==  True
-\end{sesion}
-
 \index{\texttt{esSubgrafoPropio}}
 \begin{code}
+-- | Ejemplos
+-- >>> esSubgrafoPropio (grafoRueda 3) (grafoRueda 4)
+-- True
+-- >>> esSubgrafoPropio (grafoRueda 4) (grafoCiclo 5)
+-- False
+-- >>> esSubgrafoPropio (creaGrafo [1..3] [(1,2)]) (grafoCiclo 3)
+-- True
+-- >>> esSubgrafoPropio (creaGrafo [1..2] [(1,2)]) (grafoCiclo 3)
+-- True
 esSubgrafoPropio :: Ord a => Grafo a -> Grafo a -> Bool
 esSubgrafoPropio g' g = 
   esSubgrafo g' g &&
@@ -462,6 +482,13 @@ G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),
 
 \index{\texttt{eliminaArista}}
 \begin{code}
+-- | Ejemplos
+-- >>> eliminaArista (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) (1,4)
+-- G [1,2,3,4] [(1,2),(2,4)]
+-- >>> eliminaArista (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) (4,1)
+-- G [1,2,3,4] [(1,2),(2,4)]
+-- >>> eliminaArista (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) (4,3)
+-- G [1,2,3,4] [(1,2),(1,4),(2,4)]
 eliminaArista :: Ord a => Grafo a -> (a,a) -> Grafo a
 eliminaArista g (a,b) =
   creaGrafo (vertices g) 
@@ -480,21 +507,17 @@ eliminaArista g (a,b) =
 La función \texttt{(eliminaVertice g v)} elimina el vértice \texttt{v}
 del grafo \texttt{g}.
 
-\begin{sesion}
-ghci> grafoThomson
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),
-                 (2,6),(3,4),(3,5),(3,6)]
-ghci> eliminaVertice grafoThomson 3
-G [1,2,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6)]
-ghci> eliminaVertice grafoThomson 2
-G [1,3,4,5,6] [(1,4),(1,5),(1,6),(3,4),(3,5),(3,6)]
-ghci> eliminaVertice grafoThomson 8
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),
-                 (2,6),(3,4),(3,5),(3,6)]
-\end{sesion}
-
 \index{\texttt{eliminaVertice}}
 \begin{code}
+-- | Ejemplos
+-- >>> eliminaVertice (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 1
+-- G [2,3,4] [(2,4)]
+-- >>> eliminaVertice (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 4
+-- G [1,2,3] [(1,2)]
+-- >>> eliminaVertice (creaGrafo [1..4] [(1,2),(1,4),(2,4)]) 3
+-- G [1,2,4] [(1,2),(1,4),(2,4)]
+-- >>> eliminaVertice (creaGrafo [1..4] [(1,2),(1,4),(1,3)]) 1
+-- G [2,3,4] []
 eliminaVertice :: Ord a => Grafo a -> a -> Grafo a
 eliminaVertice g v =
   creaGrafo (vertices g \\ [v]) 
@@ -514,15 +537,13 @@ eliminaVertice g v =
 La función \texttt{(sumaArista g a)} suma la arista \texttt{a} al grafo
 \texttt{g}.
 
-\begin{sesion}
-ghci> sumaArista (grafoCiclo 5) (1,3)
-G [1,2,3,4,5] [(1,2),(1,3),(1,5),(2,3),(3,4),(4,5)]
-ghci> sumaArista (grafoEstrella 5) (4,5)
-G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6),(4,5)]
-\end{sesion}
-
 \index{\texttt{sumaArista}}
 \begin{code}
+-- | Ejemplos
+-- >>> grafoCiclo 5
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
+-- >>> sumaArista (grafoCiclo 5) (1,3)
+-- G [1,2,3,4,5] [(1,2),(1,3),(1,5),(2,3),(3,4),(4,5)]
 sumaArista :: Ord a => Grafo a -> (a,a) -> Grafo a
 sumaArista g a = 
   creaGrafo (vertices g) (a : aristas g)
@@ -540,17 +561,13 @@ sumaArista g a =
 La función \texttt{(sumaVertice g a)} suma el vértice \texttt{a} al grafo
 \texttt{g}.
 
-\begin{sesion}
-ghci> sumaVertice (completo 5) 6
-G [1,2,3,4,5,6] [(1,2),(1,3),(1,4),(1,5),(1,6),
-                 (2,3),(2,4),(2,5),(2,6),(3,4),
-                 (3,5),(3,6),(4,5),(4,6),(5,6)]
-ghci> sumaVertice (creaGrafo [2..5] []) 1
-G [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5)]
-\end{sesion}
-
 \index{\texttt{sumaVertice}}
 \begin{code}
+-- | Ejemplo
+-- >>> grafoCiclo 3
+-- G [1,2,3] [(1,2),(1,3),(2,3)]
+-- >>> sumaVertice (grafoCiclo 3) 4
+-- G [1,2,3,4] [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
 sumaVertice :: Ord a => Grafo a -> a -> Grafo a
 sumaVertice g v =
   creaGrafo (v : vs) (aristas g ++ [(u,v) | u <- vs]) 
@@ -591,20 +608,17 @@ prop_completos n = n >= 2 ==>
 \end{definicion}
 
 La función \texttt{(sumaGrafos g g')} suma los grafos \texttt{g} y   
-\texttt{g'}. Por ejemplo,
-
-
-\begin{sesion}
-ghci> sumaGrafos (grafoCiclo 3) (grafoCiclo 3)
-G [1,2,3] [(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)]
-ghci> sumaGrafos (grafoRueda 3) (grafoEstrella 4)
-G [1,2,3,4,5] [(1,1),(1,2),(1,3),(1,4),(1,5),(2,2),
-               (2,3),(2,4),(2,5),(3,3),(3,4),(3,5)]
-
-\end{sesion}
+\texttt{g'}. 
 
 \index{\texttt{sumaGrafos}}
 \begin{code}
+-- | Ejemplo
+-- >>> let g1 = creaGrafo [1..3] [(1,1),(1,3),(2,3)]
+-- >>> let g2 = creaGrafo [4..6] [(4,6),(5,6)]
+-- >>> pp $ sumaGrafos g1 g2
+-- G [1,2,3,4,5,6]
+--   [(1, 1),(1, 3),(1, 4),(1, 5),(1, 6),(2, 3),(2, 4),
+--    (2, 5),(2, 6),(3, 4),(3, 5),(3, 6),(4, 6),(5, 6)]
 sumaGrafos :: Ord a => Grafo a -> Grafo a -> Grafo a
 sumaGrafos g1 g2 =
   creaGrafo (vs1 `union` vs2)
@@ -627,15 +641,13 @@ La función \texttt{(unionGrafos g g')} une los grafos \texttt{g} y
 \texttt{g'}. Por ejemplo,
 
 
-\begin{sesion}
-ghci> unionGrafos (grafoCiclo 3) (grafoCiclo 3)
-G [1,2,3] [(1,2),(1,3),(2,3)]
-ghci> unionGrafos (grafoRueda 3) (grafoEstrella 4)
-G [1,2,3,4,5] [(1,2),(1,3),(1,4),(1,5),(2,3),(2,3)]
-\end{sesion}
-
 \index{\texttt{sumaGrafos}}
 \begin{code}
+-- | Ejemplo
+-- >>> let g1 = creaGrafo [1..3] [(1,1),(1,3),(2,3)]
+-- >>> let g2 = creaGrafo [4..6] [(4,6),(5,6)]
+-- >>> unionGrafos g1 g2
+-- G [1,2,3,4,5,6] [(1,1),(1,3),(2,3),(4,6),(5,6)]
 unionGrafos :: Ord a => Grafo a -> Grafo a -> Grafo a
 unionGrafos g1 g2 =
   creaGrafo (vertices g1 `union` vertices g2)
@@ -653,20 +665,21 @@ unionGrafos g1 g2 =
 La función \texttt{(grafoComplementario g)} devuelve el grafo complementario de
 \texttt{g}.
 
-\begin{sesion}
-ghci> grafoComplementario (grafoEstrella 5)
-G [1,2,3,4,5,6] [(1,1),(2,2),(2,3),(2,4),(2,5),(2,6),
-                 (3,3),(3,4),(3,5),(3,6),(4,4),(4,5),
-                 (4,6),(5,5),(5,6),(6,6)]
-ghci> grafoComplementario (completo 4)
-G [1,2,3,4] [(1,1),(2,2),(3,3),(4,4)]
-\end{sesion}
-
 \index{\texttt{grafoComplementario}}
 \begin{code}
+-- | Ejemplo
+-- >>> grafoComplementario (creaGrafo [1..3] [(1,1),(1,3),(2,3)])
+-- G [1,2,3] [(1,2),(2,2),(3,3)]
 grafoComplementario :: Ord a => Grafo a -> Grafo a 
 grafoComplementario  g =
   creaGrafo vs
             [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
   where vs = vertices g
 \end{code}
+
+\ignora{
+  La validación es
+
+  > doctest DefinicionesYPropiedades.lhs 
+  Examples: 104  Tried: 104  Errors: 0  Failures: 0
+}

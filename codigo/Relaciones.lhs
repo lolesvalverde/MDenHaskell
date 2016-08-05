@@ -8,9 +8,12 @@ module Relaciones ( esRelacion
                   , esFuncional
                   ) where
 
-import Test.DocTest
-import Conjuntos
-import Data.List 
+import Conjuntos ( esSubconjunto
+                 , esUnitario
+                 , productoCartesiano
+                 )
+import Data.List ( nub
+                 )
 \end{code}
 }
 
@@ -144,3 +147,10 @@ esFuncional :: (Eq a, Eq b) => [(a,b)] -> Bool
 esFuncional r =
   and [esUnitario (imagenRelacion r x) | x <- dominio r] 
 \end{code}
+
+\ignora{
+  La validación es
+
+  > doctest Relaciones.lhs
+  Examples: 39  Tried: 39  Errors: 0  Failures: 0
+}
