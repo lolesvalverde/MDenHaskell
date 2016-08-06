@@ -23,10 +23,6 @@ de la librería \texttt{Data.List}
 \ignora{
 \begin{code}
 import Data.List
-
-import Text.PrettyPrint.GenericPretty ( Generic
-                                      , Out
-                                      )
 \end{code}
 }
 
@@ -158,3 +154,10 @@ minimoElemento :: Ord a => Conj a -> a
 minimoElemento (Cj (x:xs)) = x
 \end{code}
 \end{itemize}
+
+\ignora{
+  La validación es
+
+  > doctest .lhs
+  Examples: 16  Tried: 16  Errors: 0  Failures: 0
+}

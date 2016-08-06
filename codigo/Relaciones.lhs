@@ -152,5 +152,5 @@ esFuncional r =
   La validación es
 
   > doctest Relaciones.lhs
-  Examples: 39  Tried: 39  Errors: 0  Failures: 0
+  Examples: 38  Tried: 38  Errors: 0  Failures: 0
 }

@@ -5,21 +5,24 @@ implementaremos más adelante.
 
 En el proceso de recopilación de ejemplos, se ha trabajado con diversas fuentes:
 \begin{itemize}
-\item Relación de ejercicios \texttt{Rel\_20} de la asignatura de Informática.
-\item Apuntes de MD.
-\item \href{https://es.wikipedia.org/wiki/Anexo:Galería_de_grafos}
-           {Galería de grafos}\
-      \footnote{\url{https://es.wikipedia.org/wiki/Anexo:Galería_de_grafos}}
-      de la Wikipedia. 
+  \item[$*$] los apuntes de la asignatura
+  \href{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}
+       {Matemática discreta}\
+  \footnote{\url{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}}
+  (\cite{Cardenas-15a})
+
+  \item[$*$] los temas de la asignatura 
+  \href{https://www.cs.us.es/~jalonso/cursos/i1m-15}
+       {Informática}\
+  \footnote{\url{{https://www.cs.us.es/~jalonso/cursos/i1m-15}}}
+  (\cite{Alonso-15a}) y
+
+  \item[$*$] el artículo
+  \href{https://en.wikipedia.org/wiki/Graph_theory}
+       {Graph theory}\
+  \footnote{\url{https://en.wikipedia.org/wiki/Graph_theory}}
+  (\cite{Wikipedia-grafos}) de la Wikipedia.
 \end{itemize}
-
-\comentario{Añadir al fichero de bibliografía y citarla.}
-
-\comentario{Ir actualizando y completando las fuentes y cambiar el formato de
-  enumeración}
-
-\comentario{En este módulo hay un ejemplo de cómo dibujar un grafo cualquiera
-  (grafo de la amistad)}
 
 \begin{nota}
 Se utilizará la representación de los grafos como listas de aristas.

@@ -133,14 +133,9 @@ La función \texttt{(esUnitario xs)} se verifica si el conjunto
 -- True
 -- >>> esUnitario [5,3]
 -- False
--- >>> esUnitario [5,5]
--- True
 esUnitario :: Eq a => [a] -> Bool
-esUnitario xs = length (nub xs) == 1
+esUnitario xs = length xs == 1
 \end{code}
-
-\comentario{En la definición de esUnitario se puede eliminar nub si se supone
-  que trabajamos con conjuntos.}
 
 \subsection{Subconjuntos}
 
@@ -394,5 +389,5 @@ variacionesR k us =
   La validación es
 
   > doctest Conjuntos.lhs 
-  Examples: 30  Tried: 30  Errors: 0  Failures: 0
+  Examples: 29  Tried: 29  Errors: 0  Failures: 0
 }  
