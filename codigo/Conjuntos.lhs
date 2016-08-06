@@ -30,13 +30,15 @@ import Data.List ( (\\)
 \end{definicion}
 
 \comentario{Comentar la consecuencia sobre los tipos de la últma frase de la
-  definición de conjunto.}
+  definición de conjunto. No sé si se refería a eso.}
 
 \begin{nota}
   Al trabajar con la representación de conjuntos como listas en Haskell, hemos
   de cuidar que los ejemplos con los que trabajemos no tengan elementos
   repetidos. La función \texttt{(nub xs)} de la librería \texttt{Data.List}
-  elimina los elementos repetidos de una lista.
+  elimina los elementos repetidos de una lista. Además, deberemos  
+  indicar de qué tipo algebraico serán los elementos de un conjunto  
+  (necesariamente contenido en la clase de los comparables).
 \end{nota}
 
 Los conjuntos pueden definirse de manera explícita, citando todos sus elementos

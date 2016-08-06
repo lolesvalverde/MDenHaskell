@@ -1,10 +1,12 @@
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
-import ConjuntosRelacionesYFunciones
+import Conjuntos
+import Relaciones
+import Funciones
 import DefinicionesYPropiedades 
 import Morfismos
-import Biyecciones
+--import Biyecciones
        
 import Test.QuickCheck
 import Data.List

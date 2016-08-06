@@ -1,5 +1,3 @@
-\subsection{Primeras definiciones}
-
 \ignora{
 \begin{code}
 module DefinicionesYOperacionesConjuntos ( esUnitario

@@ -149,3 +149,4 @@ minimoElemento c2  == 'A'
 minimoElemento :: Ord a => Conj a -> a
 minimoElemento (Cj (x:xs)) = x
 \end{code}
+\end{itemize}
