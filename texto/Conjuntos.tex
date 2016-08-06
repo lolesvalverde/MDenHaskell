@@ -49,25 +49,25 @@ Conjuntos, presentando formalmente sus conceptos más importantes. A la hora de
 elaborar el contenido se han utilizado los siguientes recursos bibliográficos:
 
 \begin{itemize}
-\item el primer tema de la asignatura
+\item[$*$] el primer tema de la asignatura
 \href{https://rodas5.us.es/file/19961ac2-66e4-4af4-bf13-81f29b771a1b/1/01-Conjuntos.pdf}
      {Álgebra Básica}\
 \footnote{\url{https://rodas5.us.es/file/19961ac2-66e4-4af4-bf13-81f29b771a1b/1/01-Conjuntos.pdf}}
 (\cite{Algebra-15a})
 
-\item los temas de la asignatura 
+\item[$*$] los temas de la asignatura 
 \href{https://www.cs.us.es/~jalonso/cursos/i1m-15}
      {Informática}\
 \footnote{\url{{https://www.cs.us.es/~jalonso/cursos/i1m-15}}}
 (\cite{Alonso-15a}) 
  
-\item el artículo de la Wikipedia
+\item[$*$] el artículo de la Wikipedia
 \href{https://en.wikipedia.org/wiki/Set_(mathematics)}
      {Set (mathematics)}\
 \footnote{\url{https://en.wikipedia.org/wiki/Set_(mathematics)}}
 (\cite{Wikipedia-grafos}) y
 
-\item el artículo
+\item[$*$] el artículo
 \href{http://catedu.es/materranya/suplemento3.pdf}
      {\textit{El regalo de Cantor}}\
 \footnote{http://catedu.es/materranya/suplemento3.pdf}
@@ -108,28 +108,29 @@ donde,
 \item \texttt{(esVacio c)} se verifica si \texttt{c} no tiene ningún
       elemento.
 \item \texttt{(minimoElemento c)} devuelve el mínimo elemento del      
-      conjunto \texttt{c}.
+      conjunto \texttt{c}.\\
 \end{itemize}
+
 
 Hemos de tener en cuenta que a la hora de crear un nuevo tipo de dato 
 con el que representar a los conjuntos, este debe ser compatible con 
-la entidad matemática que representa.
+la entidad matemática que representa.\\
 
 Estas son algunas de las posibles representaciones con las que podríamos
 trabajar con conjuntos en Haskell:
 
 \begin{itemize}
-  \item en primer lugar, podemos trabajar con la librería  
+  \item[$*$] en primer lugar, podemos trabajar con la librería  
         \texttt{Data.Set}; en este caso, la implementación del tipo de 
         dato \texttt{Set} está basado en árboles binarios balanceados.
-  \item Por otra parte, podemos definir un nuevo tipo \texttt{Cj xs} con  
+  \item[$*$] Por otra parte, podemos definir un nuevo tipo \texttt{Cj xs} con  
         el que trabajar con conjuntos como listas no ordenadas con        
         duplicados, como listas no ordenadas sin duplicados o como        
         listas ordenadas sin duplicados.
-  \item Otra opción sería trabajar directamente con conjuntos como  
+  \item[$*$] Otra opción sería trabajar directamente con conjuntos como  
         listas, para ello, debemos cuidar que las listas no tengan        
         duplicados.
-  \item Los conjuntos que sólo contienen números (de tipo \texttt{Int)} 
+  \item[$*$] Los conjuntos que sólo contienen números (de tipo \texttt{Int)} 
         entre $0$ y $n-1$, se pueden representar como números binarios 
         con $n$ bits donde el bit $i (0 ≤ i < n)$ es $1$ syss el número
         $i$ pertenece al conjunto.
