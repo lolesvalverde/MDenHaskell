@@ -5,13 +5,16 @@ ordenada de los vértices y la segunda la lista ordenada de las aristas (en
 ambas listas se excluye la posibilidad de repeticiones).
 
 \begin{nota}
-  Una diferencia entre vectores y listas es que en los vectores se
-  tiene en tiempo constante el valor de índice $n$ pero en las listas para
-  encontrar el elemento $n$--ésimo hay que recorrerla. Los vectores tienen
-  acceso constante ($O(1)$) y las listas lineal ($O(n)$).
+  Las ventajas de usar arrays frente a usar listas es que los array  
+  tienen acceso constante ($O(1)$) a sus elementos mientras que las 
+  listas tienen acceso lineal ($O(n)$) y que la actualización de un 
+  elemento en un array no supone espacio extra. Sin embargo, los arrays 
+  son representaciones muy rígidas: cualquier modificación en su  
+  estructura, como cambiar su tamaño, supone un gran coste computacional
+  pues se tendría que crear de nuevo el array y, además, sus índices deben 
+  pertenecer a la clase de los objetos indexables (\texttt{Ix}), luego
+  perdemos mucha flexibilidad en la representación.  
 \end{nota}
-
-\comentario{Comentar las ventajas de usar listas en lugar de vectores.}
 
 \begin{code}
 {-# LANGUAGE DeriveGeneric #-}

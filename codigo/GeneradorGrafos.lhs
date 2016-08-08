@@ -6,16 +6,16 @@ Para aprender a controlar el tamaño de los grafos generados, he
 consultado las siguientes fuentes:
 
 \begin{itemize}
-\item \href{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}
+\item[*] \href{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}
   {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
   \footnote{\url{https://www.eecs.northwestern.edu/~robby/courses/395-495-2009-fall/quick.pdf}}
+(\cite{Quickcheck-testing1})
 
-\item \href{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}
-  {\textbf{QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs}}\
+\item[*] \href{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}
+  {\textbf{Property Testing using QuickCheck}}\
   \footnote{\url{https://www.dcc.fc.up.pt/~pbv/aulas/tapf/slides/quickcheck.html}}
+(\cite{Quickcheck-testing2})
 \end{itemize}
-
-\comentario{Añadir al fichero de bibliografía y poner la cita.}
 
 \ignora{
 \begin{code}
@@ -74,7 +74,7 @@ generaGrafo s = do
 \end{code}
 
 \begin{nota}
-  Los grafos están contenido en la clase de los objetos generables
+  Los grafos están contenidos en la clase de los objetos generables
   aleatoriamente.
 
 \begin{code}
