@@ -254,14 +254,11 @@ El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.
 -- | Ejemplos
 -- >>> inversa [(1,4),(2,5),(3,6)]
 -- [(4,1),(5,2),(6,3)]
--- >>> inversa [(1,4),(2,4),(3,6),(3,6)]
--- [(4,1),(4,2),(6,3)]
+-- >>> inversa [(1,'f'),(2,'m'),(3,'a')]
+-- [('f',1),('m',2),('a',3)]
 inversa :: (Eq a, Eq b) => Funcion a b -> Funcion b a
-inversa f = [(y,x) | (x,y) <- nub f]
+inversa f = [(y,x) | (x,y) <- f]
 \end{code}
-
-\comentario{En la definición de inversa se puede eliminar nub, suponiendo que f
-  es un conjunto.}
 
 \begin{nota}
 Para considerar la inversa de una función, esta tiene que ser
@@ -278,7 +275,7 @@ de salida de la función \texttt{f} tal que su imagen es \texttt{y}.
 -- | Ejemplos
 -- >>> imagenInversa [(1,4),(2,5),(3,6)] 5
 -- 2
--- >>> imagenInversa [(1,4),(2,4),(3,6),(3,6)] 6
+-- >>> imagenInversa [(1,'f'),(2,'m'),(3,'a')] 'a'
 -- 3
 imagenInversa :: (Eq a, Eq b) => Funcion a b -> b -> a 
 imagenInversa f = imagen (inversa f)
@@ -288,5 +285,5 @@ imagenInversa f = imagen (inversa f)
   La validación es
 
   > doctest Funciones.lhs
-  Examples: 60  Tried: 60  Errors: 0  Failures: 0
+  Examples: 61  Tried: 61  Errors: 0  Failures: 0
 }

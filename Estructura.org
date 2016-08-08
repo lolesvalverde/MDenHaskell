@@ -4,8 +4,9 @@
 
 * [[./texto/Introduccion.tex][Introduccion.tex]]: Introducción.
 
-* [[./texto/Conjuntos_Relaciones_Y_Funciones.tex][Conjuntos_Relaciones_Y_Funciones.tex]]: Conjuntos, relaciones y funciones.
-  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]]: Conjuntos.
+* [[./texto/Conjuntos.tex][Conjuntos.tex]]: Conjuntos
+
+* [[./texto/Relaciones_Y_Funciones.tex][Relaciones_Y_Funciones.tex]]: Relaciones y funciones.
   + [[./codigo/Relaciones.lhs][Relaciones.lhs]]: Relaciones binarias.
   + [[./codigo/RelacionesHomogeneas.lhs][RelacionesHomogeneas.lhs]]: Relaciones homogéneas.
   + [[./codigo/Funciones.lhs][Funciones.lhs]]: Funciones.

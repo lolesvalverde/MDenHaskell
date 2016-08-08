@@ -31,13 +31,13 @@ import Data.List ( nub
 La función \texttt{(esRelacion xs ys r)} se verifica si \texttt{r} es una
 relación binaria de \texttt{xs} en \texttt{ys}.  Por ejemplo,
 
-\begin{sesion}
-esRelacion [3,1] [2,4,7] [(3,4),(1,2)]  ==  True
-esRelacion [3,1] [2,4,7] [(3,1),(1,2)]  ==  False
-\end{sesion}
-
 \index{\texttt{esRelacion}}
 \begin{code}
+-- | Ejemplos
+-- >>> esRelacion [3,1] [2,4,7] [(3,4),(1,2)]
+-- True
+-- >>> esRelacion [3,1] [2,4,7] [(3,1),(1,2)]
+-- False
 esRelacion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
 esRelacion xs ys r =
   r `esSubconjunto` productoCartesiano xs ys 

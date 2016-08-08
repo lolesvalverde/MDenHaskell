@@ -24,9 +24,8 @@ Para elaborar la presente sección, se han consultado los
   \href{https://rodas5.us.es/file/a774213d-a15a-41df-816c-e633fb1a5876/1/01-Conjuntos.pdf}
   {\textbf{apuntes de Álgebra Básica}},\
   \footnote{\url{https://rodas5.us.es/file/a774213d-a15a-41df-816c-e633fb1a5876/1/01-Conjuntos.pdf}}
+  (\cite{Algebra-15a})
   asignatura del primer curso del Grado en Matemáticas.
-
-\comentario{Añadirlo al fichero de bibliografía y poner la cita.}  
 
 \begin{definicion}
   Una relación binaria entre dos conjuntos $A$ y $B$ se dice que es 

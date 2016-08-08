@@ -50,7 +50,7 @@ indicadas en el TAD de los conjuntos.
 
 \begin{itemize} 
 
-\item \texttt{(vacio)} es el conjunto vacío. Por ejemplo,
+\item \texttt{(vacio)} es el conjunto vacío.
 
 \index{\texttt{vacio}} 
 \begin{code}
@@ -81,7 +81,7 @@ inserta x (Cj s) = Cj (agrega x s)
 \end{code}
 
 \item \texttt{(esVacio c)} se verifica si \texttt{c} es el conjunto
-vacío. Por ejemplo,
+vacío.
 
 \index{\texttt{esVacio}}
 \begin{code}
@@ -130,16 +130,7 @@ elimina x (Cj s) = Cj (elimina x s) where
 \end{code}
 
 \item \texttt{(minimoElemento c)} devuelve el mínimo elemento del      
-conjunto \texttt{c}. Por ejemplo,
-
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
-c1                 ==  {0,1,2,3,5,7,9}
-minimoElemento c1  ==  0
-ghci> let c2 = foldr inserta vacio (['a'..'e'] ++ ['A'..'E'])
-c2                 == {'A','B','C','D','E','a','b','c','d','e'}
-minimoElemento c2  == 'A'
-\end{sesion}
+conjunto \texttt{c}.
 
 \index{\texttt{minimoElemento}}
 \begin{code}

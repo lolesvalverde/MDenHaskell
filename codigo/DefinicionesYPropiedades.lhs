@@ -1,15 +1,12 @@
 Una vez construida una pequeña fuente de ejemplos, estamos en condiciones de
 implementar las definiciones sobre grafos en Haskell y ver que funcionan
 correctamente. Además, comprobaremos que se cumplen las propiedades básicas
-que se han presentado en el tema
-\href{https://dl.dropboxusercontent.com/u/15420416/
-tiddly/emptyMD1314.html#Chapter2}
-     {\textbf{Introducción a la teoría de grafos}}\
-     \footnote{\url{https://dl.dropboxusercontent.com
-/u/15420416/tiddly/emptyMD1314.html}}
-de Matemática Discreta.
-
-\comentario{Añadir al fichero de bibliografia y citar.}
+que se han presentado en el tema \textit{Introducción a la teoría de grafos}
+de 
+\href{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}
+     {Matemática discreta}\
+\footnote{\url{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}}
+(\cite{Cardenas-15a}).
 
 \begin{nota}
   Se utilizará el tipo abstracto de grafos presentados en la sección
@@ -467,19 +464,6 @@ prop_HavelHakimi (s:ss) =
 La función \texttt{(eliminaArista g a)} elimina la arista \texttt{a}
 del grafo \texttt{g}.
 
-\begin{sesion}
-ghci> grafoThomson
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),
-                 (2,6),(3,4),(3,5),(3,6)]
-ghci> eliminaArista grafoThomson (3,4)
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,5),(3,6)]
-ghci> eliminaArista grafoThomson (4,3)
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),(2,6),(3,5),(3,6)]
-ghci> eliminaArista grafoThomson (1,3)
-G [1,2,3,4,5,6] [(1,4),(1,5),(1,6),(2,4),(2,5),
-                 (2,6),(3,4),(3,5),(3,6)]
-\end{sesion}
-
 \index{\texttt{eliminaArista}}
 \begin{code}
 -- | Ejemplos
@@ -681,5 +665,5 @@ grafoComplementario  g =
   La validación es
 
   > doctest DefinicionesYPropiedades.lhs 
-  Examples: 104  Tried: 104  Errors: 0  Failures: 0
+  Examples: 103  Tried: 103  Errors: 0  Failures: 0
 }
