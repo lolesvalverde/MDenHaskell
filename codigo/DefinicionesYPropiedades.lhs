@@ -38,6 +38,7 @@ module DefinicionesYPropiedades (orden
                                 , sumaGrafos
                                 , unionGrafos
                                 , grafoComplementario
+                                , esCompleto 
                                 ) where
 
 import Data.List                      ( (\\)
@@ -653,13 +654,32 @@ La función \texttt{(grafoComplementario g)} devuelve el grafo complementario de
 grafoComplementario :: Ord a => Grafo a -> Grafo a 
 grafoComplementario  g =
   creaGrafo vs
-            [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
+            [(u,v)| u <- vs, v <- vs, u < v, not ((u,v) `aristaEn` g)]
   where vs = vertices g
+\end{code}
+
+\begin{definicion}
+  Dado un grafo, diremos que es \textbf{completo} si su complementario  
+  no tiene aristas.
+\end{definicion}
+
+La función \texttt{(esCompleto g)} se verifica si el grafo \texttt{g}
+es completo. 
+
+\index{\texttt{esCompleto}}
+\begin{code}
+-- Ejemplos
+-- >>> esCompleto (grafoCiclo 5)
+-- False
+-- >>> esCompleto (completo 4)
+-- True
+esCompleto :: Ord a => Grafo a -> Bool
+esCompleto g = tamaño (grafoComplementario g) == 0
 \end{code}
 
 \ignora{
   La validación es
 
   > doctest DefinicionesYPropiedades.lhs 
-  Examples: 103  Tried: 103  Errors: 0  Failures: 0
+  Examples: 105  Tried: 105  Errors: 0  Failures: 0
 }

@@ -15,6 +15,7 @@ module ConectividadGrafos ( esCamino
                           , esCerrado
                           , esCircuito
                           , esCiclo
+                          , todosCiclos  
                           , estarConectadosCamino
                           , prop_conectadosRelEqui
                           , componentesConexas
@@ -23,33 +24,38 @@ module ConectividadGrafos ( esCamino
                           , diametro
                           , excentricidad
                           , radio
-                          , centro 
+                          , centro
+                          , grosor  
                           ) where
   
-import Data.List              ( (\\)
-                              , nub
-                              )
-import Data.Maybe             ( fromJust)
-import Test.QuickCheck        ( Gen
-                              , Property
-                              , (==>)
-                              , elements
-                              , forAll
-                              , quickCheck
-                              )
-import RelacionesHomogeneas   ( esRelacionEquivalencia
-                              , clasesEquivalencia
-                              )
-import GrafoConListaDeAristas ( Grafo
-                              , adyacentes
-                              , aristas
-                              , aristaEn
-                              , creaGrafo
-                              , vertices
-                              )
-import EjemplosGrafos         ( esGrafoNulo
-                              , grafoCiclo
-                              )
+import Data.List                ( (\\)
+                                , nub
+                                )
+import Data.Maybe               ( fromJust)
+import Test.QuickCheck          ( Gen
+                                , Property
+                                , (==>)
+                                , elements
+                                , forAll
+                                , quickCheck
+                                )
+import RelacionesHomogeneas     ( esRelacionEquivalencia
+                                , clasesEquivalencia
+                                )
+import GrafoConListaDeAristas   ( Grafo
+                                , adyacentes
+                                , aristas
+                                , aristaEn
+                                , creaGrafo
+                                , vertices
+                                )
+import EjemplosGrafos           ( esGrafoNulo
+                                , grafoCiclo
+                                )
+import DefinicionesYPropiedades ( orden
+                                , tamaño
+                                , esCompleto
+                                )
 \end{code}
 }
 
@@ -447,7 +453,29 @@ esCiclo :: (Ord a) => Grafo a -> [a] -> Bool
 esCiclo g c =
   esCaminoSimple g c && esCerrado g c
 \end{code}
-    
+
+La función \texttt{(todosCiclos g v) devuelve todos los ciclos en el   
+grafo \texttt{g} que pasan por el vértice \texttt{v}.
+
+\nota{El algoritmo utilizado en la definición es el de búsqueda en         
+anchura.}
+
+\index{todosCiclos}
+\begin{code}
+todosCiclos :: Ord a => Grafo a -> a -> [[a]]
+todosCiclos g x = aux [[x]]
+  where aux []       = []
+        aux [[z]] = aux [v:[z] | v <- adyacentes g' z \\ [x]]
+        aux ([]:zss) = aux zss
+        aux ((z:zs):zss)
+          | z == x    = (z:zs) : aux zss
+          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\
+                                                   (head zs:(zs \\ [x]))])
+        g' = eliminaLazos g
+        eliminaLazos h = creaGrafo (vertices h)
+                                   [(x,y) | (x,y) <- aristas h, x /= y]
+\end{code}
+
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
   relación de equivalencia.
@@ -648,6 +676,21 @@ centro g = [v | v <- vertices g, excentricidad g v == r]
   Sean $G = (V,A)$ un grafo. Se llama \textbf{grosor} o \textbf{cintura}
   del grafo $G$ al máximo de las longitudes de los ciclos de $G$.
 \end{definicion}
+
+La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
+
+\index{\texttt{grosor}}
+\begin{code}
+grosor :: Ord a => Grafo a -> Int
+grosor g
+    | esCompleto g = orden g             
+    | otherwise = aux (vertices g)
+        where aux [] = 0
+              aux (x:xs) = max z (aux (xs \\ nub (concat cs)))
+                  where z = maximum [longitudCamino c | c <- cs]
+                        cs = todosCiclos g x
+
+\end{code}
 
 \comentario{Seguir revisando a partir de aquí.}
 
