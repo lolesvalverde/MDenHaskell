@@ -2,11 +2,7 @@ Una vez construida una pequeña fuente de ejemplos, estamos en condiciones de
 implementar las definiciones sobre grafos en Haskell y ver que funcionan
 correctamente. Además, comprobaremos que se cumplen las propiedades básicas
 que se han presentado en el tema \textit{Introducción a la teoría de grafos}
-de 
-\href{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}
-     {Matemática discreta}\
-\footnote{\url{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}}
-(\cite{Cardenas-15a}).
+de ``Matemática discreta'' (\cite{Cardenas-15a}).
 
 \begin{nota}
   Se utilizará el tipo abstracto de grafos presentados en la sección

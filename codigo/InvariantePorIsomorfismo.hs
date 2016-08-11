@@ -1,11 +1,11 @@
 import GrafoConListaDeAristas
 import EjemplosGrafos
 import GeneradorGrafos
-import Conjuntos
-import Relaciones
-import Funciones
+-- import Conjuntos
+-- import Relaciones
+-- import Funciones
 import DefinicionesYPropiedades 
-import Morfismos
+import Morfismos hiding (esInvariantePorIsomorfismos)
 --import Biyecciones
        
 import Test.QuickCheck
@@ -25,13 +25,11 @@ esInvariantePorIsomorfismos ::
 esInvariantePorIsomorfismos p g h = 
   isomorfos3 g h --> (p g == p h)
 
--- λ> quickCheckWith (stdArgs {maxSize=10}) (esInvariantePorIsomorfismos orden)
+-- | Ejemplos
+-- >>> quickCheck (esInvariantePorIsomorfismos orden)
 -- +++ OK, passed 100 tests.
--- (2.20 secs, 1,178,725,984 bytes)
--- λ> quickCheckWith (stdArgs {maxSize=10}) (esInvariantePorIsomorfismos tamaño)
+-- >>> quickCheck (esInvariantePorIsomorfismos tamaño)
 -- +++ OK, passed 100 tests.
--- (0.02 secs, 0 bytes)
--- λ> quickCheckWith (stdArgs {maxSize=10}) (esInvariantePorIsomorfismos secuenciaGrados)
+-- >>> quickCheck (esInvariantePorIsomorfismos secuenciaGrados)
 -- +++ OK, passed 100 tests.
--- (0.03 secs, 0 bytes)
   

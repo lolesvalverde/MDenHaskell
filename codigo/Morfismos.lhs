@@ -8,6 +8,7 @@ module Morfismos ( conservaAdyacencia
                  , isomorfos1
                  , isomorfismos2
                  , isomorfos2
+                 , isomorfismos3
                  , esInvariantePorIsomorfismos
                  , isomorfismos
                  , isomorfos

@@ -7,14 +7,16 @@ definen las funciones del TAD de los conjuntos dando su representación
 como listas ordenadas sin repetición.
 
 \begin{code}
-module ConjuntosConListasOrdenadasSinRepeticion (Conj
-     , vacio           -- Conj a                         
-     , inserta         -- Ord a => a -> Conj a -> Conj a
-     , elimina         -- Ord a => a -> Conj a -> Conj a
-     , pertenece       -- Ord a => Conj a -> a -> Bool  
-     , esVacio         -- Conj a -> Bool
-     , minimoElemento  -- Ord a => Conj a -> a
-    ) where
+module ConjuntosConListasOrdenadasSinRepeticion (
+    Conj
+  , vacio           -- Conj a                         
+  , inserta         -- Ord a => a -> Conj a -> Conj a
+  , elimina         -- Ord a => a -> Conj a -> Conj a
+  , pertenece       -- Ord a => Conj a -> a -> Bool  
+  , esVacio         -- Conj a -> Bool
+  , minimoElemento  -- Ord a => Conj a -> a
+  , listaAconjunto
+  ) where
 \end{code}
 
 En las definiciones del presente módulo se usarán algunas funciones 
@@ -80,14 +82,24 @@ inserta x (Cj s) = Cj (agrega x s)
                      | otherwise = s
 \end{code}
 
+El valor de \texttt{(listaAconjunto xs)} es el conjunto cuyos elementos son los
+de la lista \texttt{xs}.
+
+\begin{code}
+-- | Ejemplo
+-- >>> listaAconjunto [2,2,1,1,2,4,2]
+-- {1,2,4}
+listaAconjunto :: Ord a => [a] -> Conj a
+listaAconjunto = foldr inserta vacio
+\end{code}
+
 \item \texttt{(esVacio c)} se verifica si \texttt{c} es el conjunto
 vacío.
 
 \index{\texttt{esVacio}}
 \begin{code}
--- | Ejemplo
--- >>> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
--- >>> esVacio c1
+-- | Ejemplos
+-- >>> esVacio (listaAconjunto [2,5,1,3,7,5,3,2,1,9,0])
 -- False
 -- >>> esVacio vacio
 -- True
@@ -95,13 +107,13 @@ esVacio :: Conj a -> Bool
 esVacio (Cj xs) = null xs
 \end{code}
 
-\item \texttt{(pertenece x c)} se verifica si \texttt{x} 
-es un elemento del conjunto \texttt{c}.
+\item \texttt{(pertenece x c)} se verifica si \texttt{x} es un elemento del
+  conjunto \texttt{c}.
 
 \index{\texttt{pertenece}}
 \begin{code}
--- | Ejemplo
--- >>> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
+-- | Ejemplos
+-- >>> let c1 = listaAconjunto [2,5,1,3,7,5,3,2,1,9,0]
 -- >>> pertenece c1 3 
 -- True
 -- >>> pertenece c1 4
@@ -110,13 +122,13 @@ pertenece :: Ord a => Conj a -> a -> Bool
 pertenece (Cj ys) x = elem x (takeWhile (<= x) ys)
 \end{code}
 
-\item \texttt{(elimina x c)} es el conjunto obtenido eliminando 
-el elemento \texttt{x} del conjunto \texttt{c}.
+\item \texttt{(elimina x c)} es el conjunto obtenido eliminando el elemento
+  \texttt{x} del conjunto \texttt{c}.
 
 \index{\texttt{elimina}}
 \begin{code}
--- | Ejemplo
--- >>> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
+-- | Ejemplos
+-- >>> let c1 = listaAconjunto [2,5,1,3,7,5,3,2,1,9,0]
 -- >>> elimina 3 c1
 -- {0,1,2,5,7,9}
 -- >>> elimina 4 c1
@@ -129,26 +141,26 @@ elimina x (Cj s) = Cj (elimina x s) where
                       | otherwise = ys
 \end{code}
 
-\item \texttt{(minimoElemento c)} devuelve el mínimo elemento del      
-conjunto \texttt{c}.
+\item \texttt{(minimoElemento c)} devuelve el mínimo elemento del conjunto
+  \texttt{c}.
 
 \index{\texttt{minimoElemento}}
 \begin{code}
--- | Ejemplo
--- >>> let c1 = foldr inserta vacio [2,5,1,3,7,5,3,2,1,9,0]
--- >>> minimoElemento c1
+-- | Ejemplos
+-- >>> minimoElemento (listaAconjunto [2,5,1,3,7,5,3,2,1,9,0])
 -- 0
--- >>> let c2 = foldr inserta vacio (['a'..'e'] ++ ['A'..'E'])
--- >>> minimoElemento c2
+-- >>> minimoElemento (listaAconjunto (['a'..'e'] ++ ['A'..'E']))
 -- 'A'
 minimoElemento :: Ord a => Conj a -> a
 minimoElemento (Cj (x:xs)) = x
 \end{code}
 \end{itemize}
 
+\comentario{Ampliar el módulo para definir todas las funciones de Conjuntos.lhs}
+
 \ignora{
   La validación es
 
-  > doctest .lhs
-  Examples: 16  Tried: 16  Errors: 0  Failures: 0
+  > doctest ConjuntosConListasOrdenadasSinRepeticion.lhs
+  Examples: 14  Tried: 14  Errors: 0  Failures: 0
 }

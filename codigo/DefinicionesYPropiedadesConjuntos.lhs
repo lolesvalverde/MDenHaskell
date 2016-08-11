@@ -26,8 +26,10 @@ import Data.List
 Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
 En caso  contrario escribiremos $a \not \in A$.
 
-\comentario{Comentar la consecuencia sobre los tipos de la últma frase de la
-  definición de conjunto.}
+\begin{nota}
+  En Haskell, para poder discernir si un objeto arbitrario pertenece a un
+  conjunto se necesita que su tipo pertenezca a la clase \texttt{Eq}.
+\end{nota}
 
 \begin{nota}
   Al trabajar con la representación de conjuntos como listas en Haskell, hemos

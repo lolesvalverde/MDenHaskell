@@ -29,8 +29,10 @@ import Data.List ( (\\)
   arbitrario está o no en él.
 \end{definicion}
 
-\comentario{Comentar la consecuencia sobre los tipos de la últma frase de la
-  definición de conjunto. No sé si se refería a eso.}
+\begin{nota}
+   En Haskell, para poder discernir si un objeto arbitrario pertenece a un conjunto, hay
+   que restringirse a tipos de la clase \texttt{Eq}.
+\end{nota}
 
 \begin{nota}
   Al trabajar con la representación de conjuntos como listas en Haskell, hemos
@@ -38,7 +40,8 @@ import Data.List ( (\\)
   repetidos. La función \texttt{(nub xs)} de la librería \texttt{Data.List}
   elimina los elementos repetidos de una lista. Además, deberemos  
   indicar de qué tipo algebraico serán los elementos de un conjunto  
-  (necesariamente contenido en la clase de los comparables).
+  (necesariamente contenido en la clase de los comparables por igualdad (es
+  decir, la clase \texttt{Eq})).
 \end{nota}
 
 Los conjuntos pueden definirse de manera explícita, citando todos sus elementos

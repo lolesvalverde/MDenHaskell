@@ -5,23 +5,9 @@ implementaremos más adelante.
 
 En el proceso de recopilación de ejemplos, se ha trabajado con diversas fuentes:
 \begin{itemize}
-  \item[$*$] los apuntes de la asignatura
-  \href{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}
-       {Matemática discreta}\
-  \footnote{\url{https://dl.dropboxusercontent.com/u/15420416/tiddly/emptyMD1314.html}}
-  (\cite{Cardenas-15a})
-
-  \item[$*$] los temas de la asignatura 
-  \href{https://www.cs.us.es/~jalonso/cursos/i1m-15}
-       {Informática}\
-  \footnote{\url{{https://www.cs.us.es/~jalonso/cursos/i1m-15}}}
-  (\cite{Alonso-15a}) y
-
-  \item[$*$] el artículo
-  \href{https://en.wikipedia.org/wiki/Graph_theory}
-       {Graph theory}\
-  \footnote{\url{https://en.wikipedia.org/wiki/Graph_theory}}
-  (\cite{Wikipedia-grafos}) de la Wikipedia.
+  \item los apuntes de la asignatura ``Matemática discreta'' (\cite{Cardenas-15a}),
+  \item los temas de la asignatura ``Informática'' (\cite{Alonso-15a}) y
+  \item el artículo ``Graph theory'' (\cite{Wikipedia-grafos}) de la Wikipedia.
 \end{itemize}
 
 \begin{nota}

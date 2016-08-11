@@ -20,12 +20,9 @@ import Data.List  ( (\\)
 \end{code}
 }
 
-Para elaborar la presente sección, se han consultado los
-  \href{https://rodas5.us.es/file/a774213d-a15a-41df-816c-e633fb1a5876/1/01-Conjuntos.pdf}
-  {\textbf{apuntes de Álgebra Básica}},\
-  \footnote{\url{https://rodas5.us.es/file/a774213d-a15a-41df-816c-e633fb1a5876/1/01-Conjuntos.pdf}}
-  (\cite{Algebra-15a})
-  asignatura del primer curso del Grado en Matemáticas.
+Para elaborar la presente sección, se han consultado los apuntes de ``Álgebra
+básica'' (\cite{Algebra-15a}), asignatura del primer curso del Grado en
+Matemáticas.
 
 \begin{definicion}
   Una relación binaria entre dos conjuntos $A$ y $B$ se dice que es 
