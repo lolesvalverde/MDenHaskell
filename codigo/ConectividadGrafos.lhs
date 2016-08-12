@@ -250,8 +250,8 @@ todosCaminosBA g x y = aux [[y]]
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
     
-Vamos a comprobar con \texttt{QuickCheck} que el primer elemento de la
-lista que devuelve la función \texttt{todosCaminosBA g u v)} es de longitud
+Vamos a comprobar con QuickCheck que el primer elemento de la
+lista que devuelve la función \texttt{(todosCaminosBA g u v)} es de longitud
 mínima. Para ello, vamos a utilizar la función \texttt{(parDeVertices g)}
 que es un generador de pares de vértices del grafo no nulo \texttt{g}. 
 Por ejemplo, 
@@ -454,11 +454,10 @@ esCiclo g c =
   esCaminoSimple g c && esCerrado g c
 \end{code}
 
-La función \texttt{(todosCiclos g v) devuelve todos los ciclos en el   
-grafo \texttt{g} que pasan por el vértice \texttt{v}.
+La función \texttt{(todosCiclos g v)} devuelve todos los ciclos en el grafo
+\texttt{g} que pasan por el vértice \texttt{v}.
 
-\nota{El algoritmo utilizado en la definición es el de búsqueda en         
-anchura.}
+\nota{El algoritmo utilizado en la definición es el de búsqueda en anchura.}
 
 \index{todosCiclos}
 \begin{code}
@@ -475,6 +474,8 @@ todosCiclos g x = aux [[x]]
         eliminaLazos h = creaGrafo (vertices h)
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
+
+\comentario{Corregir la definición de todosCiclos.}
 
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
@@ -677,22 +678,25 @@ centro g = [v | v <- vertices g, excentricidad g v == r]
   del grafo $G$ al máximo de las longitudes de los ciclos de $G$.
 \end{definicion}
 
+\comentario{Corregir la definición matemática de grosor.}
+
 La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 
 \index{\texttt{grosor}}
 \begin{code}
 grosor :: Ord a => Grafo a -> Int
 grosor g
-    | esCompleto g = orden g             
-    | otherwise = aux (vertices g)
-        where aux [] = 0
-              aux (x:xs) = max z (aux (xs \\ nub (concat cs)))
-                  where z = maximum [longitudCamino c | c <- cs]
-                        cs = todosCiclos g x
-
+  | esCompleto g = orden g             
+  | otherwise    = aux (vertices g)
+  where aux []     = 0
+        aux (x:xs) = max z (aux (xs \\ nub (concat cs)))
+          where z  = maximum [longitudCamino c | c <- cs]
+                cs = todosCiclos g x
 \end{code}
 
-\comentario{Seguir revisando a partir de aquí.}
+\comentario{Corregir la definición Haskell de grosor.}
+
+\comentario{Comprobar la definición de grosor con las familas de grafos.}
 
 \ignora{
   La validación es

@@ -659,20 +659,20 @@ grafoComplementario  g =
 \end{code}
 
 \begin{definicion}
-  Dado un grafo, diremos que es \textbf{completo} si su complementario  
-  no tiene aristas.
+  Dado un grafo, diremos que es \textbf{completo} si su complementario no tiene
+  aristas.
 \end{definicion}
 
-La función \texttt{(esCompleto g)} se verifica si el grafo \texttt{g}
-es completo. 
+La función \texttt{(esCompleto g)} se verifica si el grafo \texttt{g} es
+completo.
 
 \index{\texttt{esCompleto}}
 \begin{code}
 -- Ejemplos
--- >>> esCompleto (grafoCiclo 5)
--- False
 -- >>> esCompleto (completo 4)
 -- True
+-- >>> esCompleto (grafoCiclo 5)
+-- False
 esCompleto :: Ord a => Grafo a -> Bool
 esCompleto g = tamaño (grafoComplementario g) == 0
 \end{code}
