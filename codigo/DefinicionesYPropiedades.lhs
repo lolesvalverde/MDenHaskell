@@ -15,6 +15,7 @@ de ``Matemática discreta'' (\cite{Cardenas-15a}).
 module DefinicionesYPropiedades (orden
                                 , tamaño
                                 , sonIncidentes
+                                , lazos
                                 , esLazo
                                 , entorno
                                 , grado 
@@ -32,6 +33,7 @@ module DefinicionesYPropiedades (orden
                                 , prop_HavelHakimi
                                 , eliminaArista
                                 , eliminaVertice
+                                , eliminaLazos
                                 , sumaArista
                                 , sumaVertice
                                 , prop_completos
@@ -134,6 +136,19 @@ sonIncidentes (u1,u2) (v1,v2) =
   Diremos que una arista de un grafo $G$ es un \textbf{lazo} si va de un
   vértice en sí mismo. 
 \end{definicion}
+
+La función \texttt{(lazos g)} devuelve los lazos del grafo \texttt{g}.
+
+\index{\texttt{esLazo}}
+\begin{code}
+-- | Ejemplos
+-- >>> lazos (grafoCiclo 5)
+-- []
+-- >>> lazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
+-- [(1,1),(2,2)]
+lazos :: Eq a => Grafo a -> [(a,a)]
+lazos g = [(u,v) | (u,v) <- aristas g, u == v]
+\end{code}
 
 La función \texttt{(esLazo a)} se verifica si la arista \texttt{a} es un
 lazo. 
@@ -506,6 +521,17 @@ eliminaVertice g v =
   where as = aristas g
 \end{code}
 
+
+\begin{code}
+-- | Ejemplos
+-- >>> eliminaLazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
+-- G [1,2] [(1,2)]
+-- >>> eliminaLazos (grafoCiclo 5)
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
+eliminaLazos :: Ord a => Grafo a -> Grafo a
+eliminaLazos g = creaGrafo (vertices g)
+                           [(x,y) | (x,y) <- aristas g, x /= y]
+\end{code}
 \subsubsection{Suma de aristas}
 
 \begin{definicion}
@@ -654,13 +680,13 @@ La función \texttt{(grafoComplementario g)} devuelve el grafo complementario de
 grafoComplementario :: Ord a => Grafo a -> Grafo a 
 grafoComplementario  g =
   creaGrafo vs
-            [(u,v)| u <- vs, v <- vs, u < v, not ((u,v) `aristaEn` g)]
+            [(u,v)| u <- vs, v <- vs, u <= v, not ((u,v) `aristaEn` g)]
   where vs = vertices g
 \end{code}
 
 \begin{definicion}
-  Dado un grafo, diremos que es \textbf{completo} si su complementario no tiene
-  aristas.
+  Dado un grafo, diremos que es \textbf{completo} si su complementario
+  sin lazos no tiene aristas.
 \end{definicion}
 
 La función \texttt{(esCompleto g)} se verifica si el grafo \texttt{g} es
@@ -674,12 +700,13 @@ completo.
 -- >>> esCompleto (grafoCiclo 5)
 -- False
 esCompleto :: Ord a => Grafo a -> Bool
-esCompleto g = tamaño (grafoComplementario g) == 0
+esCompleto g =
+    tamaño (eliminaLazos (grafoComplementario g)) == 0
 \end{code}
 
 \ignora{
   La validación es
 
   > doctest DefinicionesYPropiedades.lhs 
-  Examples: 105  Tried: 105  Errors: 0  Failures: 0
+  Examples: 107  Tried: 107  Errors: 0  Failures: 0
 }

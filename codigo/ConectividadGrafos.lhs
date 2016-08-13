@@ -51,9 +51,14 @@ import GrafoConListaDeAristas   ( Grafo
                                 )
 import EjemplosGrafos           ( esGrafoNulo
                                 , grafoCiclo
+                                , completo
+                                , grafoEstrella
+                                , grafoPetersen
                                 )
 import DefinicionesYPropiedades ( orden
                                 , tamaño
+                                , lazos
+                                , eliminaLazos
                                 , esCompleto
                                 )
 \end{code}
@@ -167,7 +172,7 @@ un arco.
 -- False
 esCaminoSimple :: Ord a => Grafo a -> [a] -> Bool
 esCaminoSimple g (v:vs) =
-  esCamino g (v:vs) && 
+  esRecorrido g (v:vs) && 
   verticesCamino vs == vs
 \end{code}
 
@@ -209,6 +214,8 @@ caminos que pueden continuar por él antes de pasar al siquiente.
 -- [[4,3,2,1],[4,1]]
 -- >>> todosCaminosBP (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
 -- []
+-- >>> todosCaminosBA (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
+-- [[1]]
 todosCaminosBP :: Ord a => Grafo a -> a -> a -> [[a]]
 todosCaminosBP g x y = aux [[y]]
   where aux []       = []
@@ -238,6 +245,8 @@ por niveles, de forma que el primer camino de la lista es de longitud mínima.
 -- [[4,1],[4,3,2,1]]
 -- >>> todosCaminosBA (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
 -- []
+-- >>> todosCaminosBA (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
+-- [[1]]
 todosCaminosBA :: Ord a => Grafo a -> a -> a -> [[a]]
 todosCaminosBA g x y = aux [[y]]
   where aux []       = []
@@ -246,8 +255,7 @@ todosCaminosBA g x y = aux [[y]]
           | z == x    = (z:zs) : aux zss
           | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\ zs])
         g' = eliminaLazos g
-        eliminaLazos h = creaGrafo (vertices h)
-                                   [(x,y) | (x,y) <- aristas h, x /= y]
+
 \end{code}
     
 Vamos a comprobar con QuickCheck que el primer elemento de la
@@ -379,7 +387,7 @@ una geodésica entre sus extremos en el grafo \texttt{g}.
 -- False
 esGeodesica :: Ord a => Grafo a -> [a] -> Bool
 esGeodesica g c =
-  esCamino g c && 
+  esRecorrido g c && 
   longitudCamino c == fromJust (distancia g u v)
   where u = head c
         v = last c
@@ -404,8 +412,8 @@ cerrado en el grafo \texttt{g}. Por ejemplo,
 -- >>> esCerrado g [1,2,4,1]
 -- False
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
-esCerrado g c =
-  esCamino g c && head c == last c
+esCerrado g (v:c) =
+  esCamino g c && v == last c
 \end{code}
   
 \begin{definicion}
@@ -443,6 +451,8 @@ ciclo en el grafo \texttt{g}.
 \index{\texttt{esCircuito}}
 \begin{code}
 -- | Ejemplos
+-- >>> esCiclo (grafoCiclo 4) [1,2,1]
+-- False
 -- >>> esCiclo (grafoCiclo 4) [1,2,3,4,1]
 -- True
 -- >>> esCiclo (grafoCiclo 4) [1,2,3,4]
@@ -457,14 +467,12 @@ esCiclo g c =
 La función \texttt{(todosCiclos g v)} devuelve todos los ciclos en el grafo
 \texttt{g} que pasan por el vértice \texttt{v}.
 
-\nota{El algoritmo utilizado en la definición es el de búsqueda en anchura.}
-
 \index{todosCiclos}
 \begin{code}
 todosCiclos :: Ord a => Grafo a -> a -> [[a]]
-todosCiclos g x = aux [[x]]
+todosCiclos g x = [[u] | (u,v) <- lazos g] ++ aux [[x]]
   where aux []       = []
-        aux [[z]] = aux [v:[z] | v <- adyacentes g' z \\ [x]]
+        aux [[z]]    = aux [v:[z] | v <- adyacentes g' z \\ [x]]
         aux ([]:zss) = aux zss
         aux ((z:zs):zss)
           | z == x    = (z:zs) : aux zss
@@ -475,7 +483,54 @@ todosCiclos g x = aux [[x]]
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
 
-\comentario{Corregir la definición de todosCiclos.}
+\begin{definicion}
+Diremos que un grafo $G=(V,A)$ es \textbf{acíclico} si no contiene        
+ningún ciclo, es decir, si $\forall v \in V$ no existe ningún camino       
+simple que comience y termine en $v$.
+\end{definicion}
+
+La función \texttt{(esAciclico g)} se verifica si el grafo \texttt{g} es 
+acíclico.
+
+\begin{code}
+-- | Ejemplo
+-- >>> esAciclico (creaGrafo [1..4] [(1,2),(2,4)])
+-- True
+-- >>> esAciclico (grafoCiclo 5)
+-- False
+-- >>> esAciclico (grafoEstrella 6)
+-- True
+esAciclico :: Ord a => Grafo a -> Bool
+esAciclico g = aux (vertices g) where
+    aux [] = True
+    aux (x:xs)
+        | not (null (todosCiclos g x)) = False
+        | otherwise = aux (xs \\ nub (concat (todosCiclos g x)))
+\end{code}
+
+\nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos         
+g)} es el de búsqueda en anchura. Este algoritmo recorre el grafo por 
+niveles, de forma que el primer camino de la lista es de longitud         
+mínima.}
+
+La propiedad es: 
+
+\index{\texttt{prop\_todosCiclos}}    
+\begin{code}
+prop_todosCiclos :: Grafo Int -> Bool
+prop_todosCiclos g = esAciclico g || all p vs
+    where vs = filter (not.null.todosCiclos g) (vertices g)                 
+          p v =  longitudCamino (head cs) ==
+                 minimum (map longitudCamino cs)
+                     where cs = todosCiclos g v
+\end{code}
+
+La comprobación es:
+
+\begin{sesion}
+ghci> quickCheck prop_todosCiclos
++++ OK, passed 100 tests:
+\end{sesion}
 
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
@@ -675,26 +730,34 @@ centro g = [v | v <- vertices g, excentricidad g v == r]
       
 \begin{definicion}
   Sean $G = (V,A)$ un grafo. Se llama \textbf{grosor} o \textbf{cintura}
-  del grafo $G$ al máximo de las longitudes de los ciclos de $G$.
+  del grafo $G$ al mínimo de las longitudes de los ciclos de $G$. Si el  
+  grafo no posee ciclos (es decir, es un grafo acíclico), se dice que  
+  su cintura es infinita.
 \end{definicion}
-
-\comentario{Corregir la definición matemática de grosor.}
 
 La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 
 \index{\texttt{grosor}}
 \begin{code}
-grosor :: Ord a => Grafo a -> Int
-grosor g
-  | esCompleto g = orden g             
-  | otherwise    = aux (vertices g)
-  where aux []     = 0
-        aux (x:xs) = max z (aux (xs \\ nub (concat cs)))
-          where z  = maximum [longitudCamino c | c <- cs]
-                cs = todosCiclos g x
-\end{code}
+-- | Ejemplos
+-- grosor (grafoCiclo 5)
+-- Just 5
+-- grosor (completo 5)
+-- Just 3
+-- grosor (creaGrafo [1,2,3] [(1,2),(2,3)])
+-- Nothing
+-- grosor (creaGrafo [1,2,3] [(1,1),(1,2),(2,3),(3,4)])
+-- Just 0
+-- grosor grafoPetersen
+-- Just 5
+grosor :: Ord a => Grafo a -> Maybe Int
+grosor g | esAciclico g = Nothing
+         | otherwise    = Just (minimum (map f (filter p vs)))
+             where f = longitudCamino . head . todosCiclos g
+                   p = not . null . todosCiclos g
+                   vs = vertices g
 
-\comentario{Corregir la definición Haskell de grosor.}
+\end{code}
 
 \comentario{Comprobar la definición de grosor con las familas de grafos.}
 
@@ -702,5 +765,5 @@ grosor g
   La validación es
 
   > doctest ConectividadGrafos.lhs 
-  Examples: 138  Tried: 138  Errors: 0  Failures: 0
+  Examples: 201  Tried: 201  Errors: 0  Failures: 0
 }
