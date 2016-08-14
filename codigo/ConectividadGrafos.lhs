@@ -158,7 +158,7 @@ esRecorrido g c =
 \end{definicion}
 
 La función \texttt{(esCaminoSimple g c)} se verifica si el camino \texttt{c} es
-un arco. 
+un camino simple. 
 
 \begin{code}
 -- | Ejemplos
@@ -175,6 +175,11 @@ esCaminoSimple g (v:vs) =
   esRecorrido g (v:vs) && 
   verticesCamino vs == vs
 \end{code}
+
+\comentario{Corregir la definición de esCaminoSimple para evitar
+  contraejemplos como el siguiente
+  (esCaminoSimple (creaGrafo [1,2] [(1,1),(1,2)]) [1,1,2] == True).
+}
 
 \comentario{Simplificar la definición de \texttt{esCaminoSimple} usando
   \texttt{sinRepetidos}.}
@@ -214,7 +219,7 @@ caminos que pueden continuar por él antes de pasar al siquiente.
 -- [[4,3,2,1],[4,1]]
 -- >>> todosCaminosBP (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
 -- []
--- >>> todosCaminosBA (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
+-- >>> todosCaminosBP (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
 -- [[1]]
 todosCaminosBP :: Ord a => Grafo a -> a -> a -> [[a]]
 todosCaminosBP g x y = aux [[y]]
@@ -392,6 +397,17 @@ esGeodesica g c =
   where u = head c
         v = last c
 \end{code}
+
+\comentario{Comparar la definición de esGeodesica con la siguiente: ¿son
+  equivalentes?, ¿cuál es más cercana a la definición matemática?, ¿cuál es más
+  corta?}
+
+\begin{code}
+esGeodesica2 :: Ord a => Grafo a -> [a] -> Bool
+esGeodesica2 g c =
+  esCamino g c && 
+  longitudCamino c == fromJust (distancia g (head c) (last c))
+\end{code}
   
 \begin{definicion}
   Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos son
@@ -399,7 +415,7 @@ esGeodesica g c =
 \end{definicion}
 
 La función \texttt{(esCerrado g c)} se verifica si el camino \texttt{c} es
-cerrado en el grafo \texttt{g}. Por ejemplo,
+cerrado en el grafo \texttt{g}. 
 
 \index{\texttt{esCerrado}}
 \begin{code}
@@ -415,7 +431,9 @@ esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
 esCerrado g (v:c) =
   esCamino g c && v == last c
 \end{code}
-  
+
+\comentario{En la definición de esCerrado ¿qué pasa con el camino vacío?)}
+
 \begin{definicion}
   Un recorrido en un grafo $G$ se dice \textbf{circuito} si sus extremos son
   iguales.
@@ -483,13 +501,17 @@ todosCiclos g x = [[u] | (u,v) <- lazos g] ++ aux [[x]]
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
 
+\comentario{Corregir la definición de todosCiclos para evitar
+  contraejemplos como el siguiente:
+  (todosCiclos (creaGrafo [1,2] [(1,1)]) 2 == [[1]])}
+
 \begin{definicion}
-Diremos que un grafo $G=(V,A)$ es \textbf{acíclico} si no contiene        
-ningún ciclo, es decir, si $\forall v \in V$ no existe ningún camino       
-simple que comience y termine en $v$.
+  Diremos que un grafo $G = (V,A)$ es \textbf{acíclico} si no contiene ningún
+  ciclo; es decir, si $\forall v \in V$ no existe ningún camino simple que
+  comience y termine en $v$.
 \end{definicion}
 
-La función \texttt{(esAciclico g)} se verifica si el grafo \texttt{g} es 
+La función \texttt{(esAciclico g)} se verifica si el grafo \texttt{g} es
 acíclico.
 
 \begin{code}
@@ -508,10 +530,31 @@ esAciclico g = aux (vertices g) where
         | otherwise = aux (xs \\ nub (concat (todosCiclos g x)))
 \end{code}
 
-\nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos         
-g)} es el de búsqueda en anchura. Este algoritmo recorre el grafo por 
-niveles, de forma que el primer camino de la lista es de longitud         
-mínima.}
+
+\comentario{La definición de esAciclico se puede simplificar como sigue:}
+
+\begin{code}
+esAciclico2 :: Ord a => Grafo a -> Bool
+esAciclico2 g = 
+  and [null (todosCiclos g x) | x <- vertices g]
+\end{code}
+
+
+\comentario{Desde el punto de vista de la eficiencia no hay grandes diferencias
+  entre esAciclico y esAciclico2 como se observa en el siguiente ejemplo:}
+
+\begin{sesion}
+ghci> esAciclico2 (completo 100)
+False
+(2.18 secs, 4,313,432,952 bytes)
+ghci> esAciclico (completo 100)
+False
+(2.23 secs, 4,311,646,816 bytes)
+\end{sesion}
+
+\nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
+  de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
+  que el primer camino de la lista es de longitud mínima.}
 
 La propiedad es: 
 
@@ -531,6 +574,9 @@ La comprobación es:
 ghci> quickCheck prop_todosCiclos
 +++ OK, passed 100 tests:
 \end{sesion}
+
+\comentario{La propiedad \texttt{prop\_todosCiclos} es consecuencia de
+  \texttt{prop\_todosCaminosBA} y se puede eliminar.}
 
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
@@ -740,24 +786,52 @@ La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 \index{\texttt{grosor}}
 \begin{code}
 -- | Ejemplos
--- grosor (grafoCiclo 5)
+-- >>> grosor (grafoCiclo 5)
 -- Just 5
--- grosor (completo 5)
+-- >>> grosor (completo 5)
 -- Just 3
--- grosor (creaGrafo [1,2,3] [(1,2),(2,3)])
+-- >>> grosor (creaGrafo [1,2,3] [(1,2),(2,3)])
 -- Nothing
--- grosor (creaGrafo [1,2,3] [(1,1),(1,2),(2,3),(3,4)])
+-- >>> grosor (creaGrafo [1,2,3] [(1,1),(1,2),(2,3),(3,4)])
 -- Just 0
--- grosor grafoPetersen
+-- >>> grosor grafoPetersen
 -- Just 5
 grosor :: Ord a => Grafo a -> Maybe Int
 grosor g | esAciclico g = Nothing
          | otherwise    = Just (minimum (map f (filter p vs)))
-             where f = longitudCamino . head . todosCiclos g
-                   p = not . null . todosCiclos g
-                   vs = vertices g
-
+  where vs = vertices g
+        p  = not . null . todosCiclos g
+        f  = longitudCamino . head . todosCiclos g
 \end{code}
+
+\comentario{Se puede reducir el número de llamadas a todosCiclos como se
+  muestra en la siguiente definición:}
+
+\begin{code}
+grosor2 :: Ord a => Grafo a -> Maybe Int
+grosor2 g
+  | esAciclico g = Nothing
+  | otherwise    = Just (minimum [length (head yss) - 1
+                                 | x <- vertices g
+                                 , let yss = todosCiclos g x
+                                 , not (null yss)])
+
+prop_grosor2 :: Grafo Int -> Bool
+prop_grosor2 g =
+  grosor g == grosor2 g 
+\end{code}
+
+\comentario{La definición grosor2 es más eficiente como se observa en el
+  siguiente ejemplo:}
+
+\begin{sesion}
+ghci> grosor (completo 40)
+Just 3
+(3.48 secs, 8,041,804,520 bytes)
+ghci> grosor2 (completo 40)
+Just 3
+(1.79 secs, 4,027,647,400 bytes)
+\end{sesion}
 
 \comentario{Comprobar la definición de grosor con las familas de grafos.}
 
@@ -765,5 +839,5 @@ grosor g | esAciclico g = Nothing
   La validación es
 
   > doctest ConectividadGrafos.lhs 
-  Examples: 201  Tried: 201  Errors: 0  Failures: 0
+  Examples: 207  Tried: 207  Errors: 0  Failures: 0
 }

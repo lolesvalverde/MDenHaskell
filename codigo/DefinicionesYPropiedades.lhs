@@ -522,10 +522,14 @@ eliminaVertice g v =
 \end{code}
 
 
+\comentario{Añadir la especificación de eliminaLazos.}
+
 \begin{code}
 -- | Ejemplos
 -- >>> eliminaLazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
 -- G [1,2] [(1,2)]
+-- >>> grafoCiclo 5
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
 -- >>> eliminaLazos (grafoCiclo 5)
 -- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
 eliminaLazos :: Ord a => Grafo a -> Grafo a
