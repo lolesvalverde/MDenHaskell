@@ -815,11 +815,9 @@ grosor g
                                  , not (null yss)])
 \end{code}
 
-\comentario{Comprobar la definición de grosor con las familas de grafos.}
-
 \ignora{
   La validación es
 
   > doctest ConectividadGrafos.lhs 
-  Examples: 209  Tried: 209  Errors: 0  Failures: 0
+  Examples: 213  Tried: 213  Errors: 0  Failures: 0
 }
