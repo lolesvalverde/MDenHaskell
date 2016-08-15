@@ -6,31 +6,118 @@
 
 *** GrafoConListaDeAristas
 
-|-----------------+---------------------|
-| creaGrafo vs as | create_grah (vs,as) |
-| vertices g      | vertices (g)        |
-| adyacentes g v  | neighbors (v,g)     |
-| aristaEn a g    |                     |
-| aristas g       | edges (g)           |
-|-----------------+---------------------|
+|-----------------+--------------------------|
+| creaGrafo vs as | create_grah (vs,as)      |
+| vertices g      | vertices (g)             |
+| adyacentes g v  | neighbors (v,g)          |
+| aristaEn a g    | is_edge_in_graph (a,g)   |
+| aristas g       | edges (g)                |
+|-----------------+--------------------------|
 
 *** EjemplosGrafos
 
-|--------------------|
-| grafoNulo          |
-| esGrafoNulo        |
-| grafoCiclo         |
-| grafoAmistad       |
-| completo           |
-| bipartitoCompleto  |
-| grafoEstrella      |
-| grafoRueda         |
-| grafoCirculante    |
-| grafoPetersenGen   |
-| grafoThomson       |
-| grafoPetersen      |
-| grafoMoebiusCantor |
-|--------------------|
+|-----------------------+--------------------------------|
+| grafoNulo             | empty_graph (0)                |
+| esGrafoNulo g         |                                |
+| grafoCiclo n          | cycle_graph (n)                |
+| grafoAmistad          |                                |
+| completo n            | complete_graph (n)             |
+| bipartitoCompleto n m | complete_bipartite_graph (n,m) |
+| grafoEstrella         |                                |
+| grafoRueda n          | wheel_graph (n-1)              |
+| grafoCirculante n ss  | circulant_graph (n,d)          |
+| grafoPetersenGen n d  | petersen_graph (n,d)           |
+| grafoThomson          |                                |
+| grafoPetersen         | petersen_graph (5,2)           |
+| grafoMoebiusCantor    |                                |
+|-----------------------+--------------------------------|
+
+*** DefinicionesYPropiedades
+
+|-------------------------+------------------------|
+| orden g                 | graph_order (g)        |
+| tamaño g                | graph_size (g)         |
+| sonIncidentes           |                        |
+| lazos                   |                        |
+| esLazo                  |                        |
+| entorno g v             | neighbors (v,g)        |
+| grado g v               | vertex_degree (v,g)    |
+| esAislado               |                        |
+| esRegular               |                        |
+| valenciaMin g           | first (min_degree (g)) |
+| valenciaMax g           | first (max_degree (g)) |
+| esSimple g              | is_graph (g)           |
+| secuenciaGrados g       | degree_sequence (g)    |
+| secuenciaGrafica        |                        |
+| esSubgrafo              |                        |
+| esSubgrafoMax           |                        |
+| esSubgrafoPropio        |                        |
+|-------------------------+------------------------|
+| prop_LemaApretonDeManos |                        |
+| prop_HavelHakimi        |                        |
+|-------------------------+------------------------|
+| eliminaArista ga        | remove_edge (a,g)      |
+| eliminaVertice          | remove_vertex (v,g)    |
+| eliminaLazos            |                        |
+| sumaArista g a          | add_edge (a,g)         |
+| sumaVertice             |                        |
+| prop_completos          |                        |
+| sumaGrafos              |                        |
+| unionGrafos             |                        |
+| grafoComplementario g   | complement_graph (g)   |
+| esCompleto              |                        |
+|-------------------------+------------------------|
+
+** Morfismos
+
+|-----------------------------+-----------------------|
+| conservaAdyacencia          |                       |
+| esMorfismo                  |                       |
+| morfismos                   |                       |
+| esIsomorfismo               |                       |
+| isomorfismos1 g1 g2         | isomorphism (g1,g2)   |
+| isomorfos1 g1 g2            | is_isomorphic (g1,g2) |
+| isomorfismos2 g1 g2         | isomorphism (g1,g2)   |
+| isomorfos2                  | is_isomorphic (g1,g2) |
+| isomorfismos3 g1 g2         | isomorphism (g1,g2)   |
+| esInvariantePorIsomorfismos |                       |
+| isomorfismos g1 g2          | isomorphism (g1,g2)   |
+| isomorfos g1 g2             | is_isomorphic (g1,g2) |
+| esAutomorfismo g            |                       |
+| automorfismos               |                       |
+|-----------------------------+-----------------------|
+
+** Conectividad de grafos
+
+|-------------------------------+---------------------------|
+| esCamino                      |                           |
+| aristasCamino                 |                           |
+| verticesCamino                |                           |
+| esRecorrido                   |                           |
+| esCaminoSimple                |                           |
+| longitudCamino                |                           |
+| todosCaminosBP                |                           |
+| todosCaminosBA                |                           |
+| (head . todosCaminosBA) g u v | shortest_path (u,v,g)     |
+| prop_todosCaminosBA           |                           |
+| estanConectados               |                           |
+| distancia g u v               | vertex_distance (u,v,g)   |
+| esGeodesica                   |                           |
+| esCerrado                     |                           |
+| esCircuito                    |                           |
+| esCiclo                       |                           |
+| todosCiclos                   |                           |
+| estarConectadosCamino         |                           |
+| prop_conectadosRelEqui        |                           |
+| componentesConexas g          | connected_components (g)  |
+| esConexo g                    | is_connected (g)          |
+| prop_caracterizaGrafoConexo   |                           |
+| excentricidad g v             | vertex_eccentricity (v,g) |
+| diametro g                    | diameter (g)              |
+| radio g                       | radius (g)                |
+| centro g                      | graph_center (g)          |
+| grosor g                      | girth (g)                 |
+|-------------------------------+---------------------------|
 
 ** Por orden alfabético
 
