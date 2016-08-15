@@ -530,7 +530,6 @@ esAciclico g = aux (vertices g) where
         | otherwise = aux (xs \\ nub (concat (todosCiclos g x)))
 \end{code}
 
-
 \comentario{La definición de esAciclico se puede simplificar como sigue:}
 
 \begin{code}
@@ -538,7 +537,6 @@ esAciclico2 :: Ord a => Grafo a -> Bool
 esAciclico2 g = 
   and [null (todosCiclos g x) | x <- vertices g]
 \end{code}
-
 
 \comentario{Desde el punto de vista de la eficiencia no hay grandes diferencias
   entre esAciclico y esAciclico2 como se observa en el siguiente ejemplo:}

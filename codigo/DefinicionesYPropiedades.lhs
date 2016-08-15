@@ -12,7 +12,7 @@ de ``Matemática discreta'' (\cite{Cardenas-15a}).
 
 \ignora{
 \begin{code}
-module DefinicionesYPropiedades (orden
+module DefinicionesYPropiedades ( orden
                                 , tamaño
                                 , sonIncidentes
                                 , lazos
@@ -142,10 +142,10 @@ La función \texttt{(lazos g)} devuelve los lazos del grafo \texttt{g}.
 \index{\texttt{esLazo}}
 \begin{code}
 -- | Ejemplos
--- >>> lazos (grafoCiclo 5)
--- []
 -- >>> lazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
 -- [(1,1),(2,2)]
+-- >>> lazos (grafoCiclo 5)
+-- []
 lazos :: Eq a => Grafo a -> [(a,a)]
 lazos g = [(u,v) | (u,v) <- aristas g, u == v]
 \end{code}
@@ -541,7 +541,7 @@ eliminaLazos g = creaGrafo (vertices g)
 \begin{definicion}
   Sea $G = (V,A)$ un grafo y sean $u,v \in V$ tales que
   $(u,v), (v,u) \not\in A$. Definimos el grafo $G + (u,v)$ como el grafo
-  $G'=(V,A \cup \{(u,v)\})$. Esta operación se denomina \textbf{suma de una
+  $G' = (V,A \cup \{(u,v)\})$. Esta operación se denomina \textbf{suma de una
   arista}.
 \end{definicion}
 
@@ -565,8 +565,8 @@ sumaArista g a =
 \begin{definicion}
   Sea $G = (V,A)$ un grafo y sea $v \not\in V$. Definimos el grafo $G + v$ como
   el grafo $G' = (V',A')$, donde $V'= V \cup \{v\}$,
-  $A'=A \cup \{(u,v) | u \in V\}$.  Esta operación se denomina \textbf{suma de
-    un vértice}.
+  $A' = A \cup \{(u,v) | u \in V\}$.  Esta operación se denomina \textbf{suma de
+  un vértice}.
 \end{definicion}
 
 La función \texttt{(sumaVertice g a)} suma el vértice \texttt{a} al grafo
