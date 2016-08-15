@@ -53,6 +53,9 @@ import EjemplosGrafos           ( esGrafoNulo
                                 , grafoCiclo
                                 , completo
                                 , grafoEstrella
+                                , grafoHeawood
+                                , grafoMcGee
+                                , grafoTutteCoxeter
                                 , grafoPetersen
                                 )
 import DefinicionesYPropiedades ( orden
@@ -786,52 +789,31 @@ La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 \index{\texttt{grosor}}
 \begin{code}
 -- | Ejemplos
--- >>> grosor (grafoCiclo 5)
--- Just 5
--- >>> grosor (completo 5)
--- Just 3
 -- >>> grosor (creaGrafo [1,2,3] [(1,2),(2,3)])
 -- Nothing
 -- >>> grosor (creaGrafo [1,2,3] [(1,1),(1,2),(2,3),(3,4)])
 -- Just 0
+-- >>> grosor (grafoCiclo 5)
+-- Just 5
+-- >>> grosor (completo 5)
+-- Just 3
 -- >>> grosor grafoPetersen
 -- Just 5
+-- >>> grosor grafoHeawood
+-- Just 6
+-- >>> grosor grafoMcGee
+-- Just 7
+-- >>> grosor grafoTutteCoxeter
+-- Just 8
 grosor :: Ord a => Grafo a -> Maybe Int
-grosor g | esAciclico g = Nothing
-         | otherwise    = Just (minimum (map f (filter p vs)))
-  where vs = vertices g
-        p  = not . null . todosCiclos g
-        f  = longitudCamino . head . todosCiclos g
-\end{code}
-
-\comentario{Se puede reducir el número de llamadas a todosCiclos como se
-  muestra en la siguiente definición:}
-
-\begin{code}
-grosor2 :: Ord a => Grafo a -> Maybe Int
-grosor2 g
+grosor g
   | esAciclico g = Nothing
-  | otherwise    = Just (minimum [length (head yss) - 1
+  | esCompleto g = Just 3
+  | otherwise    = Just (minimum [longitudCamino (head yss)
                                  | x <- vertices g
                                  , let yss = todosCiclos g x
                                  , not (null yss)])
-
-prop_grosor2 :: Grafo Int -> Bool
-prop_grosor2 g =
-  grosor g == grosor2 g 
 \end{code}
-
-\comentario{La definición grosor2 es más eficiente como se observa en el
-  siguiente ejemplo:}
-
-\begin{sesion}
-ghci> grosor (completo 40)
-Just 3
-(3.48 secs, 8,041,804,520 bytes)
-ghci> grosor2 (completo 40)
-Just 3
-(1.79 secs, 4,027,647,400 bytes)
-\end{sesion}
 
 \comentario{Comprobar la definición de grosor con las familas de grafos.}
 
@@ -839,5 +821,5 @@ Just 3
   La validación es
 
   > doctest ConectividadGrafos.lhs 
-  Examples: 207  Tried: 207  Errors: 0  Failures: 0
+  Examples: 209  Tried: 209  Errors: 0  Failures: 0
 }

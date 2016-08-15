@@ -27,11 +27,16 @@ module EjemplosGrafos ( grafoNulo
                       , grafoCirculante
                       , grafoPetersenGen
                       , grafoThomson
+                      , grafoHeawood
+                      , grafoMcGee
+                      , grafoTutteCoxeter
                       , grafoPetersen
                       , grafoMoebiusCantor
                       ) where
 
-import Data.List ( sort )
+import Data.List ( sort
+                 , (\\)
+                 )
 import Text.PrettyPrint.GenericPretty (pp)
 import GrafoConListaDeAristas ( Grafo
                               , aristas
@@ -458,12 +463,160 @@ grafoThomson :: Grafo Int
 grafoThomson = bipartitoCompleto 3 3
 \end{code}
 
+\subsubsection{Grafo de Heawood}
+
+El \href{https://en.wikipedia.org/wiki/Heawood_graph}
+        {\textbf{grafo de Heawood}}\
+        \footnote{\url{https://en.wikipedia.org/wiki/Heawood_graph}} 
+es un grafo no dirigido, regular con 14 vértices y 21 aristas. Todos 
+sus vértices son incidentes a exactamente 3 aristas, es decir, es un
+grafo \textbf{cúbico}. Tiene importantes propiedades 
+geométricas y topológicas.
+
+\begin{center}
+\begin{tikzpicture}
+   \tikzset{VertexStyle/.style=   { shape        = circle,
+                                    shading      = ball,
+                                    ball color   = green!60!black,
+                                    minimum size = 24pt,
+                                    draw}}
+   \tikzset{EdgeStyle/.style=   {thick,
+                                 double          = orange,
+                                 double distance = 1pt}}
+   \SetVertexNoLabel
+   \grHeawood[Math,RA=3.5]   
+   \AssignVertexLabel{a}{1,2,3,4,5,6,7,8,9,10,11,12,13,14}
+\end{tikzpicture}
+\end{center}
+
+La función \texttt{grafoHeawood} genera el grafo de Heawood.
+
+\index{\texttt{grafoHeawood}}
+\begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoHeawood
+-- G [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+--   [(1, 2),(1, 6),(1, 14),(2, 3),(2, 11),(3, 4),(3, 8),
+--    (4, 5),(4, 13),(5, 6),(5, 10),(6, 7),(7, 8),(7, 12),
+--    (8, 9),(9, 10),(9, 14),(10, 11),(11, 12),(12, 13),
+--    (13, 14)]
+grafoHeawood :: Grafo Int
+grafoHeawood =
+    creaGrafo [1..14]
+              (aristas (grafoCiclo 14) ++
+               [(u,f u) | u <- [1,2,3,4,5,7,9]])
+        where f v | mod (m v) 14 == 0 = 14
+                  | otherwise         = mod (m v) 14
+              m x = (x + 5*(-1)^(x+1))
+\end{code}
+
+\subsubsection{Grafo de McGee}
+
+El \href{https://en.wikipedia.org/wiki/McGee_graph}
+        {\textbf{grafo de McGee}}\
+        \footnote{\url{https://en.wikipedia.org/wiki/McGee_graph}} 
+es un grafo no dirigido, cúbico, con 24 vértices y 36 aristas. Tiene
+importantes propiedades geométricas y topológicas.
+
+\begin{center}
+\begin{tikzpicture}
+   \tikzset{VertexStyle/.style=   { shape        = circle,
+                                    shading      = ball,
+                                    ball color   = green!60!black,
+                                    minimum size = 24pt,
+                                    draw}}
+   \tikzset{EdgeStyle/.style=   {thick,
+                                 double          = orange,
+                                 double distance = 1pt}}
+   \SetVertexNoLabel
+   \grMcGee[Math,RA=4]   
+   \AssignVertexLabel{a}{1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+                         15,16,17,18,19,20,21,22,23,24}
+\end{tikzpicture}
+\end{center}
+
+La función \texttt{grafoMcGee} genera el grafo de McGee.
+
+\index{\texttt{grafoMcGee}}
+\begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoMcGee
+-- G [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
+--    20,21,22,23,24]
+--   [(1, 2),(1, 13),(1, 24),(2, 3),(2, 9),(3, 4),(3, 20),
+--    (4, 5),(4, 16),(5, 6),(5, 12),(6, 7),(6, 23),(7, 8),
+--    (7, 19),(8, 9),(8, 15),(9, 10),(10, 11),(10, 22),
+--    (11, 12),(11, 18),(12, 13),(13, 14),(14, 15),
+--    (14, 21),(15, 16),(16, 17),(17, 18),(18, 19),
+--    (19, 20),(20, 21),(21, 22),(22, 23),(23, 24)]
+grafoMcGee :: Grafo Int
+grafoMcGee =
+    creaGrafo [1..24]
+              (aristas (grafoCiclo 24) ++
+               [(u,u + 12) | u <- [1,4,7,10]] ++
+               [(u,v) |(u,v) <- zip [2, 3, 5, 6, 8,11,14,17]
+                                    [9,20,12,23,15,18,21,24]])
+\end{code}
+
+\subsubsection{Grafo Tutte--Coxeter}
+
+El \href{https://en.wikipedia.org/wiki/Tutte–Coxeter_graph}
+        {\textbf{grafo Tutte–Coxeter}}\
+        \footnote{\url{https://en.wikipedia.org/wiki/Tutte–Coxeter_graph}} 
+es un grafo no dirigido, cúbico, con 30 vértices y 45 aristas. Tiene
+importantes propiedades geométricas y topológicas.
+
+\begin{center}
+\begin{tikzpicture}
+   \tikzset{VertexStyle/.style=   { shape        = circle,
+                                    shading      = ball,
+                                    ball color   = green!60!black,
+                                    minimum size = 24pt,
+                                    draw}}
+   \tikzset{EdgeStyle/.style=   {thick,
+                                 double          = orange,
+                                 double distance = 1pt}}
+   \SetVertexNoLabel
+   \grTutteCoxeter[Math,RA=5]   
+   \AssignVertexLabel{a}{1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+                         15,16,17,18,19,20,21,22,23,24,25,
+                         26,27,28,29,30}
+\end{tikzpicture}
+\end{center}
+
+La función \texttt{grafoTutteCoxeter} genera el grafo Tutte--Coxeter.
+
+\index{\texttt{grafoTutteCoxeter}}
+\begin{code}
+-- | Ejemplo
+-- >>> pp $ grafoTutteCoxeter
+-- G [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,
+--    20,21,22,23,24]
+--   [(1, 2),(1, 13),(1, 24),(2, 3),(2, 9),(3, 4),(3, 20),
+--    (4, 5),(4, 16),(5, 6),(5, 12),(6, 7),(6, 23),(7, 8),
+--    (7, 19),(8, 9),(8, 15),(9, 10),(10, 11),(10, 22),
+--    (11, 12),(11, 18),(12, 13),(13, 14),(14, 15),
+--    (14, 21),(15, 16),(16, 17),(17, 18),(18, 19),
+--    (19, 20),(20, 21),(21, 22),(22, 23),(23, 24)]
+grafoTutteCoxeter :: Grafo Int
+grafoTutteCoxeter =
+    creaGrafo [1..30]
+              (aristas (grafoCiclo 30) ++
+               [(u,v) |(u,v) <- zip [ 1, 2, 3, 4, 5, 6, 7, 8,
+                                      9,11,12,13,15,17,21]
+                                    [18,23,10,27,14,19,24,29,
+                                     16,20,25,30,22,26,28]])
+\end{code}
+
 \subsubsection{Grafo de Petersen}
 
 El \href{https://en.wikipedia.org/wiki/Petersen_graph}
           {\textbf{grafo de Petersen}}\
           \footnote{\url{https://en.wikipedia.org/wiki/Petersen_graph}}
-es un grafo no dirigido con 10 vértices y 15 aristas que es usado como 
+se define como el grafo de Petersen generalizado $GP_{5,2}$; es decir,
+es un grafo cúbico formado por los vértices de un pentágono, conectados
+a los vértices de una estrella de cinco puntas en la que cada nodo es
+adyacente a los nodos que están a un salto 2 de él. Es usado como          
 ejemplo y como contraejemplo en muchos problemas de la Teoría de grafos.
 
 \begin{center}
@@ -503,11 +656,11 @@ El \href{https://en.wikipedia.org/wiki/Moëbius-Kantor_graph}
         {\textbf{grafo de Moëbius--Cantor}}\
         \footnote{\url{https://en.wikipedia.org/wiki/Moëbius-Kantor_graph}} 
 se define como el grafo de Petersen generalizado $GP_{8,3}$; es decir,
-está formado por los vértices de un octógono, conectados a los vértices
-de una estrella de ocho puntas en la que cada nodo es adyacente a los
-nodos que están a un salto 3 de él.  Al igual que el grafo de Petersen,
-tiene importantes propiedades que lo hacen ser ejemplo y contraejemplo
-de muchos problemas de la Teoría de Grafos.
+es un grafo cúbico formado por los vértices de un octógono, conectados
+a los vértices de una estrella de ocho puntas en la que cada nodo es
+adyacente a los nodos que están a un salto 3 de él.  Al igual que el
+grafo de Petersen, tiene importantes propiedades que lo hacen ser      
+ejemplo y contraejemplo de muchos problemas de la Teoría de Grafos.
 
 \begin{center}
 \begin{tikzpicture}
@@ -545,5 +698,5 @@ grafoMoebiusCantor = grafoPetersenGen 8 3
   La validación es
 
   > doctest EjemplosGrafos.lhs
-  Examples: 22  Tried: 22  Errors: 0  Failures: 0
+  Examples: 23  Tried: 23  Errors: 0  Failures: 0
 }
