@@ -25,7 +25,8 @@ module ConectividadGrafos       ( esCamino
                                 , excentricidad
                                 , radio
                                 , centro
-                                , grosor  
+                                , grosor
+                                , prop_conexionIsomorfismo
                                 ) where
   
 import Data.List                ( (\\)
@@ -38,6 +39,9 @@ import Test.QuickCheck          ( Gen
                                 , elements
                                 , forAll
                                 , quickCheck
+                                , quickCheckWith
+                                , stdArgs
+                                , maxDiscardRatio
                                 )
 import RelacionesHomogeneas     ( esRelacionEquivalencia
                                 , clasesEquivalencia
@@ -68,6 +72,12 @@ import DefinicionesYPropiedades ( orden
                                 , eliminaLazos
                                 , esCompleto
                                 )
+import Funciones                ( imagen
+                                )
+import Morfismos                ( isomorfos
+                                , isomorfismos
+                                )
+
 \end{code}
 }
 
@@ -915,6 +925,39 @@ ghci> all prop_grosor_grafoRueda [1..30]
 True
 \end{sesion}
 
+\begin{teorema}
+  Sean $G=(V,A)$ y $G'=(V',A')$ grafos isomorfos con $\phi: V\to V'$ 
+  un isomorfismo. Entonces, dados $u,v\in V$, $u∼v$ si y solamente si
+  $\phi(u)∼\phi(v)$.
+\end{teorema}
+
+La comprobación del teorema con \texttt{QuickCheck} es:
+
+\begin{sesion}
+ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_conexionIsomorfismo
++++ OK, passed 100 tests.
+\end{sesion}
+
+    
+\index{\texttt{prop_conexionIsomorfismo}}
+\begin{code}
+prop_conexionIsomorfismo :: Grafo Int -> Grafo Int -> Property
+prop_conexionIsomorfismo g h =
+    isomorfos g h ==> do
+      u <- elements vs
+      v <- elements vs
+      let phi = head (isomorfismos g h)
+      return (estanConectados g u v ==
+              estanConectados h (imagen phi u) (imagen phi v))
+          where vs = vertices g
+\end{code}
+
+\begin{teorema}
+  Sean $G=(V,A)$ y $G'=(V',A')$ grafos isomorfos con $\phi: V\to V'$ 
+  un isomorfismo. Entonces, $\phi$ lleva cada componente conexa de $G$
+  en una componente conexa de $G'$.
+\end{teorema}
+    
 \ignora{
   La validación es
 
