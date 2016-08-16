@@ -9,10 +9,7 @@ import GrafoConListaDeAristas   ( Grafo
                                 )
 import EjemplosGrafos           ( grafoCiclo
                                 , completo
-<<<<<<< HEAD
-=======
                                 , grafoPetersen
->>>>>>> Rev-16-Ago-16
                                 )
 import DefinicionesYPropiedades ( orden
                                 , tamaño
@@ -107,9 +104,6 @@ grafoSimple = do
 --    G [1] []
 --    G [1,2,3] [(1,2),(1,3)]
 
-<<<<<<< HEAD
-=======
-
 -- | (tamañoM g) es el tamaño del grafo simple g, calculado usando su matriz de
 -- adyacencia. Por ejemplo,
 -- >>> tamañoM (grafoCiclo 4)
@@ -119,17 +113,12 @@ grafoSimple = do
 tamañoM :: Grafo Int -> Int
 tamañoM g = sum (toList (matrizAdyacencia g)) `div` 2
 
->>>>>>> Rev-16-Ago-16
 -- Prop. El tamaño de un grafo simple es la mitad de la suma de los
 -- elementos de su matriz de adyacencia. 
 prop_tamaño :: Property
 prop_tamaño =
   forAll grafoSimple  
-<<<<<<< HEAD
-         (\g -> tamaño g == sum (toList (matrizAdyacencia g)) `div` 2)
-=======
          (\g -> tamaño g == tamañoM g)
->>>>>>> Rev-16-Ago-16
 
 -- La comprobación es
 --    ghci> quickCheck prop_tamaño
