@@ -469,7 +469,7 @@ El \href{https://en.wikipedia.org/wiki/Heawood_graph}
         {\textbf{grafo de Heawood}}\
         \footnote{\url{https://en.wikipedia.org/wiki/Heawood_graph}} 
 es un grafo no dirigido, regular con 14 vértices y 21 aristas. Todos 
-sus vértices son incidentes a exactamente 3 aristas, es decir, es un
+sus vértices son incidentes a exactamente 3 aristas; es decir, es un
 grafo \textbf{cúbico}. Tiene importantes propiedades 
 geométricas y topológicas.
 
@@ -502,12 +502,10 @@ La función \texttt{grafoHeawood} genera el grafo de Heawood.
 --    (13, 14)]
 grafoHeawood :: Grafo Int
 grafoHeawood =
-    creaGrafo [1..14]
-              (aristas (grafoCiclo 14) ++
-               [(u,f u) | u <- [1,2,3,4,5,7,9]])
-        where f v | mod (m v) 14 == 0 = 14
-                  | otherwise         = mod (m v) 14
-              m x = (x + 5*(-1)^(x+1))
+  creaGrafo [1..14]
+            (aristas (grafoCiclo 14) ++
+             zip [1, 2,3, 4, 5, 7, 9]
+                 [6,11,8,13,10,12,14])
 \end{code}
 
 \subsubsection{Grafo de McGee}
@@ -552,11 +550,10 @@ La función \texttt{grafoMcGee} genera el grafo de McGee.
 --    (23, 24)]
 grafoMcGee :: Grafo Int
 grafoMcGee =
-    creaGrafo [1..24]
-              (aristas (grafoCiclo 24) ++
-               [(u,u + 12) | u <- [1,4,7,10]] ++
-               [(u,v) |(u,v) <- zip [2, 3, 5, 6, 8,11,14,17]
-                                    [9,20,12,23,15,18,21,24]])
+  creaGrafo [1..24]
+            (aristas (grafoCiclo 24) ++
+             zip [ 1,2, 3, 4, 5, 6, 7, 8,10,11,14,17]
+                 [13,9,20,16,12,23,19,15,22,18,21,24])
 \end{code}
 
 \subsubsection{Grafo Tutte--Coxeter}
@@ -604,12 +601,10 @@ La función \texttt{grafoTutteCoxeter} genera el grafo Tutte--Coxeter.
 --    (29, 30)]
 grafoTutteCoxeter :: Grafo Int
 grafoTutteCoxeter =
-    creaGrafo [1..30]
-              (aristas (grafoCiclo 30) ++
-               [(u,v) |(u,v) <- zip [ 1, 2, 3, 4, 5, 6, 7, 8,
-                                      9,11,12,13,15,17,21]
-                                    [18,23,10,27,14,19,24,29,
-                                     16,20,25,30,22,26,28]])
+  creaGrafo [1..30]
+            (aristas (grafoCiclo 30) ++
+             zip [ 1, 2, 3, 4, 5, 6, 7, 8, 9,11,12,13,15,17,21]
+                 [18,23,10,27,14,19,24,29,16,20,25,30,22,26,28])
 \end{code}
 
 \subsubsection{Grafo de Petersen}

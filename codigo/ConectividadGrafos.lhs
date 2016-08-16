@@ -1,32 +1,32 @@
 \ignora{
 \begin{code}
-module ConectividadGrafos ( esCamino
-                          , aristasCamino
-                          , verticesCamino
-                          , esRecorrido
-                          , esCaminoSimple
-                          , longitudCamino
-                          , todosCaminosBP 
-                          , todosCaminosBA 
-                          , prop_todosCaminosBA 
-                          , estanConectados
-                          , distancia
-                          , esGeodesica
-                          , esCerrado
-                          , esCircuito
-                          , esCiclo
-                          , todosCiclos  
-                          , estarConectadosCamino
-                          , prop_conectadosRelEqui
-                          , componentesConexas
-                          , esConexo
-                          , prop_caracterizaGrafoConexo
-                          , diametro
-                          , excentricidad
-                          , radio
-                          , centro
-                          , grosor  
-                          ) where
+module ConectividadGrafos       ( esCamino
+                                , aristasCamino
+                                , verticesCamino
+                                , esRecorrido
+                                , esCaminoSimple
+                                , longitudCamino
+                                , todosCaminosBP 
+                                , todosCaminosBA 
+                                , prop_todosCaminosBA 
+                                , estanConectados
+                                , distancia
+                                , esGeodesica
+                                , esCerrado
+                                , esCircuito
+                                , esCiclo
+                                , todosCiclos  
+                                , estarConectadosCamino
+                                , prop_conectadosRelEqui
+                                , componentesConexas
+                                , esConexo
+                                , prop_caracterizaGrafoConexo
+                                , diametro
+                                , excentricidad
+                                , radio
+                                , centro
+                                , grosor  
+                                ) where
   
 import Data.List                ( (\\)
                                 , nub
@@ -51,12 +51,16 @@ import GrafoConListaDeAristas   ( Grafo
                                 )
 import EjemplosGrafos           ( esGrafoNulo
                                 , grafoCiclo
+                                , grafoAmistad
                                 , completo
+                                , bipartitoCompleto
+                                , grafoRueda
                                 , grafoEstrella
                                 , grafoHeawood
                                 , grafoMcGee
                                 , grafoTutteCoxeter
                                 , grafoPetersen
+                                , grafoMoebiusCantor
                                 )
 import DefinicionesYPropiedades ( orden
                                 , tamaño
@@ -791,12 +795,10 @@ La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 -- Nothing
 -- >>> grosor (creaGrafo [1,2,3] [(1,1),(1,2),(2,3),(3,4)])
 -- Just 0
--- >>> grosor (grafoCiclo 5)
--- Just 5
--- >>> grosor (completo 5)
--- Just 3
 -- >>> grosor grafoPetersen
 -- Just 5
+-- >>> grosor grafoMoebiusCantor
+-- Just 6
 -- >>> grosor grafoHeawood
 -- Just 6
 -- >>> grosor grafoMcGee
@@ -806,12 +808,112 @@ La función \texttt{(grosor g)} devuelve el grosor del grafo \texttt{g}.
 grosor :: Ord a => Grafo a -> Maybe Int
 grosor g
   | esAciclico g = Nothing
-  | esCompleto g = Just 3
   | otherwise    = Just (minimum [longitudCamino (head yss)
                                  | x <- vertices g
                                  , let yss = todosCiclos g x
                                  , not (null yss)])
 \end{code}
+
+\begin{teorema}
+  El grosor del grafo ciclo de orden $n$, $C_n$, es $\infty$, si $n < 3$
+  y 3 en caso contrario.
+\end{teorema}
+
+La propiedad se expresa por
+
+\begin{code}
+prop_grosor_grafoCiclo :: Int -> Bool
+prop_grosor_grafoCiclo n = 
+  grosor (grafoCiclo n) == if n < 3
+                           then Nothing
+                           else Just n
+\end{code}
+
+Su comprobación para $n \leq 30$ es
+\begin{sesion}
+ghci> all prop_grosor_grafoCiclo [1..30]
+True
+\end{sesion}
+
+\begin{teorema}
+  El grosor del grafo amistad de orden $n$ es 3, para todo $n$.
+\end{teorema}
+
+\begin{code}
+prop_grosor_grafoAmistad :: Int -> Bool
+prop_grosor_grafoAmistad n =
+  grosor (grafoAmistad n) == Just 3
+\end{code}
+
+Su comprobación para $n \leq 30$ es
+\begin{sesion}
+ghci> all prop_grosor_grafoAmistad [1..30]
+True
+\end{sesion}
+
+\begin{teorema}
+  El grosor del grafo completo de orden $n$, $K_n$, es $\infty$ si $n < 3$
+  y 3 en caso contrario.
+\end{teorema}
+
+La propiedad se expresa por
+
+\begin{code}
+prop_grosor_completo :: Int -> Bool
+prop_grosor_completo n = 
+  grosor (completo n) == if n < 3
+                         then Nothing
+                         else Just 3
+\end{code}
+
+Su comprobación para $n \leq 30$ es
+\begin{sesion}
+ghci> all prop_grosor_completo [1..30] 
+True
+\end{sesion}
+
+\begin{teorema}
+  El grosor del grafo bipartito completo de orden, $K_{m,n}$, es
+  $\infty$ si $m = 1$ ó $n = 1$ y es 4 en caso contrario.
+  y 3 en caso contrario.
+\end{teorema}
+
+La propiedad se expresa por
+
+\begin{code}
+prop_grosor_bipartitoCompleto :: Int -> Int -> Bool
+prop_grosor_bipartitoCompleto m n = 
+  grosor (bipartitoCompleto m n) == if m == 1 || n == 1
+                                    then Nothing
+                                    else Just 4
+\end{code}
+
+Su comprobación para $1 \leq m \leq n \leq 15$ es
+\begin{sesion}
+ghci> and [prop_grosor_bipartitoCompleto m n | m <- [1..15], n <- [m..15]]
+True
+\end{sesion}
+
+\begin{teorema}
+  El grosor del grafo rueda de orden $n$, $W_n$ es $\infty$ si $n < 3$
+  y 3 en caso contrario.
+\end{teorema}
+
+La propiedad se expresa por
+
+\begin{code}
+prop_grosor_grafoRueda :: Int -> Bool
+prop_grosor_grafoRueda n = 
+  grosor (grafoRueda n) == if n < 3
+                           then Nothing
+                           else Just 3     
+\end{code}
+
+Su comprobación para $1 \leq n \leq 30$ es
+\begin{sesion}
+ghci> all prop_grosor_grafoRueda [1..30]
+True
+\end{sesion}
 
 \ignora{
   La validación es
