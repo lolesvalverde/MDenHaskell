@@ -31,6 +31,7 @@ module ConectividadGrafos       ( esCamino
   
 import Data.List                ( (\\)
                                 , nub
+                                , union
                                 )
 import Data.Maybe               ( fromJust)
 import Test.QuickCheck          ( Gen
@@ -42,6 +43,9 @@ import Test.QuickCheck          ( Gen
                                 , quickCheckWith
                                 , stdArgs
                                 , maxDiscardRatio
+                                )
+import Conjuntos                ( conjuntosIguales
+                                , unionGeneral
                                 )
 import RelacionesHomogeneas     ( esRelacionEquivalencia
                                 , clasesEquivalencia
@@ -571,28 +575,6 @@ False
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
   que el primer camino de la lista es de longitud mínima.}
 
-La propiedad es: 
-
-\index{\texttt{prop\_todosCiclos}}    
-\begin{code}
-prop_todosCiclos :: Grafo Int -> Bool
-prop_todosCiclos g = esAciclico g || all p vs
-    where vs = filter (not.null.todosCiclos g) (vertices g)                 
-          p v =  longitudCamino (head cs) ==
-                 minimum (map longitudCamino cs)
-                     where cs = todosCiclos g v
-\end{code}
-
-La comprobación es:
-
-\begin{sesion}
-ghci> quickCheck prop_todosCiclos
-+++ OK, passed 100 tests:
-\end{sesion}
-
-\comentario{La propiedad \texttt{prop\_todosCiclos} es consecuencia de
-  \texttt{prop\_todosCaminosBA} y se puede eliminar.}
-
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
   relación de equivalencia.
@@ -648,6 +630,16 @@ caminos del grafo \texttt{g}.
 componentesConexas :: Ord a => Grafo a -> [[a]]
 componentesConexas g =
   clasesEquivalencia (vertices g) (estarConectadosCamino g)
+
+numeroComponentesConexas :: Eq a => Grafo a -> Int
+numeroComponentesConexas g | null (aristas g) = orden g
+numeroComponentesConexas g = undefined
+                             
+                         
+prop_numeroComponentesConexas :: Grafo Int -> Bool
+prop_numeroComponentesConexas g =
+    length (componentesConexas g) ==
+    numeroComponentesConexas g
 \end{code}
 
 \begin{definicion}
@@ -673,8 +665,8 @@ esConexo g = length (componentesConexas g) == 1
 \comentario{Buscar definiciones más eficientes de esConexo.}
 
 \begin{teorema}
-  Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si $forall  u,v \in V$ 
-  existe un camino entre $u$ y $v$.
+  Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si $\forall  
+  u,v \in V$ existe un camino entre $u$ y $v$.
 \end{teorema}
 
 Vamos a comprobar el resultado con QuickCheck.

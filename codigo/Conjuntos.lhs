@@ -9,6 +9,7 @@ module Conjuntos (  conjuntoVacio
                   , complementario
                   , cardinal
                   , unionConjuntos
+                  , unionGeneral
                   , interseccion
                   , productoCartesiano
                   , combinaciones
@@ -286,6 +287,29 @@ unionConjuntos = union
   \texttt{(union xs ys)} definida en el módulo \texttt{Data.List}, equivalente
   a \texttt{(unionConjuntos xs ys)}
 \end{nota}
+
+\begin{definicion}
+  Dada una familia de conjuntos $\{A\}_i$ con $i \in I}, se define la 
+  \texttt{unión general} de los conjuntos $A_i$ notado
+  $\bigcup_{i \in I} A_i$, como el conjunto formado por aquellos 
+  elementos que pertenecen al menos a uno de los conjuntos de la  
+  familia; es decir,\\
+  $\bigcup_{i \in I} A_i = \{ x | x \in A_i$ con $i\in I\}$
+\end{definicion}
+
+La función \texttt{(unionGeneral xss)} devuelve la unión general de la
+familia de conjuntos de la lista \texttt{xss}.
+
+\index{\texttt{unionGeneral}}
+\begin{code}
+-- | Ejemplos
+-- >>> unionGeneral [[1,4..15],[2,5..15],[3,6..15]]
+-- [1,4,7,10,13,2,5,8,11,14,3,6,9,12,15]
+-- >>> unionGeneral ["m","u","r","c","i","e","l","a","g","o"]
+-- "murcielago"
+unionGeneral :: Eq a => [[a]] -> [a]
+unionGeneral = foldr union []
+\end{code}
 
 \subsection{Intersección de conjuntos}
 
