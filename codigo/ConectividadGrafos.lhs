@@ -926,12 +926,12 @@ True
 \end{sesion}
 
 \begin{teorema}
-  Sean $G=(V,A)$ y $G'=(V',A')$ grafos isomorfos con $\phi: V\to V'$ 
-  un isomorfismo. Entonces, dados $u,v\in V$, $u∼v$ si y solamente si
-  $\phi(u)∼\phi(v)$.
+  Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ un
+  isomorfismo. Entonces, dados $u,v \in V$, $u ∼ v$ si y solamente si
+  $\phi(u) ∼ \phi(v)$.
 \end{teorema}
 
-La comprobación del teorema con \texttt{QuickCheck} es:
+La comprobación del teorema con QuickCheck es:
 
 \begin{sesion}
 ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_conexionIsomorfismo
@@ -943,17 +943,17 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_conexionIsomorfismo
 \begin{code}
 prop_conexionIsomorfismo :: Grafo Int -> Grafo Int -> Property
 prop_conexionIsomorfismo g h =
-    isomorfos g h ==> do
-      u <- elements vs
-      v <- elements vs
-      let phi = head (isomorfismos g h)
-      return (estanConectados g u v ==
-              estanConectados h (imagen phi u) (imagen phi v))
-          where vs = vertices g
+  isomorfos g h ==>
+  do u <- elements vs
+     v <- elements vs
+     let phi = head (isomorfismos g h)
+     return (estanConectados g u v ==
+             estanConectados h (imagen phi u) (imagen phi v))
+  where vs = vertices g
 \end{code}
 
 \begin{teorema}
-  Sean $G=(V,A)$ y $G'=(V',A')$ grafos isomorfos con $\phi: V\to V'$ 
+  Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
   un isomorfismo. Entonces, $\phi$ lleva cada componente conexa de $G$
   en una componente conexa de $G'$.
 \end{teorema}
