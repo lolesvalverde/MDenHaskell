@@ -32,6 +32,7 @@ module ConectividadGrafos       ( esCamino
 import Data.List                ( (\\)
                                 , nub
                                 , union
+                                , sort
                                 )
 import Data.Maybe               ( fromJust)
 import Test.QuickCheck          ( Gen
@@ -43,6 +44,8 @@ import Test.QuickCheck          ( Gen
                                 , quickCheckWith
                                 , stdArgs
                                 , maxDiscardRatio
+                                , sample
+                                , arbitrary
                                 )
 import Conjuntos                ( conjuntosIguales
                                 , unionGeneral
@@ -81,7 +84,7 @@ import Funciones                ( imagen
 import Morfismos                ( isomorfos
                                 , isomorfismos
                                 )
-
+import GeneradorGrafos          ( generaGrafo)
 \end{code}
 }
 
@@ -631,6 +634,24 @@ componentesConexas :: Ord a => Grafo a -> [[a]]
 componentesConexas g =
   clasesEquivalencia (vertices g) (estarConectadosCamino g)
 
+componentesConexas2 :: Ord a => Grafo a -> [[a]]
+componentesConexas2 g = aux (vertices g) [] []
+    where aux [] [] [] = []
+          aux [] [] xs = [xs]
+          aux [x] [] [] = [[x]]
+          aux (x:xs) [] [] = aux xs (adyacentes g x) [x]
+          aux xs ys zs =
+              if   null (ys \\ zs)  
+              then zs : aux (xs \\ ys) [] []
+              else aux (xs \\ ys)
+                       (unionGeneral (map (adyacentes g) (ys \\ zs)))
+                       (union zs ys)
+                      
+prop_ComponentesConexas :: Grafo Int -> Bool
+prop_ComponentesConexas g = conjuntosIguales
+    (componentesConexas g)
+    (map sort (componentesConexas2 g))
+                                             
 numeroComponentesConexas :: Eq a => Grafo a -> Int
 numeroComponentesConexas g | null (aristas g) = orden g
 numeroComponentesConexas g = undefined

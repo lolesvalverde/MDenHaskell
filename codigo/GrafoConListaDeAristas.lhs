@@ -36,6 +36,7 @@ En las definiciones del presente módulo se usarán las funciones \texttt{nub} y
 \begin{code}
 import Data.List ( nub
                  , sort
+                 , union
                  )
 import Text.PrettyPrint.GenericPretty ( Generic
                                       , Out
@@ -121,7 +122,7 @@ vertices (G vs _) = vs
 -- [2,4,5]
 adyacentes :: Eq a => Grafo a -> a -> [a]
 adyacentes (G _ as) v =
-  [u | (u,x) <- as, x == v] ++
+  [u | (u,x) <- as, x == v] `union`
   [u | (x,u) <- as, x == v] 
 \end{code}
 
