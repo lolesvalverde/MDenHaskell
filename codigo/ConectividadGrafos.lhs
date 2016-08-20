@@ -85,6 +85,7 @@ import Funciones                ( imagen
                                 )
 import Morfismos                ( isomorfos
                                 , isomorfismos
+                                , esInvariantePorIsomorfismos
                                 )
 import GeneradorGrafos          ( generaGrafo)
 \end{code}
@@ -340,7 +341,25 @@ ghci> quickCheck prop_todosCaminosBA
 +++ OK, passed 100 tests:
 \end{sesion}
 
-\comentario{Comprobar que con todosCaminosBP no se cumple la propiedad.}
+Veamos que la función \texttt{(todosCaminosBP g u v)} no verifica la       
+propiedad.
+
+\begin{sesion}
+ghci> quickCheck prop_todosCaminosBP
+*** Failed! Falsifiable (after 6 tests): 
+G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,2),(2,3),(2,4),(4,4),(4,5),(5,5)]
+(5,2)
+\end{sesion}
+
+\begin{code}
+prop_todosCaminosBP :: Grafo Int -> Property
+prop_todosCaminosBP g =
+  not (esGrafoNulo g) ==>
+  forAll (parDeVertices g)
+         (\(x,y) -> let zss = todosCaminosBP g x y
+                    in null zss || longitudCamino (head zss) ==
+                                   minimum (map longitudCamino zss))
+\end{code}
         
 \begin{definicion}
   Dado un grafo $G = (V,A)$, sean $u,v \in V$. Si existe algún camino entre $u$
@@ -513,8 +532,19 @@ La función \texttt{(todosCiclos g v)} devuelve todos los ciclos en el grafo
 
 \index{todosCiclos}
 \begin{code}
+-- | Ejemplos
+-- >>> todosCiclos (grafoCiclo 4) 3
+-- [[3,4,1,2,3],[3,2,1,4,3]]
+-- >>> todosCiclos (completo 3) 2
+-- [[2,3,1,2],[2,1,3,2]]
+-- >>> todosCiclos (creaGrafo [1,2,3] [(1,1),(1,2),(1,3),(2,3)]) 1
+-- [[1],[1,3,2,1],[1,2,3,1]]
+-- >>> todosCiclos (creaGrafo [1,2] [(1,2),(2,2),(2,3)]) 2
+-- [[2]]
 todosCiclos :: Ord a => Grafo a -> a -> [[a]]
-todosCiclos g x = [[u] | (u,v) <- lazos g] ++ aux [[x]]
+todosCiclos g x = if aristaEn (x,x) g
+                  then [x] : aux [[x]]
+                  else aux [[x]]
   where aux []       = []
         aux [[z]]    = aux [v:[z] | v <- adyacentes g' z \\ [x]]
         aux ([]:zss) = aux zss
@@ -526,10 +556,6 @@ todosCiclos g x = [[u] | (u,v) <- lazos g] ++ aux [[x]]
         eliminaLazos h = creaGrafo (vertices h)
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
-
-\comentario{Corregir la definición de todosCiclos para evitar
-  contraejemplos como el siguiente:
-  (todosCiclos (creaGrafo [1,2] [(1,1)]) 2 == [[1]])}
 
 \begin{definicion}
   Diremos que un grafo $G = (V,A)$ es \textbf{acíclico} si no contiene ningún
@@ -549,36 +575,15 @@ acíclico.
 -- >>> esAciclico (grafoEstrella 6)
 -- True
 esAciclico :: Ord a => Grafo a -> Bool
-esAciclico g = aux (vertices g) where
-    aux [] = True
-    aux (x:xs)
-        | not (null (todosCiclos g x)) = False
-        | otherwise = aux (xs \\ nub (concat (todosCiclos g x)))
-\end{code}
-
-\comentario{La definición de esAciclico se puede simplificar como sigue:}
-
-\begin{code}
-esAciclico2 :: Ord a => Grafo a -> Bool
-esAciclico2 g = 
+esAciclico g =
   and [null (todosCiclos g x) | x <- vertices g]
 \end{code}
-
-\comentario{Desde el punto de vista de la eficiencia no hay grandes diferencias
-  entre esAciclico y esAciclico2 como se observa en el siguiente ejemplo:}
-
-\begin{sesion}
-ghci> esAciclico2 (completo 100)
-False
-(2.18 secs, 4,313,432,952 bytes)
-ghci> esAciclico (completo 100)
-False
-(2.23 secs, 4,311,646,816 bytes)
-\end{sesion}
 
 \nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
   que el primer camino de la lista es de longitud mínima.}
+
+\subsection{Conectividad}
 
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
@@ -640,34 +645,10 @@ componentesConexas g
         clasesEquivalencia (vertices g) (estarConectadosCamino g)
 \end{code}
 
-\begin{ignora}
-\begin{code}
-componentesConexas2 :: Ord a => Grafo a -> [[a]]
-componentesConexas2 g
-    | esGrafoNulo g     = []
-    | esCompleto g = [vertices g]
-    | otherwise    = aux (vertices g) [] []
-    where aux [] [] [] = []
-          aux [] [] xs = [xs]
-          aux [x] [] [] = [[x]]
-          aux (x:xs) [] [] = aux xs (adyacentes g x) [x]
-          aux xs ys zs =
-              if   null (ys \\ zs)  
-              then zs : aux (xs \\ ys) [] []
-              else aux (xs \\ ys)
-                       (unionGeneral (map (adyacentes g) (ys \\ zs)))
-                       (union zs ys)
-                      
-prop_ComponentesConexas :: Grafo Int -> Bool
-prop_ComponentesConexas g = conjuntosIguales
-    (componentesConexas g)
-    (map sort (componentesConexas2 g))
-\end{code}
-\end{ignora}
-
 La función \texttt{(numeroComponentes g)} devuelve el número de   
 componentes conexas del grafo \texttt{g}.
 
+\index{texttt{numeroComponentesConexas}}
 \begin{code}
 -- Ejemplos
 -- >>> numeroComponentes (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
@@ -745,9 +726,25 @@ La función \texttt{(excentricidad g v)} devuelve la excentricidad del vértice
 excentricidad :: Ord a => Grafo a -> a -> Maybe Int
 excentricidad g u
   | esGrafoNulo g             = Nothing
+  | orden g == 1              = Just 0
   | Nothing `elem` distancias = Nothing
   | otherwise                 = maximum distancias
   where distancias = [distancia g u v | v <- vertices g \\ [u]]
+\end{code}
+
+La función \texttt{(excentricidades g)} devuelve la lista ordenada 
+de las excentricidades de los vértices del grafo \texttt{g}.
+
+\index{\texttt{excentricidades}}
+\begin{code}
+-- | Ejemplos
+-- >>> excentricidades (creaGrafo [1..3] [(1,2),(2,3),(3,3)])
+-- [Just 1,Just 2,Just 2]
+-- >>> excentricidad (creaGrafo [1..3] [(1,2),(3,3)])
+-- [Nothing,Nothing,Nothing]
+excentricidades :: Ord a => Grafo a -> [Maybe Int]
+excentricidades g = sort (map (excentricidad g) (vertices g))
+
 \end{code}
 
 \begin{definicion}
@@ -855,6 +852,8 @@ grosor g
                                  , not (null yss)])
 \end{code}
 
+\subsection{Propiedades del grosor de los grafos}
+
 \begin{teorema}
   El grosor del grafo ciclo de orden $n$, $C_n$, es $\infty$, si $n < 3$
   y 3 en caso contrario.
@@ -956,6 +955,8 @@ ghci> all prop_grosor_grafoRueda [1..30]
 True
 \end{sesion}
 
+\subsection{Propiedades e invariantes por isomorfismos}
+
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ un
   isomorfismo. Entonces, dados $u,v \in V$, $u ∼ v$ si y solamente si
@@ -975,12 +976,10 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_ConexionIsomorfismo1
 prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Property
 prop_ConexionIsomorfismo1 g h =
   isomorfos g h ==>
-  do u <- elements vs
-     v <- elements vs
-     let phi = head (isomorfismos g h)
-     return (estanConectados g u v ==
-             estanConectados h (imagen phi u) (imagen phi v))
-  where vs = vertices g
+  and [ec g u v == ec h (imagen phi u) (imagen phi v)
+          | u <- vs, v <- vs, phi <- isomorfismos g h]
+      where vs = vertices g
+            ec = estanConectados
 \end{code}
 
 \begin{teorema}
@@ -1028,9 +1027,95 @@ prop_ConexionIsomorfismo3 g h =
   numeroComponentes g == numeroComponentes h
 \end{code}
 
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que el diámetro de $G$ es igual 
+  al diámetro de $G'$; es decir, el diámetro de un grafo es un  
+  invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos diametro)
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que el radio de $G$ es igual 
+  al radio de $G'$; es decir, el radio de un grafo es un  
+  invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos radio)
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que el grosor de $G$ es igual 
+  al grosor de $G'$; es decir, el grosor de un grafo es un  
+  invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos grosor)
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que el centro de $G$ es igual 
+  al centro de $G'$; es decir, el centro de un grafo es un  
+  invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos centro)
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que el número de componentes  
+  conexas de  $G$ es igual al número de las de $G'$; es decir, el 
+  número de componentes conexas de un grafo es un invariante por 
+  isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos numeroComponentes)
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
+  isomorfismo. Entonces, se verifica que los valores que toman las
+  excentricidades de los vértices $G$ es igual al de los vértices de 
+  $G'$; es decir, el conjunto de valores que toman las excentricidades 
+  de los vértices es un invariante por isomorfismos.
+\end{teorema}
+
+Vamos a comprobar el teorema anterior con QuickCheck.
+
+\begin{sesion}
+ghci> quickCheck (esInvariantePorIsomorfismos excentricidades)
++++ OK, passed 100 tests.
+\end{sesion}
+
 \ignora{
   La validación es
 
   > doctest ConectividadGrafos.lhs 
-  Examples: 213  Tried: 213  Errors: 0  Failures: 0
+  Examples: 289  Tried: 289  Errors: 0  Failures: 0
 }

@@ -486,7 +486,7 @@ isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos = isomorfismos2
 
 isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos = isomorfos2
+isomorfos = 
 \end{code}
 \end{nota}
 

@@ -289,7 +289,7 @@ unionConjuntos = union
 \end{nota}
 
 \begin{definicion}
-  Dada una familia de conjuntos $\{A\}_i$ con $i \in I}, se define la 
+  Dada una familia de conjuntos $\{A\}_i$ con $i \in I$, se define la 
   \texttt{unión general} de los conjuntos $A_i$ notado
   $\bigcup_{i \in I} A_i$, como el conjunto formado por aquellos 
   elementos que pertenecen al menos a uno de los conjuntos de la  
