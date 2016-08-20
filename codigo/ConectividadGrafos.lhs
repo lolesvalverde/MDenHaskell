@@ -26,7 +26,8 @@ module ConectividadGrafos       ( esCamino
                                 , radio
                                 , centro
                                 , grosor
-                                , prop_conexionIsomorfismo
+                                , prop_ConexionIsomorfismo1
+                                , prop_ConexionIsomorfismo2
                                 ) where
   
 import Data.List                ( (\\)
@@ -80,6 +81,7 @@ import DefinicionesYPropiedades ( orden
                                 , esCompleto
                                 )
 import Funciones                ( imagen
+                                , imagenConjunto
                                 )
 import Morfismos                ( isomorfos
                                 , isomorfismos
@@ -631,11 +633,20 @@ caminos del grafo \texttt{g}.
 -- >>> componentesConexas (creaGrafo [1..3] [(1,2),(2,3)])
 -- [[1,2,3]]
 componentesConexas :: Ord a => Grafo a -> [[a]]
-componentesConexas g =
-  clasesEquivalencia (vertices g) (estarConectadosCamino g)
+componentesConexas g
+    | esGrafoNulo g = []
+    | esCompleto g  = [vertices g]
+    | otherwise     =
+        clasesEquivalencia (vertices g) (estarConectadosCamino g)
+\end{code}
 
+\begin{ignora}
+\begin{code}
 componentesConexas2 :: Ord a => Grafo a -> [[a]]
-componentesConexas2 g = aux (vertices g) [] []
+componentesConexas2 g
+    | esGrafoNulo g     = []
+    | esCompleto g = [vertices g]
+    | otherwise    = aux (vertices g) [] []
     where aux [] [] [] = []
           aux [] [] xs = [xs]
           aux [x] [] [] = [[x]]
@@ -651,16 +662,23 @@ prop_ComponentesConexas :: Grafo Int -> Bool
 prop_ComponentesConexas g = conjuntosIguales
     (componentesConexas g)
     (map sort (componentesConexas2 g))
-                                             
-numeroComponentesConexas :: Eq a => Grafo a -> Int
-numeroComponentesConexas g | null (aristas g) = orden g
-numeroComponentesConexas g = undefined
-                             
-                         
-prop_numeroComponentesConexas :: Grafo Int -> Bool
-prop_numeroComponentesConexas g =
-    length (componentesConexas g) ==
-    numeroComponentesConexas g
+\end{code}
+\end{ignora}
+
+La función \texttt{(numeroComponentes g)} devuelve el número de   
+componentes conexas del grafo \texttt{g}.
+
+\begin{code}
+-- Ejemplos
+-- >>> numeroComponentes (creaGrafo [1..5] [(1,2),(2,3),(4,5)])
+-- 2
+-- >>> numeroComponentes (creaGrafo [1..4] [(1,2),(2,2),(3,4)])
+-- 2
+numeroComponentes :: Ord a => Grafo a -> Int
+numeroComponentes g
+    | null (aristas g) = orden g
+    | esCompleto g     = 1
+    | otherwise        = length (componentesConexas g)
 \end{code}
 
 \begin{definicion}
@@ -947,15 +965,15 @@ True
 La comprobación del teorema con QuickCheck es:
 
 \begin{sesion}
-ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_conexionIsomorfismo
+ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_ConexionIsomorfismo1
 +++ OK, passed 100 tests.
 \end{sesion}
 
     
-\index{\texttt{prop_conexionIsomorfismo}}
+\index{\texttt{prop_ConexionIsomorfismo1}}
 \begin{code}
-prop_conexionIsomorfismo :: Grafo Int -> Grafo Int -> Property
-prop_conexionIsomorfismo g h =
+prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo1 g h =
   isomorfos g h ==>
   do u <- elements vs
      v <- elements vs
@@ -970,7 +988,46 @@ prop_conexionIsomorfismo g h =
   un isomorfismo. Entonces, $\phi$ lleva cada componente conexa de $G$
   en una componente conexa de $G'$.
 \end{teorema}
-    
+
+La comprobación del teorema con QuickCheck es:
+
+\begin{sesion}
+ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo2
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop_ConexionIsomorfismo2}}
+\begin{code}
+prop_ConexionIsomorfismo2 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo2 g h =
+  isomorfos g h ==>
+  and [conjuntosIguales cch (aux f) | f <- isomorfismos g h]
+      where cch = componentesConexas h
+            ccg = componentesConexas g
+            aux f = map (sort . imagenConjunto f) ccg
+\end{code}
+
+\begin{teorema}
+  Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
+  un isomorfismo. Entonces, $G$ y $G'$ tienen el mismo número de  
+  componentes conexas.
+\end{teorema}
+
+La comprobación del teorema con QuickCheck es:
+
+\begin{sesion}
+ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo3
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop_ConexionIsomorfismo3}}
+\begin{code}
+prop_ConexionIsomorfismo3 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo3 g h =
+  isomorfos g h ==>
+  numeroComponentes g == numeroComponentes h
+\end{code}
+
 \ignora{
   La validación es
 

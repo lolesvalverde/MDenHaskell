@@ -4,6 +4,7 @@ module Funciones ( esFuncion
                  , Funcion
                  , funciones
                  , imagen
+                 , imagenConjunto
                  , esInyectiva
                  , esSobreyectiva
                  , esBiyectiva
@@ -106,6 +107,20 @@ función \texttt{f}.
 -- 2
 imagen :: (Eq a, Eq b) => Funcion a b -> a -> b
 imagen f x = head (imagenRelacion f x)
+\end{code}
+
+La función \texttt{(imagenConjunto f xs)} es la imagen del conjunto 
+\texttt{xs} en la función \texttt{f}.
+
+\index{\texttt{imagenConjunto}}
+\begin{code}
+-- | Ejemplos
+-- >>> imagenConjunto [(1,7),(3,2),(4,3)] [1,4]
+-- [7,3]
+-- >>> imagenConjunto [(1,7),(3,2)] [3,1]
+-- [2,7]
+imagenConjunto :: (Eq a, Eq b) => Funcion a b -> [a] -> [b]
+imagenConjunto f xs = nub (map (imagen f) xs)
 \end{code}
 
 \subsection{Funciones inyectivas}
