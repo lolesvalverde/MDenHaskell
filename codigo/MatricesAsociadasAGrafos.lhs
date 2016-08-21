@@ -7,6 +7,7 @@ import GeneradorGrafosSimples   ( grafoSimple
 import GrafoConListaDeAristas   ( Grafo
                                 , aristaEn
                                 , creaGrafo
+                                , vertices
                                 )
 import EjemplosGrafos           ( grafoCiclo
                                 , completo
@@ -14,6 +15,7 @@ import EjemplosGrafos           ( grafoCiclo
                                 )
 import DefinicionesYPropiedades ( orden
                                 , tamaño
+                                , esAislado
                                 )
 import Data.Matrix              ( Matrix
                                 , fromLists
@@ -46,6 +48,15 @@ imprimeMatriz :: Show a => Matrix a -> IO ()
 imprimeMatriz p =
   mapM_ print (toLists p)
 \end{code}
+
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo simple con $V=\{v_1, \dots, v_n\}$. Se define su  
+  matriz de adyacencia como $\mathcal{A}_{n \times n} = (a_{i,j})$ donde  
+  el elemento $a_{i,j}$ toma el valor $1$ si existe alguna arista en $A$
+  uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
+\end{definicion} 
+
+\end{definicion}
 
 La función \texttt{(matrizAdyacencia g)} es la matriz de adyacencia 
 del grafo \texttt{g}.
@@ -155,6 +166,22 @@ prop_tamaño =
          (\g -> tamaño g == tamañoM g)
 \end{code}
 
+\begin{teorema}
+  Si un grafo $G=(V,A)$ tiene un vértice aislado $v_i$, tanto la fila como la 
+  columna $i-$ésima de su matriz de adyacencia estarán formadas por ceros.
+\end{teorema}
 
+La comprobación del teorema es:
 
-  
+\begin{sesion}
+ghci> quickCheck prop_verticeAislado
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{code}
+prop_verticeAislado :: Grafo Int -> Bool
+prop_verticeAislado g = 
+    all p (filter (esAislado g) (vertices g))
+        where p v = all (==0) ((toLists (ma g)) !! (v-1))
+              ma = matrizAdyacencia
+\end{code}

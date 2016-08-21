@@ -49,12 +49,4 @@ grafoSimple = do
   return (creaGrafo [1..n] as)
 \end{code}
 
-\begin{nota}
-  Los grafos simples están contenidos en la clase de los objetos 
-  generables aleatoriamente.
-
-\begin{code}
-instance Arbitrary (Grafo Int) where
-  arbitrary = grafoSimple 
-\end{code}
 \end{nota}
