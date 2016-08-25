@@ -1,6 +1,6 @@
 \ignora{
 \begin{code}
-module MatricesAsociadasAGrafos where
+module MatricesDeAdyacencia where
 
 import GeneradorGrafosSimples   ( grafoSimple
                                 )
@@ -16,6 +16,7 @@ import EjemplosGrafos           ( grafoCiclo
 import DefinicionesYPropiedades ( orden
                                 , tamaño
                                 , esAislado
+                                , grado
                                 )
 import Data.Matrix              ( Matrix
                                 , fromLists
@@ -56,7 +57,9 @@ imprimeMatriz p =
   uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
 \end{definicion} 
 
-\end{definicion}
+\begin{nota}
+  La matriz de adyacencia depende del etiquetado del grafo.
+\end{nota}
 
 La función \texttt{(matrizAdyacencia g)} es la matriz de adyacencia 
 del grafo \texttt{g}.
@@ -178,6 +181,7 @@ ghci> quickCheck prop_verticeAislado
 +++ OK, passed 100 tests.
 \end{sesion}
 
+\index{\texttt{prop_verticeAislado}}
 \begin{code}
 prop_verticeAislado :: Grafo Int -> Bool
 prop_verticeAislado g = 
@@ -185,3 +189,40 @@ prop_verticeAislado g =
         where p v = all (==0) ((toLists (ma g)) !! (v-1))
               ma = matrizAdyacencia
 \end{code}
+
+\begin{teorema}
+  Sea un grafo $G=(V,A)$ no dirigido con $V=\{v_1, \dots, v_n\}$. La  
+  suma de los elementos de la fila (o columna) $i-$ésima de su matriz 
+  de adyacencia coincide con el grado del vértice $v_i$. Es decir,
+
+\begin{equation*}
+\delta(v_i) = \sum_{j=1}^{n} a_{i,j} = \sum_{j=1}^{n} a_{j,i} 
+\end{equation*}
+\end{teorema}
+
+La comprobación del teorema es:
+
+\begin{sesion}
+ghci> quickCheck prop_grado
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop_matrizGrado}}
+\begin{code}
+prop_matrizGrado :: Grafo Int -> Bool
+prop_grado g = 
+    and [grado g u == sumaf u && sumaf u == sumac u | u <- vertices g]
+        where sumaf v = sum ((toLists (ma g)) !! (v-1))
+              sumac v = sum ((toLists (transpose (ma g))) !! (v-1))
+              ma = matrizAdyacencia
+\end{code}
+
+\begin{teorema}
+  Sean $G_1,G_2$ dos grafos isomorfos y sean $A_1$ y $A_2$ sus matrices 
+  de adyacencia respectivas. Entonces existe una matriz de paso $P$, 
+  que es regular y verifica:
+\begin{equation*}
+A_1 = P^t A_2 P
+\end{equation*}
+\end{teorema}
+

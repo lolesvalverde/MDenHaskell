@@ -49,4 +49,3 @@ grafoSimple = do
   return (creaGrafo [1..n] as)
 \end{code}
 
-\end{nota}
