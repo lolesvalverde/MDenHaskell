@@ -210,7 +210,7 @@ ghci> quickCheck prop_grado
 \index{\texttt{prop_matrizGrado}}
 \begin{code}
 prop_matrizGrado :: Grafo Int -> Bool
-prop_grado g = 
+prop_matrizGrado g = 
     and [grado g u == sumaf u && sumaf u == sumac u | u <- vertices g]
         where sumaf v = sum ((toLists (ma g)) !! (v-1))
               sumac v = sum ((toLists (transpose (ma g))) !! (v-1))
@@ -221,8 +221,20 @@ prop_grado g =
   Sean $G_1,G_2$ dos grafos isomorfos y sean $A_1$ y $A_2$ sus matrices 
   de adyacencia respectivas. Entonces existe una matriz de paso $P$, 
   que es regular y verifica:
-\begin{equation*}
-A_1 = P^t A_2 P
-\end{equation*}
+  $$A_1 = P^t A_2 P$$
 \end{teorema}
 
+\begin{teorema}
+  Sea $G=(V,A)$ un grafo bipartito de conjuntos de vértices disjuntos 
+  $V_1 = \{v_1,\dots,v_k\}$ y $V_2=\{v_{k+1},\dots,v_n\}$, tal que 
+  $V=V_1\cup V_2$ y sólo existen aristas que conectan vértices de $V_1$ 
+  con vértices de $V_2$. Entonces, con este etiquetado de $V$, la matriz
+  de adyacencia de $G$ tiene la forma:
+$$
+A=\left (\begin{array}{c|c}
+\theta  &B      \\ \hline
+B^t     &\theta
+\end{array}\right)
+$$
+
+\end{teorema}

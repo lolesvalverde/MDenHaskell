@@ -36,12 +36,15 @@ module EjemplosGrafos ( grafoNulo
 
 import Data.List ( sort
                  , (\\)
+                 , union
+                 , intersect
                  )
 import Text.PrettyPrint.GenericPretty (pp)
 import GrafoConListaDeAristas ( Grafo
                               , aristas
                               , creaGrafo
                               , vertices
+                              , adyacentes
                               )
 \end{code}
 }
@@ -271,6 +274,30 @@ bipartitoCompleto n m =
   creaGrafo [1..n+m]
             [(a,b) | a <- [1..n], b <- [n+1..n+m]]
 \end{code}
+
+La función \texttt{(esBipartito g m)} se verifica si el grafo \texttt{g}
+es bipartito.
+
+\index{\texttt{esBipartito}}
+\begin{code}
+-- | Ejemplo
+-- >>> esBipartito (bipartitoCompleto 3 4)
+-- G [1,2,3,4,5] [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5)]
+esBipartito :: Ord a => Grafo a -> Bool
+esBipartito g = aux (sort (vertices g)) [] []
+    where aux [] red blue  = null (intersect red blue)
+          aux (v:vs) [] [] = aux vs [v] (a v)
+          aux (v:vs) r b
+              | any (`elem` r) (a v) == any (`elem` b) (a v) = False        
+              | elem v r = aux vs r (union b (a v))
+              | elem v b = aux vs (union r (a v)) b
+              | any (`elem` r) (a v) = aux vs r (v:b) 
+              | any (`elem` b) (a v) = aux vs (v:r) b
+              | otherwise = False
+          a = adyacentes g
+\end{code}
+
+\comentario{Tengo que corregir la definición}
 
 \subsection{Grafo estrella}
 
