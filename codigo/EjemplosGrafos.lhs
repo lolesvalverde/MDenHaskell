@@ -282,18 +282,16 @@ es bipartito.
 \begin{code}
 -- | Ejemplo
 -- >>> esBipartito (bipartitoCompleto 3 4)
--- G [1,2,3,4,5] [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5)]
+-- True
 esBipartito :: Ord a => Grafo a -> Bool
 esBipartito g = aux (sort (vertices g)) [] []
     where aux [] red blue  = null (intersect red blue)
           aux (v:vs) [] [] = aux vs [v] (a v)
-          aux (v:vs) r b
-              | any (`elem` r) (a v) == any (`elem` b) (a v) = False        
-              | elem v r = aux vs r (union b (a v))
-              | elem v b = aux vs (union r (a v)) b
-              | any (`elem` r) (a v) = aux vs r (v:b) 
-              | any (`elem` b) (a v) = aux vs (v:r) b
-              | otherwise = False
+          aux (v:vs) r b       
+              | any (`elem` r) (a v) =
+                  aux (vs \\ (a v)) (union r (a v)) (v:b)
+              | otherwise =
+                  aux (vs \\ (a v)) (v:r) (union b (a v))
           a = adyacentes g
 \end{code}
 
