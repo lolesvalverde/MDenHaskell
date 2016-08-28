@@ -22,6 +22,7 @@ module EjemplosGrafos ( grafoNulo
                       , grafoAmistad
                       , completo
                       , bipartitoCompleto
+                      , esBipartito
                       , grafoEstrella
                       , grafoRueda
                       , grafoCirculante
@@ -38,6 +39,7 @@ import Data.List ( sort
                  , (\\)
                  , union
                  , intersect
+                 , subsequences
                  )
 import Text.PrettyPrint.GenericPretty (pp)
 import GrafoConListaDeAristas ( Grafo
@@ -45,7 +47,8 @@ import GrafoConListaDeAristas ( Grafo
                               , creaGrafo
                               , vertices
                               , adyacentes
-                              )
+                              , aristaEn
+                              )                              
 \end{code}
 }
 
@@ -283,19 +286,28 @@ es bipartito.
 -- | Ejemplo
 -- >>> esBipartito (bipartitoCompleto 3 4)
 -- True
+-- >>> esBipartito (grafoCiclo 5)
+-- False
+-- >>> esBipartito (grafoCiclo 6)
+-- True
 esBipartito :: Ord a => Grafo a -> Bool
-esBipartito g = aux (sort (vertices g)) [] []
-    where aux [] red blue  = null (intersect red blue)
-          aux (v:vs) [] [] = aux vs [v] (a v)
-          aux (v:vs) r b       
-              | any (`elem` r) (a v) =
-                  aux (vs \\ (a v)) (union r (a v)) (v:b)
-              | otherwise =
-                  aux (vs \\ (a v)) (v:r) (union b (a v))
+esBipartito g | null (vertices g) = True
+              | otherwise = aux vs [v] [] []
+    where aux [] _ red blue =
+              and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
+          aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
+          aux (x:xs) [] r b = aux xs [x] r b
+          aux xs (x:ys) r b = if x `elem` r
+                              then aux (xs \\ (a x)) ys r (u (a x) b)
+                              else aux (xs \\ (a x)) ys (u (a x) r) b
+          (v:vs) = vertices g
+          f xs ys = filter p (subsequences xs ++ subsequences ys)
+                    where p zs = length zs == 2
           a = adyacentes g
+          u = union
 \end{code}
 
-\comentario{Tengo que corregir la definición}
+\comentario{Tengo que mejorar la definición}
 
 \subsection{Grafo estrella}
 
@@ -722,5 +734,5 @@ grafoMoebiusCantor = grafoPetersenGen 8 3
   La validación es
 
   > doctest EjemplosGrafos.lhs
-  Examples: 23  Tried: 23  Errors: 0  Failures: 0
+  Examples: 28  Tried: 28  Errors: 0  Failures: 0
 }
