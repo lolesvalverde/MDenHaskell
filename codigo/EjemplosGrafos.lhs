@@ -23,6 +23,7 @@ module EjemplosGrafos ( grafoNulo
                       , completo
                       , bipartitoCompleto
                       , esBipartito
+                      , conjuntosVerticesDisjuntos
                       , grafoEstrella
                       , grafoRueda
                       , grafoCirculante
@@ -295,6 +296,39 @@ esBipartito g | null (vertices g) = True
               | otherwise = aux vs [v] [] []
     where aux [] _ red blue =
               and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
+          aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
+          aux (x:xs) [] r b = aux xs [x] r b
+          aux xs (x:ys) r b = if x `elem` r
+                              then aux (xs \\ (a x)) ys r (u (a x) b)
+                              else aux (xs \\ (a x)) ys (u (a x) r) b
+          (v:vs) = vertices g
+          f xs ys = filter p (subsequences xs ++ subsequences ys)
+                    where p zs = length zs == 2
+          a = adyacentes g
+          u = union
+\end{code}
+
+La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve   
+\texttt{Nothing} si el grafo \texttt{g} no es bipartito y
+\texttt{Just(v1,v2)} si lo es, donde \texttt{xs},\texttt{ys} es una 
+partición disjunta de los vértices de \texttt{g}.
+
+\index{\texttt{conjuntosVerticesDisjuntos}}
+\begin{code}
+-- | Ejemplo
+-- >>> conjuntosVerticesDisjuntos (bipartitoCompleto 3 4)
+-- Just ([1,2,3],[4,5,6,7])
+-- >>> conjuntosVerticesDisjuntos (grafoCiclo 5)
+-- Nothing
+-- >>> conjuntosVerticesDisjuntos (grafoCiclo 6)
+-- Just ([1,5,3],[2,6])
+conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
+conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
+                             | otherwise = aux vs [v] [] []
+    where aux [] _ red blue =
+              if and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
+              then Just (red,blue)
+              else Nothing
           aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
           aux (x:xs) [] r b = aux xs [x] r b
           aux xs (x:ys) r b = if x `elem` r
@@ -734,5 +768,5 @@ grafoMoebiusCantor = grafoPetersenGen 8 3
   La validación es
 
   > doctest EjemplosGrafos.lhs
-  Examples: 28  Tried: 28  Errors: 0  Failures: 0
+  Examples: 31  Tried: 31  Errors: 0  Failures: 0
 }

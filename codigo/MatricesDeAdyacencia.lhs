@@ -12,6 +12,8 @@ import GrafoConListaDeAristas   ( Grafo
 import EjemplosGrafos           ( grafoCiclo
                                 , completo
                                 , grafoPetersen
+                                , esBipartito
+                                , conjuntosVerticesDisjuntos
                                 )
 import DefinicionesYPropiedades ( orden
                                 , tamaño
@@ -24,13 +26,18 @@ import Data.Matrix              ( Matrix
                                 , toList
                                 , toLists
                                 , transpose
+                                , getElem
                                 )
+import Data.List                ( subsequences
+                                )
+import Data.Maybe               ( fromJust)
 import Test.QuickCheck          ( Gen
                                 , Property
                                 , choose
                                 , forAll
                                 , quickCheck
                                 , sublistOf
+                                , (==>)
                                 )
 \end{code}
 }
@@ -236,5 +243,22 @@ A=\left (\begin{array}{c|c}
 B^t     &\theta
 \end{array}\right)
 $$
-
 \end{teorema}
+
+La comprobación del teorema es:
+
+\begin{sesion}
+ghci> quickCheck prop_matrizBipartito
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{code}
+prop_matrizBipartito :: Grafo Int -> Property
+prop_matrizBipartito g =
+    esBipartito g ==>
+    all (==0) [ getElem u v m | [u,v] <- (f (fromJust p))]
+        where f (xs,ys) = filter p (subsequences xs ++ subsequences ys)
+                    where p zs = length zs == 2
+              p = conjuntosVerticesDisjuntos g
+              m = matrizAdyacencia g
+\end{code}
