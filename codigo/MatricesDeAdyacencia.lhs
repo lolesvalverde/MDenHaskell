@@ -127,7 +127,7 @@ ghci> all prop_simetricaAdyacenciaCiclo [1..30]
 True
 \end{sesion}
 
-\index{\texttt{prop_simetricaAdyacenciaCiclo}}
+\index{\texttt{prop\_simetricaAdyacenciaCiclo}}
 \begin{code}
 prop_simetricaAdyacenciaCiclo :: Int -> Bool
 prop_simetricaAdyacenciaCiclo n =
@@ -144,7 +144,7 @@ ghci> all prop_simetricaAdyacenciaCompleto [1..30]
 True
 \end{sesion}
 
-\index{\texttt{prop_simetricaAdyacenciaCompleto}}
+\index{\texttt{prop\_simetricaAdyacenciaCompleto}}
 \begin{code}
 prop_simetricaAdyacenciaCompleto :: Int -> Bool
 prop_simetricaAdyacenciaCompleto n =
@@ -177,10 +177,10 @@ ghci> quickCheck prop_tamaño
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop_tamaño}}
+\index{\texttt{prop\_TamañoMatriz}}
 \begin{code}
-prop_tamaño :: Property
-prop_tamaño =
+prop_TamañoMatriz :: Property
+prop_TamañoMatriz =
   forAll grafoSimple  
          (\g -> tamaño g == tamañoM g)
 \end{code}
@@ -197,7 +197,7 @@ ghci> quickCheck prop_verticeAislado
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop_verticeAislado}}
+\index{\texttt{prop\_verticeAislado}}
 \begin{code}
 prop_verticeAislado :: Grafo Int -> Bool
 prop_verticeAislado g = 
@@ -219,14 +219,14 @@ prop_verticeAislado g =
 La comprobación del teorema es:
 
 \begin{sesion}
-ghci> quickCheck prop_grado
+ghci> quickCheck prop_GradoMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop_matrizGrado}}
+\index{\texttt{prop\_GradoMatriz}}
 \begin{code}
-prop_matrizGrado :: Grafo Int -> Bool
-prop_matrizGrado g = 
+prop_GradoMatriz :: Grafo Int -> Bool
+prop_GradoMatriz g = 
     and [grado g u == sumaf u && grado g u == sumac u | u <- vertices g]
         where sumaf v = sum ((toLists (ma g)) !! (v-1))
               sumac v = sum ((toLists (transpose (ma g))) !! (v-1))
@@ -257,13 +257,14 @@ $$
 La comprobación del teorema es:
 
 \begin{sesion}
-ghci> quickCheck prop_matrizBipartito
+ghci> quickCheck prop_BipartitoMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
+\index{\texttt{prop\_BipartitoMatriz}}
 \begin{code}
-prop_matrizBipartito :: Grafo Int -> Property
-prop_matrizBipartito g =
+prop_BipartitoMatriz :: Grafo Int -> Property
+prop_BipartitoMatriz g =
     esBipartito g ==>
     all (==0) [ getElem u v m | [u,v] <- (f (fromJust p))]
         where f (xs,ys) = filter p (subsequences xs ++ subsequences ys)
@@ -292,7 +293,7 @@ ghci> quickCheck prop_NumeroCaminosMatriz
 
 \end{sesion}
 
-\index{\texttt{prop_NumeroCaminosMatriz}}
+\index{\texttt{prop\_NumeroCaminosMatriz}}
 \begin{code}
 prop_NumeroCaminosMatriz :: Grafo Int -> Int -> Property
 prop_NumeroCaminosMatriz g k =
@@ -304,3 +305,6 @@ prop_NumeroCaminosMatriz g k =
           m = matrizAdyacencia g
           mk = foldr (multStd2) (identity n)  (take k (repeat m))
 \end{code}
+
+\comentario{Hay que corregir la propiedad. El enunciado del teorema se
+refiere al número de caminos entre dos vértices, no al número de arcos}

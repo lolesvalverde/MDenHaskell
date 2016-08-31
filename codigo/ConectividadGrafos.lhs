@@ -989,7 +989,7 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_ConexionIsomorfismo1
 \end{sesion}
 
     
-\index{\texttt{prop_ConexionIsomorfismo1}}
+\index{\texttt{prop\_ConexionIsomorfismo1}}
 \begin{code}
 prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Property
 prop_ConexionIsomorfismo1 g h =
@@ -1013,7 +1013,7 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo2
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop_ConexionIsomorfismo2}}
+\index{\texttt{prop\_ConexionIsomorfismo2}}
 \begin{code}
 prop_ConexionIsomorfismo2 :: Grafo Int -> Grafo Int -> Property
 prop_ConexionIsomorfismo2 g h =
@@ -1037,7 +1037,7 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo3
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop_ConexionIsomorfismo3}}
+\index{\texttt{prop\_ConexionIsomorfismo3}}
 \begin{code}
 prop_ConexionIsomorfismo3 :: Grafo Int -> Grafo Int -> Property
 prop_ConexionIsomorfismo3 g h =
