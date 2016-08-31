@@ -2,6 +2,8 @@
 \begin{code}
 module MatricesDeAdyacencia where
 
+import Conjuntos                ( productoCartesiano
+                                )
 import GeneradorGrafosSimples   ( grafoSimple
                                 )
 import GrafoConListaDeAristas   ( Grafo
@@ -19,7 +21,10 @@ import DefinicionesYPropiedades ( orden
                                 , tamaño
                                 , esAislado
                                 , grado
+                                , esSimple
                                 )
+import ConectividadGrafos       ( numeroCaminosDeLongitud
+                                ) 
 import Data.Matrix              ( Matrix
                                 , fromLists
                                 , matrix
@@ -27,6 +32,8 @@ import Data.Matrix              ( Matrix
                                 , toLists
                                 , transpose
                                 , getElem
+                                , multStd2
+                                , identity
                                 )
 import Data.List                ( subsequences
                                 )
@@ -42,6 +49,19 @@ import Test.QuickCheck          ( Gen
 \end{code}
 }
 
+\subsection{Definición y propiedades}
+
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo simple con $V=\{v_1, \dots, v_n\}$. Se define su  
+  matriz de adyacencia como $\mathcal{A}_{n \times n} = (a_{i,j})$ donde  
+  el elemento $a_{i,j}$ toma el valor $1$ si existe alguna arista en $A$
+  uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
+\end{definicion} 
+
+\begin{nota}
+  La matriz de adyacencia depende del etiquetado del grafo.
+\end{nota}
+
 La función \texttt{(imprimeMatriz p)} imprime por pantalla la matriz
 \texttt{p} con una fila por línea.
 
@@ -56,17 +76,6 @@ imprimeMatriz :: Show a => Matrix a -> IO ()
 imprimeMatriz p =
   mapM_ print (toLists p)
 \end{code}
-
-\begin{definicion}
-  Sea $G=(V,A)$ un grafo simple con $V=\{v_1, \dots, v_n\}$. Se define su  
-  matriz de adyacencia como $\mathcal{A}_{n \times n} = (a_{i,j})$ donde  
-  el elemento $a_{i,j}$ toma el valor $1$ si existe alguna arista en $A$
-  uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
-\end{definicion} 
-
-\begin{nota}
-  La matriz de adyacencia depende del etiquetado del grafo.
-\end{nota}
 
 La función \texttt{(matrizAdyacencia g)} es la matriz de adyacencia 
 del grafo \texttt{g}.
@@ -218,7 +227,7 @@ ghci> quickCheck prop_grado
 \begin{code}
 prop_matrizGrado :: Grafo Int -> Bool
 prop_matrizGrado g = 
-    and [grado g u == sumaf u && sumaf u == sumac u | u <- vertices g]
+    and [grado g u == sumaf u && grado g u == sumac u | u <- vertices g]
         where sumaf v = sum ((toLists (ma g)) !! (v-1))
               sumac v = sum ((toLists (transpose (ma g))) !! (v-1))
               ma = matrizAdyacencia
@@ -261,4 +270,37 @@ prop_matrizBipartito g =
                     where p zs = length zs == 2
               p = conjuntosVerticesDisjuntos g
               m = matrizAdyacencia g
+\end{code}
+
+\subsection{Caminos y arcos}
+
+En esta sección, se presentará la información que contiene la matriz de   
+adyacencia de un grafo en relación a los caminos que se encuentran en 
+él.
+
+\begin{teorema}
+  Sea $G=(V,A)$ un grafo con $V=\{v_1,\dots,v_n\}$ y matriz de adyacencia
+  $A = (a_{i,j})$. Entonces el elemento $(i,j)$ de $A^k$, que  
+  denotaremos por $a^k_{i,j}$, es el número de caminos de longitud
+  $k$ desde el vértice $v_i$ al vértice $v_j$.
+\end{teorema}
+
+La comprobación del teorema es:
+
+\begin{sesion}
+ghci> quickCheck prop_NumeroCaminosMatriz
+
+\end{sesion}
+
+\index{\texttt{prop_NumeroCaminosMatriz}}
+\begin{code}
+prop_NumeroCaminosMatriz :: Grafo Int -> Int -> Property
+prop_NumeroCaminosMatriz g k =
+    esSimple g ==>
+    and [ getElem u v mk == numeroCaminosDeLongitud g u v k
+             |(u,v) <- productoCartesiano vs vs, u < v]
+    where vs = vertices g
+          n = orden g
+          m = matrizAdyacencia g
+          mk = foldr (multStd2) (identity n)  (take k (repeat m))
 \end{code}

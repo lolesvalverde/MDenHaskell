@@ -8,7 +8,8 @@ module ConectividadGrafos       ( esCamino
                                 , longitudCamino
                                 , todosCaminosBP 
                                 , todosCaminosBA 
-                                , prop_todosCaminosBA 
+                                , prop_todosCaminosBA
+                                , numeroCaminosDeLongitud
                                 , estanConectados
                                 , distancia
                                 , esGeodesica
@@ -360,7 +361,24 @@ prop_todosCaminosBP g =
                     in null zss || longitudCamino (head zss) ==
                                    minimum (map longitudCamino zss))
 \end{code}
-        
+
+La función \texttt{(numeroCaminosDeLongitud g u v k)} devuelve el número de   
+caminos entre los vértices \texttt{u} y \texttt{v} en el grafo        
+\texttt{g} que tienen longitud \texttt{k}.
+
+\index{\texttt{numeroCaminosDeLongitud}}
+\begin{code}
+-- | Ejemplos
+-- >>> numeroCaminosDeLongitud (completo 6) 1 3 4
+-- 24
+-- >>> numeroCaminosDeLongitud grafoPetersen 1 3 4
+-- 4
+numeroCaminosDeLongitud :: Ord a => Grafo a -> a -> a -> Int -> Int
+numeroCaminosDeLongitud g u v k =
+    length (filter p (todosCaminosBA g u v))
+    where p vs = longitudCamino vs == k
+\end{code}
+
 \begin{definicion}
   Dado un grafo $G = (V,A)$, sean $u,v \in V$. Si existe algún camino entre $u$
   y $v$ en el grafo $G$ diremos que están \textbf{conectados} y lo denotamos

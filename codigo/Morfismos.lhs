@@ -486,7 +486,7 @@ isomorfismos :: (Ord a,Ord b) => Grafo a -> Grafo b -> [Funcion a b]
 isomorfismos = isomorfismos2
 
 isomorfos :: (Ord a,Ord b) => Grafo a -> Grafo b -> Bool
-isomorfos = 
+isomorfos = isomorfos2
 \end{code}
 \end{nota}
 
@@ -509,7 +509,7 @@ La función \texttt{(esAutomorfismo g f)} se verifica si la aplicación
 -- >>> esAutomorfismo g [(1,2),(2,3),(3,1)]
 -- False
 esAutomorfismo :: Ord a => Grafo a -> Funcion a a -> Bool
-esAutomorfismo g = esIsomorfismo g g 
+esAutomorfismo g = esIsomorfismo g g
 \end{code}
 
 La función \texttt{(automorfismos g)} devuelve la lista de todos los posibles
@@ -535,5 +535,5 @@ automorfismos g = isomorfismos1 g g
   La validación es
 
   > doctest Morfismos.lhs
-  Examples: 186  Tried: 186  Errors: 0  Failures: 0
+  Examples: 205  Tried: 205  Errors: 0  Failures: 0
 }

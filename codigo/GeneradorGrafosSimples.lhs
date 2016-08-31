@@ -48,4 +48,3 @@ grafoSimple = do
   as <- sublistOf [(x,y) | x <- [1..n], y <- [x+1..n]] 
   return (creaGrafo [1..n] as)
 \end{code}
-
