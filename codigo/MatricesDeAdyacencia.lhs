@@ -23,7 +23,7 @@ import DefinicionesYPropiedades ( orden
                                 , grado
                                 , esSimple
                                 )
-import ConectividadGrafos       ( numeroCaminosDeLongitud
+import Caminos                  ( numeroCaminosDeLongitud
                                 ) 
 import Data.Matrix              ( Matrix
                                 , fromLists
@@ -281,30 +281,27 @@ adyacencia de un grafo en relación a los caminos que se encuentran en
 
 \begin{teorema}
   Sea $G=(V,A)$ un grafo con $V=\{v_1,\dots,v_n\}$ y matriz de adyacencia
-  $A = (a_{i,j})$. Entonces el elemento $(i,j)$ de $A^k$, que  
-  denotaremos por $a^k_{i,j}$, es el número de caminos de longitud
-  $k$ desde el vértice $v_i$ al vértice $v_j$.
+  $A = (a_{i,j})$. Entonces, $\forall k \geq 0$ el elemento $(i,j)$ de  
+  $A^k$, que denotaremos por $a^k_{i,j}$, es el número de caminos de
+  longitud $k$ desde el vértice $v_i$ al vértice $v_j$.
 \end{teorema}
 
-La comprobación del teorema es:
+La comprobación del teorema para $k \leq 6$ es:
 
 \begin{sesion}
 ghci> quickCheck prop_NumeroCaminosMatriz
-
++++ OK, passed 100 tests.
 \end{sesion}
 
 \index{\texttt{prop\_NumeroCaminosMatriz}}
 \begin{code}
-prop_NumeroCaminosMatriz :: Grafo Int -> Int -> Property
-prop_NumeroCaminosMatriz g k =
-    esSimple g ==>
-    and [ getElem u v mk == numeroCaminosDeLongitud g u v k
-             |(u,v) <- productoCartesiano vs vs, u < v]
-    where vs = vertices g
-          n = orden g
-          m = matrizAdyacencia g
-          mk = foldr (multStd2) (identity n)  (take k (repeat m))
+prop_NumeroCaminosMatriz :: Grafo Int -> Gen Bool
+prop_NumeroCaminosMatriz g = do
+    k <- choose (0,6)
+    let vs = vertices g
+    let n = orden g
+    let m = matrizAdyacencia g
+    let mk = foldr (multStd2) (identity n)  (take k (repeat m))
+    return (and [ getElem u v mk == numeroCaminosDeLongitud g u v k
+                      |(u,v) <- productoCartesiano vs vs, u < v])    
 \end{code}
-
-\comentario{Hay que corregir la propiedad. El enunciado del teorema se
-refiere al número de caminos entre dos vértices, no al número de arcos}

@@ -1,23 +1,6 @@
 \ignora{
 \begin{code}
-module ConectividadGrafos       ( esCamino
-                                , aristasCamino
-                                , verticesCamino
-                                , esRecorrido
-                                , esCaminoSimple
-                                , longitudCamino
-                                , todosCaminosBP 
-                                , todosCaminosBA 
-                                , prop_todosCaminosBA
-                                , numeroCaminosDeLongitud
-                                , estanConectados
-                                , distancia
-                                , esGeodesica
-                                , esCerrado
-                                , esCircuito
-                                , esCiclo
-                                , todosCiclos  
-                                , estarConectadosCamino
+module Conectividad             ( estarConectadosCamino
                                 , prop_conectadosRelEqui
                                 , componentesConexas
                                 , esConexo
@@ -32,10 +15,9 @@ module ConectividadGrafos       ( esCamino
                                 ) where
   
 import Data.List                ( (\\)
-                                , nub
-                                , union
-                                , sort
-                                )
+                                 , nub
+                                 , sort
+                                 )
 import Data.Maybe               ( fromJust)
 import Test.QuickCheck          ( Gen
                                 , Property
@@ -50,7 +32,6 @@ import Test.QuickCheck          ( Gen
                                 , arbitrary
                                 )
 import Conjuntos                ( conjuntosIguales
-                                , unionGeneral
                                 )
 import RelacionesHomogeneas     ( esRelacionEquivalencia
                                 , clasesEquivalencia
@@ -76,9 +57,6 @@ import EjemplosGrafos           ( esGrafoNulo
                                 , grafoMoebiusCantor
                                 )
 import DefinicionesYPropiedades ( orden
-                                , tamaño
-                                , lazos
-                                , eliminaLazos
                                 , esCompleto
                                 )
 import Funciones                ( imagen
@@ -88,296 +66,15 @@ import Morfismos                ( isomorfos
                                 , isomorfismos
                                 , esInvariantePorIsomorfismos
                                 )
-import GeneradorGrafos          ( generaGrafo)
+import Caminos                  ( todosArcosBA
+                                , longitudCamino
+                                , esRecorrido
+                                , esCamino
+                                , esCaminoSimple
+                                )
 \end{code}
 }
 
-Una de las aplicaciones de la teoría de grafos es la determinación de trayectos
-o recorridos en una red de transporte o de distribución de productos. Así, si
-cada vértice representa un punto de interés y cada arista representa una
-conexión entre dos puntos, usando grafos como modelos, podemos simplificar el
-problema de encontrar la ruta más ventajosa en cada caso.
-
-\subsection{Caminos}
-
-\begin{definicion}
-  Sea $G = (V,A)$ un grafo simple y sean $u, v \in V$ dos vértices. Un 
-  \textbf{camino} entre $u$ y $v$ es una sucesión de vértices de $G$: 
-  $u = v_0, v_1, v_2, \dots, v_{k−1}, v_k = v$ donde
-  $\forall i \in \{0,\dots,k-1\}, (v_i,v_{i+1}) \in A$.
-\end{definicion}
-
-La función \texttt{(esCamino g c)} se verifica si la sucesión de vértices
-\texttt{c} es un camino en el grafo \texttt{g}. 
-
-\index{\texttt{esCamino}}
-\begin{code}
--- | Ejemplo
--- >>> grafoCiclo 5
--- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
--- >>> esCamino (grafoCiclo 5) [1,2,3,4,5,1]
--- True
--- >>> esCamino (grafoCiclo 5) [1,2,4,5,3,1]
--- False
-esCamino :: Ord a => Grafo a -> [a] -> Bool
-esCamino g c = all (`aristaEn` g) (zip c (tail c))
-\end{code}
-
-La función \texttt{(aristasCamino c)} devuelve la lista de las aristas
-recorridas en el camino \texttt{c}.
-
-\index{\texttt{aristasCamino}}
-\begin{code}
--- | Ejemplos
--- >>> aristasCamino [1,2,3]
--- [(1,2),(2,3)]
--- >>> aristasCamino [1,2,3,1]
--- [(1,2),(2,3),(1,3)]
--- >>> aristasCamino [1,2,3,2]
--- [(1,2),(2,3),(2,3)]
-aristasCamino :: Ord a => [a] -> [(a,a)]
-aristasCamino c =
-  map parOrdenado (zip c (tail c))
-  where parOrdenado (u,v) | u <= v    = (u,v)
-                          | otherwise = (v,u)
-\end{code}
-
-La función \texttt{(verticesCamino c)} devuelve la lista de las 
-vertices recorridas en el camino \texttt{c}.
-
-\index{\texttt{verticesCamino}}
-\begin{code}
--- | Ejemplo
--- >>> verticesCamino [1,2,3,1]
--- [1,2,3]
-verticesCamino :: Ord a => [a] -> [a]
-verticesCamino c = nub c
-\end{code}
-
-\begin{definicion}
-  Sea $G = (V,A)$ un grafo y sean $u,v \in V$. Un camino entre $u$ y $v$ que no
-  repite aristas (quizás vértices) se llama \textbf{recorrido}.
-\end{definicion}
-
-La función \texttt{(esRecorrido g c)} se verifica si el camino \texttt{c} es un
-recorrido en el grafo \texttt{g}. 
-       
-\begin{code}
--- | Ejemplo
--- >>> esRecorrido (grafoCiclo 4) [2,1,4]
--- True
--- >>> esRecorrido (grafoCiclo 4) [2,1,4,1]
--- False
--- >>> esRecorrido (grafoCiclo 4) [2,1,3]
--- False
-esRecorrido :: Ord a => Grafo a -> [a] -> Bool      
-esRecorrido g c =
-  esCamino g c && 
-  aristasCamino c == nub (aristasCamino c)
-\end{code}
-
-\comentario{Añadir a la sección de conjuntos la función 
-  \texttt{(sinRepetidos xs)} que se verifque si \texttt{xs} no tiene elementos
-  repetidos y usarla para definir \texttt{esRecorrido}.}
-
-\begin{definicion}
-  Un camino que no repite vértices (y, por tanto, tampoco aristas)
-  se llama \textbf{camino simple}.
-\end{definicion}
-
-La función \texttt{(esCaminoSimple g c)} se verifica si el camino \texttt{c} es
-un camino simple. 
-
-\begin{code}
--- | Ejemplos
--- >>> grafoCiclo 4
--- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
--- >>> esCaminoSimple (grafoCiclo 4) [2,1,4]
--- True
--- >>> esCaminoSimple (grafoCiclo 4) [1,4,3,2,1]
--- True
--- >>> esCaminoSimple (grafoCiclo 4) [4,3,2,1,2]
--- False
-esCaminoSimple :: Ord a => Grafo a -> [a] -> Bool
-esCaminoSimple g (v:vs) =
-  esRecorrido g (v:vs) && 
-  verticesCamino vs == vs
-\end{code}
-
-\comentario{Corregir la definición de esCaminoSimple para evitar
-  contraejemplos como el siguiente
-  (esCaminoSimple (creaGrafo [1,2] [(1,1),(1,2)]) [1,1,2] == True).
-}
-
-\comentario{Simplificar la definición de \texttt{esCaminoSimple} usando
-  \texttt{sinRepetidos}.}
-
-\begin{definicion}
-  Se llama \textbf{longitud} de un camino al número de veces que
-  se atraviesa una arista en dicho camino.
-\end{definicion}
-
-La función \texttt{(longitudCamino c)} devuelve la longitud del camino
-\texttt{c}. 
-
-\index{\texttt{longitudCamino}}
-\begin{code}
--- | Ejemplo
--- >>> longitudCamino [4,2,7]
--- 2
-longitudCamino :: [a] -> Int
-longitudCamino c = length c - 1
-\end{code}
-
-La función \texttt{(todosCaminosBP g u v)} devuelve una lista con todos
-los caminos simples posibles en el grafo \texttt{g} entre los vértices
-\texttt{u} y \texttt{v}, utilizando una algoritmo de búsqueda
-en profundidad sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
-de izquierda a derecha y de forma al visitar un nodo, explora todos los   
-caminos que pueden continuar por él antes de pasar al siquiente. 
-
-\index{\texttt{todosCaminos}}
-\begin{code}
--- | Ejemplos
--- >>> grafoCiclo 4
--- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
--- >>> todosCaminosBP (grafoCiclo 4) 1 4
--- [[1,4],[1,2,3,4]]
--- >>> todosCaminosBP (grafoCiclo 4) 4 1
--- [[4,3,2,1],[4,1]]
--- >>> todosCaminosBP (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
--- []
--- >>> todosCaminosBP (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
--- [[1]]
-todosCaminosBP :: Ord a => Grafo a -> a -> a -> [[a]]
-todosCaminosBP g x y = aux [[y]]
-  where aux []       = []
-        aux ([]:zss) = aux zss
-        aux ((z:zs):zss)
-          | z == x    = (z:zs) : aux zss
-          | otherwise = aux ([v:z:zs | v <- adyacentes g' z \\ zs] ++ zss)
-        g' = eliminaLazos g
-        eliminaLazos h = creaGrafo (vertices h)
-                                   [(x,y) | (x,y) <- aristas h, x /= y]
-\end{code}
-    
-La función \texttt{(todosCaminosBA g u v)} devuelve una lista con todos
-los caminos simples posibles en el grafo \texttt{g} entre los vértices
-\texttt{u} y \texttt{v}, utilizando una algoritmo de búsqueda
-en anchura sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
-por niveles, de forma que el primer camino de la lista es de longitud mínima. 
-
-\index{\texttt{todosCaminos}}
-\begin{code}
--- | Ejemplos
--- >>> grafoCiclo 4
--- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
--- >>> todosCaminosBA (grafoCiclo 4) 1 4
--- [[1,4],[1,2,3,4]]
--- >>> todosCaminosBA (grafoCiclo 4) 4 1
--- [[4,1],[4,3,2,1]]
--- >>> todosCaminosBA (creaGrafo [1..4] [(1,2),(3,4)]) 1 4
--- []
--- >>> todosCaminosBA (creaGrafo [1,2] [(1,1),(1,2)]) 1 1
--- [[1]]
-todosCaminosBA :: Ord a => Grafo a -> a -> a -> [[a]]
-todosCaminosBA g x y = aux [[y]]
-  where aux []       = []
-        aux ([]:zss) = aux zss
-        aux ((z:zs):zss)
-          | z == x    = (z:zs) : aux zss
-          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\ zs])
-        g' = eliminaLazos g
-
-\end{code}
-    
-Vamos a comprobar con QuickCheck que el primer elemento de la
-lista que devuelve la función \texttt{(todosCaminosBA g u v)} es de longitud
-mínima. Para ello, vamos a utilizar la función \texttt{(parDeVertices g)}
-que es un generador de pares de vértices del grafo no nulo \texttt{g}. 
-Por ejemplo, 
-
-\begin{sesion}
-ghci> sample (parDeVertices (creaGrafo [1..9] []))
-(3,9)
-(9,3)
-(7,4)
-(4,3)
-(2,8)
-(7,2)
-(8,4)
-(5,3)
-(7,2)
-(3,1)
-(7,2)
-\end{sesion}
-
-\index{texttt{parDeVertices}}
-\begin{code}
-parDeVertices :: Grafo Int -> Gen (Int,Int)
-parDeVertices g = do
-  x <- elements vs
-  y <- elements vs
-  return (x,y)
-  where vs = vertices g
-\end{code}
-
-La propiedad es
-
-\index{\texttt{prop\_todosCaminosBA}}    
-\begin{code}
-prop_todosCaminosBA :: Grafo Int -> Property
-prop_todosCaminosBA g =
-  not (esGrafoNulo g) ==>
-  forAll (parDeVertices g)
-         (\(x,y) -> let zss = todosCaminosBA g x y
-                    in null zss || longitudCamino (head zss) ==
-                                   minimum (map longitudCamino zss))
-\end{code}
-
-La comprobación es
-
-\begin{sesion}
-ghci> quickCheck prop_todosCaminosBA
-+++ OK, passed 100 tests:
-\end{sesion}
-
-Veamos que la función \texttt{(todosCaminosBP g u v)} no verifica la       
-propiedad.
-
-\begin{sesion}
-ghci> quickCheck prop_todosCaminosBP
-*** Failed! Falsifiable (after 6 tests): 
-G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,2),(2,3),(2,4),(4,4),(4,5),(5,5)]
-(5,2)
-\end{sesion}
-
-\begin{code}
-prop_todosCaminosBP :: Grafo Int -> Property
-prop_todosCaminosBP g =
-  not (esGrafoNulo g) ==>
-  forAll (parDeVertices g)
-         (\(x,y) -> let zss = todosCaminosBP g x y
-                    in null zss || longitudCamino (head zss) ==
-                                   minimum (map longitudCamino zss))
-\end{code}
-
-La función \texttt{(numeroCaminosDeLongitud g u v k)} devuelve el número de   
-caminos entre los vértices \texttt{u} y \texttt{v} en el grafo        
-\texttt{g} que tienen longitud \texttt{k}.
-
-\index{\texttt{numeroCaminosDeLongitud}}
-\begin{code}
--- | Ejemplos
--- >>> numeroCaminosDeLongitud (completo 6) 1 3 4
--- 24
--- >>> numeroCaminosDeLongitud grafoPetersen 1 3 4
--- 4
-numeroCaminosDeLongitud :: Ord a => Grafo a -> a -> a -> Int -> Int
-numeroCaminosDeLongitud g u v k =
-    length (filter p (todosCaminosBA g u v))
-    where p vs = longitudCamino vs == k
-\end{code}
 
 \begin{definicion}
   Dado un grafo $G = (V,A)$, sean $u,v \in V$. Si existe algún camino entre $u$
@@ -398,7 +95,7 @@ La función \texttt{(estanConectados g u v)} se verifica si los vértices
 estanConectados :: Ord a => Grafo a -> a -> a -> Bool
 estanConectados g u v
   | esGrafoNulo g = False
-  | otherwise     = not (null (todosCaminosBA g u v))
+  | otherwise     = not (null (todosArcosBA g u v))
 \end{code}
 
 \begin{nota}
@@ -432,7 +129,7 @@ estén conectados devuelve el valor \texttt{Nothing}.
 distancia :: Ord a => Grafo a -> a -> a -> Maybe Int    
 distancia g u v
   | estanConectados g u v =
-      Just (longitudCamino (head (todosCaminosBA g u v)))
+      Just (longitudCamino (head (todosArcosBA g u v)))
   | otherwise = Nothing
 \end{code}
 
@@ -491,11 +188,10 @@ cerrado en el grafo \texttt{g}.
 -- >>> esCerrado g [1,2,4,1]
 -- False
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
+esCerrado _ [] = False
 esCerrado g (v:c) =
   esCamino g c && v == last c
 \end{code}
-
-\comentario{En la definición de esCerrado ¿qué pasa con el camino vacío?)}
 
 \begin{definicion}
   Un recorrido en un grafo $G$ se dice \textbf{circuito} si sus extremos son
@@ -601,7 +297,7 @@ esAciclico g =
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
   que el primer camino de la lista es de longitud mínima.}
 
-\subsection{Conectividad}
+\subsection{Estar conectados por un camino}
 
 \begin{teorema}
   Dado un grafo $G$, la relación $u∼v$ (estar conectados por un camino) es una
@@ -636,6 +332,8 @@ prop_conectadosRelEqui g =
   esRelacionEquivalencia (vertices g) (estarConectadosCamino g)
 \end{code}
 
+\subsection{Componentes conexas de un grafo}
+
 \begin{definicion}
   Las clases de equivalencia obtenidas por la relación $∼$, estar conectados
   por un camino en un grafo $G$, inducen subgrafos en $G$, los vértices y todas
@@ -645,7 +343,7 @@ prop_conectadosRelEqui g =
 
 La función \texttt{(componentesConexas g)} devuelve las componentes conexas por
 caminos del grafo \texttt{g}. 
-      
+
 \index{\texttt{componentesConexas}}
 \begin{code}
 -- | Ejemplos
@@ -679,6 +377,8 @@ numeroComponentes g
     | esCompleto g     = 1
     | otherwise        = length (componentesConexas g)
 \end{code}
+
+\subsection{Grafos conexos}
 
 \begin{definicion}
   Dado un grafo, diremos que es \textbf{conexo} si la relación $~$ tiene una
@@ -722,6 +422,8 @@ prop_caracterizaGrafoConexo g =
                       | u <- vertices g, v <- vertices g]
 \end{code}
 
+\subsection{Excentricidad}
+
 \begin{definicion}
   Sean $G = (V,A)$ un grafo y $v \in V$. Se define la \textbf{excentricidad} de
   $v$ como el máximo de las distancias entre $v$ y el resto de vértices de
@@ -758,12 +460,13 @@ de las excentricidades de los vértices del grafo \texttt{g}.
 -- | Ejemplos
 -- >>> excentricidades (creaGrafo [1..3] [(1,2),(2,3),(3,3)])
 -- [Just 1,Just 2,Just 2]
--- >>> excentricidad (creaGrafo [1..3] [(1,2),(3,3)])
+-- >>> excentricidades (creaGrafo [1..3] [(1,2),(3,3)])
 -- [Nothing,Nothing,Nothing]
 excentricidades :: Ord a => Grafo a -> [Maybe Int]
 excentricidades g = sort (map (excentricidad g) (vertices g))
-
 \end{code}
+
+\subsection{Diámetro}
 
 \begin{definicion}
   Sea $G = (V,A)$ un grafo. Se define el \textbf{diámetro} de $G$ como el
@@ -789,6 +492,8 @@ diametro g
         distancias = [distancia g u v | u <- vs, v <- vs, u <= v] 
 \end{code}
 
+\subsection{Radio}
+
 \begin{definicion}
   Sean $G = (V,A)$ un grafo y $v \in V$. Se define el \textbf{radio} de $G$
   como el mínimo de las excentricidades de sus vértices. Lo denotaremos por
@@ -811,7 +516,9 @@ radio g
   | otherwise         = minimum ds
   where ds = [excentricidad g v | v <- vertices g]
 \end{code}
-    
+
+\subsection{Centro}
+
 \begin{definicion}
   Sean $G = (V,A)$ un grafo. Llamamos \textbf{centro} del grafo $G$ al conjunto
   de vértices de excentricidad mínima. A estos vértices se les denomina
@@ -834,7 +541,9 @@ centro :: Ord a => Grafo a -> [a]
 centro g = [v | v <- vertices g, excentricidad g v == r]
   where r = radio g
 \end{code}
-      
+
+\subsection{Grosor}
+
 \begin{definicion}
   Sean $G = (V,A)$ un grafo. Se llama \textbf{grosor} o \textbf{cintura}
   del grafo $G$ al mínimo de las longitudes de los ciclos de $G$. Si el  
@@ -870,7 +579,7 @@ grosor g
                                  , not (null yss)])
 \end{code}
 
-\subsection{Propiedades del grosor de los grafos}
+\subsubsection{Propiedades del grosor de los grafos}
 
 \begin{teorema}
   El grosor del grafo ciclo de orden $n$, $C_n$, es $\infty$, si $n < 3$
@@ -1134,6 +843,6 @@ ghci> quickCheck (esInvariantePorIsomorfismos excentricidades)
 \ignora{
   La validación es
 
-  > doctest ConectividadGrafos.lhs 
-  Examples: 289  Tried: 289  Errors: 0  Failures: 0
+  > doctest Conectividad.lhs 
+  Examples: 335  Tried: 335  Errors: 0  Failures: 0
 }
