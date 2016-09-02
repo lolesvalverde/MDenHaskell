@@ -18,7 +18,8 @@ module Caminos                  ( esCamino
                                 , esCerrado
                                 , esCircuito
                                 , esCiclo
-                                , todosCiclos  
+                                , todosCiclos
+                                , esAciclico
                                 ) where
   
 import Data.List                ( (\\)
@@ -33,6 +34,7 @@ import Test.QuickCheck          ( Gen
                                 , quickCheck
                                 )
 import Conjuntos                ( variacionesR
+                                , sinRepetidos
                                 )
 import GrafoConListaDeAristas   ( Grafo
                                 , adyacentes
@@ -192,13 +194,8 @@ recorrido en el grafo \texttt{g}.
 -- False
 esRecorrido :: Ord a => Grafo a -> [a] -> Bool      
 esRecorrido g c =
-  esCamino g c && 
-  aristasCamino c == nub (aristasCamino c)
+  esCamino g c && sinRepetidos (aristasCamino c)
 \end{code}
-
-\comentario{Añadir a la sección de conjuntos la función 
-  \texttt{(sinRepetidos xs)} que se verifque si \texttt{xs} no tiene elementos
-  repetidos y usarla para definir \texttt{esRecorrido}.}
 
 \subsection{Caminos simples}
 
@@ -208,12 +205,12 @@ esRecorrido g c =
 \end{definicion}
 
 La función \texttt{(esCaminoSimple g c)} se verifica si el camino \texttt{c} es
-un camino simple. 
+un camino simple en el grafo \texttt{g}. 
 
 \begin{code}
 -- | Ejemplos
--- >>> grafoCiclo 4
--- G [1,2,3,4] [(1,2),(1,4),(2,3),(3,4)]
+-- >>> esCaminoSimple (creaGrafo [1,2] [(1,1),(1,2)]) [1,1,2]
+-- False
 -- >>> esCaminoSimple (grafoCiclo 4) [2,1,4]
 -- True
 -- >>> esCaminoSimple (grafoCiclo 4) [1,4,3,2,1]
@@ -221,18 +218,14 @@ un camino simple.
 -- >>> esCaminoSimple (grafoCiclo 4) [4,3,2,1,2]
 -- False
 esCaminoSimple :: Ord a => Grafo a -> [a] -> Bool
-esCaminoSimple g (v:vs) =
-  esRecorrido g (v:vs) && 
-  verticesCamino vs == vs
+esCaminoSimple g [] = True
+esCaminoSimple g vs =
+  esRecorrido g vs && noRepiteVertices vs
+  where noRepiteVertices (x:xs)
+            | sinRepetidos (x:xs)              =  True
+            | x == last xs && sinRepetidos xs  =  True
+            | otherwise                        =  False
 \end{code}
-
-\comentario{Corregir la definición de esCaminoSimple para evitar
-  contraejemplos como el siguiente
-  (esCaminoSimple (creaGrafo [1,2] [(1,1),(1,2)]) [1,1,2] == True).
-}
-
-\comentario{Simplificar la definición de \texttt{esCaminoSimple} usando
-  \texttt{sinRepetidos}.}
 
 La función \texttt{(todosArcosBP g u v)} devuelve una lista con todos
 los caminos simples posibles en el grafo \texttt{g} entre los vértices
@@ -497,7 +490,7 @@ cerrado en el grafo \texttt{g}.
 -- >>> esCerrado g [1,2,4,1]
 -- False
 esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
-esCerrado _ [] = False
+esCerrado _ []    = False
 esCerrado g (v:c) =
   esCamino g c && v == last c
 \end{code}
@@ -584,6 +577,10 @@ todosCiclos g x = if aristaEn (x,x) g
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
 
+\nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
+  de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
+  que el primer camino de la lista es de longitud mínima.}
+
 \begin{definicion}
   Diremos que un grafo $G = (V,A)$ es \textbf{acíclico} si no contiene ningún
   ciclo; es decir, si $\forall v \in V$ no existe ningún camino simple que
@@ -606,13 +603,9 @@ esAciclico g =
   and [null (todosCiclos g x) | x <- vertices g]
 \end{code}
 
-\nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
-  de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
-  que el primer camino de la lista es de longitud mínima.}
-
 \ignora{
  La validación es:
 
  > doctest Caminos.lhs
- Examples: 178  Tried: 178  Errors: 0  Failures: 0
+ Examples: 181  Tried: 181  Errors: 0  Failures: 0
 }

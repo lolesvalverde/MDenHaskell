@@ -1,18 +1,18 @@
 \ignora{
 \begin{code}
-module DefinicionesYOperacionesConjuntos ( esUnitario
-                                         , esSubconjunto
-                                         , esSubconjuntoPropio
-                                         , complementario
-                                         , cardinal
-                                         , unionConjuntos
-                                         , interseccion
-                                         , productoCartesiano
-                                         ) where
+module Conjuntos2 ( esUnitario
+                  , esSubconjunto
+                  , conjuntosIguales
+                  , esSubconjuntoPropio
+                  , complementario
+                  , cardinal
+                  , unionConjuntos
+                  , unionGeneral
+                  , interseccion
+                  , productoCartesiano
+                  ) where
 
 import ConjuntosConListasOrdenadasSinRepeticion
-    
-import Data.List
 \end{code}
 }
 
@@ -78,17 +78,18 @@ forma algo más precisa, podemos dar la siguiente definición:
 La función \texttt{(esUnitario c)} se verifica si el conjunto 
 \texttt{c} es unitario.
 
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio (take 10 (repeat 5))
-ghci> let c2 = foldr inserta vacio "valverde"
-ghci> let c3 = foldr inserta vacio "coco"
-esUnitario c1  ==  True
-esUnitario c2  ==  False
-esUnitario c2  ==  False
-\end{sesion}
-
 \index{\texttt{unitario}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio (take 10 (repeat 5))
+-- >>> let c2 = foldr inserta vacio "valverde"
+-- >>> let c3 = foldr inserta vacio "coco"
+-- >>> esUnitario c1
+-- True
+-- >>> esUnitario c2
+-- False
+-- >>> esUnitario c2
+-- False
 esUnitario :: Ord a => Conj a -> Bool
 esUnitario c | esVacio c = False              
              | otherwise = esVacio (elimina (minimoElemento c) c)
@@ -105,20 +106,23 @@ esUnitario c | esVacio c = False
 La función \texttt{(esSubconjunto c1 c2)} se verifica si \texttt{c1} es
 un subconjunto de \texttt{c2}.
 
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [4,2]
-ghci> let c2 = foldr inserta vacio [3,2,4]
-ghci> let c3 = foldr inserta vacio [4,2,1]
-ghci> let c4 = foldr inserta vacio [1,2,4]
-c1 `esSubconjunto` c2     ==  True
-c1 `esSubconjunto` vacio  ==  False
-vacio `esSubconjunto` c2  ==  True
-c3 `esSubconjunto` c4     ==  True
-c2 `esSubconjunto` c1     ==  False
-\end{sesion}
-
 \index{\texttt{esSubconjunto}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [4,2]
+-- >>> let c2 = foldr inserta vacio [3,2,4]
+-- >>> let c3 = foldr inserta vacio [4,2,1]
+-- >>> let c4 = foldr inserta vacio [1,2,4]
+-- >>> c1 `esSubconjunto` c2
+-- True
+-- >>> c1 `esSubconjunto` vacio
+-- False
+-- >>> vacio `esSubconjunto` c2
+-- True
+-- >>> c3 `esSubconjunto` c4
+-- True
+-- >>> c2 `esSubconjunto` c1
+-- False
 esSubconjunto :: Ord a => Conj a -> Conj a -> Bool
 esSubconjunto c1 c2
     | esVacio c1             = True
@@ -136,21 +140,22 @@ esSubconjunto c1 c2
 \end{definicion}
 
 La función \texttt{(conjuntosIguales c1 c2)} se verifica si los conjuntos
-\texttt{xs} y \texttt{ys} son iguales. Por ejemplo,
-
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [4,2]
-ghci> let c2 = foldr inserta vacio [3,2,4]
-ghci> let c3 = foldr inserta vacio [4,2,1]
-ghci> let c4 = foldr inserta vacio [1,2,4]
-ghci> let c5 = foldr inserta vacio [4,4,4,4,4,4,2]
-conjuntosIguales c1 c2  ==  False
-conjuntosIguales c3 c4  ==  True
-conjuntosIguales c1 c5  ==  True
-\end{sesion}
+\texttt{xs} y \texttt{ys} son iguales.
 
 \index{\texttt{conjuntosIguales}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [4,2]
+-- >>> let c2 = foldr inserta vacio [3,2,4]
+-- >>> let c3 = foldr inserta vacio [4,2,1]
+-- >>> let c4 = foldr inserta vacio [1,2,4]
+-- >>> let c5 = foldr inserta vacio [4,4,4,4,4,4,2]
+-- >>> conjuntosIguales c1 c2
+-- False
+-- >>> conjuntosIguales c3 c4
+-- True
+-- >>> conjuntosIguales c1 c5
+-- True
 conjuntosIguales :: Ord a => Conj a -> Conj a -> Bool
 conjuntosIguales c1 c2 = 
     esSubconjunto c1 c2 && esSubconjunto c2 c1
@@ -164,15 +169,17 @@ conjuntosIguales c1 c2 =
 \end{definicion}
 
 La función \texttt{(esSubconjuntoPropio c1 c2)} se verifica si \texttt{c1} es
-un subconjunto propio de \texttt{c2}. Por ejemplo,
-
-\begin{sesion}
-[4,2]   `esSubconjuntoPropio` [3,2,4]  ==  True
-[4,2,1] `esSubconjuntoPropio` [1,2,4]  ==  False
-\end{sesion}
+un subconjunto propio de \texttt{c2}.
 
 \index{\texttt{esSubconjuntoPropio}}
 \begin{code}
+-- | Ejemplos
+-- >>> let u  = foldr inserta vacio [1..9]
+-- >>> let c1 = foldr inserta vacio [3,2,5,7]
+-- >>> esSubconjuntoPropio u u
+-- False
+-- >>> esSubconjuntoPropio c1 u
+-- True
 esSubconjuntoPropio :: Ord a => Conj a -> Conj a -> Bool
 esSubconjuntoPropio c1 c2
     | esVacio c1 = False
@@ -189,20 +196,22 @@ esSubconjuntoPropio c1 c2
 \end{definicion}
 
 La función \texttt{(complementario u c)} devuelve el complementario del 
-conjunto \texttt{c} y en el universo \texttt{u}. Por ejemplo,
-
-\begin{sesion}
-ghci> let u  = foldr inserta vacio [1..9]
-ghci> let c1 = foldr inserta vacio [3,2,5,7]
-ghci> let c2 = foldr inserta vacio [1,4,6,8,9]
-complementario u c1     ==  {1,4,6,8,9}
-complementario u u      ==  {}
-complementario u vacio  ==  {1,2,3,4,5,6,7,8,9}
-complementario u c2     ==  {2,3,5,7}
-\end{sesion}
+conjunto \texttt{c} y en el universo \texttt{u}.
 
 \index{\texttt{complementario}}
 \begin{code}
+-- | Ejemplos
+-- >>> let u  = foldr inserta vacio [1..9]
+-- >>> let c1 = foldr inserta vacio [3,2,5,7]
+-- >>> let c2 = foldr inserta vacio [1,4,6,8,9]
+-- >>> complementario u c1
+-- {1,4,6,8,9}
+-- >>> complementario u u
+-- {}
+-- >>> complementario u vacio
+-- {1,2,3,4,5,6,7,8,9}
+-- >>> complementario u c2
+-- {2,3,5,7}
 complementario :: Ord a => Conj a -> Conj a -> Conj a
 complementario u c
     | esVacio c = u
@@ -219,16 +228,17 @@ complementario u c
 \end{definicion}
 
 La función \texttt{(cardinal xs)} devuelve el cardinal del conjunto
-\texttt{xs}. Por ejemplo,
-
-\begin{sesion}
-cardinal vacio                              ==  0
-cardinal (foldr inserta vacio [1..10])      ==  10
-cardinal (foldr inserta vacio "chocolate")  ==  7
-\end{sesion}
+\texttt{xs}.
 
 \index{\texttt{cardinal}}
 \begin{code}
+-- | Ejemplos
+-- >>> cardinal vacio
+-- 0
+-- >>> cardinal (foldr inserta vacio [1..10])
+-- 10
+-- >>> cardinal (foldr inserta vacio "chocolate")
+-- 7
 cardinal :: Ord a => Conj a -> Int
 cardinal c | esVacio c = 0
            | otherwise = 1 + cardinal (elimina (min c) c)
@@ -246,21 +256,19 @@ cardinal c | esVacio c = 0
 \end{definicion}
 
 La función \texttt{(unionConjuntos c1 c2)} devuelve la unión de los
-conjuntos \texttt{xs} y \texttt{ys}. Por ejemplo,
-
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [1,3..9]
-ghci> let c2 = foldr inserta vacio [2,4..9]
-ghci> let c3 = foldr inserta vacio "centri"
-ghci> let c4 = foldr inserta vacio "fugado"
-ghci> unionConjuntos c1 c2
-{1,3,5,7,9,2,4,6,8}
-ghci> unionConjuntos c3 c4
-{'a','c','d','e','f','g','i','n','o','r','t','u'}
-\end{sesion}
+conjuntos \texttt{xs} y \texttt{ys}.
 
 \index{\texttt{unionConjuntos}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [1,3..9]
+-- >>> let c2 = foldr inserta vacio [2,4..9]
+-- >>> let c3 = foldr inserta vacio "centri"
+-- >>> let c4 = foldr inserta vacio "fugado"
+-- >>> unionConjuntos c1 c2
+-- {1,2,3,4,5,6,7,8,9}
+-- >>> unionConjuntos c3 c4
+-- {'a','c','d','e','f','g','i','n','o','r','t','u'}
 unionConjuntos :: Ord a => Conj a  -> Conj a -> Conj a
 unionConjuntos c1 c2
     | esVacio c1 = c2
@@ -268,6 +276,30 @@ unionConjuntos c1 c2
     | otherwise =
         unionConjuntos (elimina (min c1) c1) (inserta (min c1) c2)
         where min = minimoElemento
+\end{code}
+
+\begin{definicion}
+  Dada una familia de conjuntos $\{A\}_i$ con $i \in I$, se define la 
+  \texttt{unión general} de los conjuntos $A_i$ notado
+  $\bigcup_{i \in I} A_i$, como el conjunto formado por aquellos 
+  elementos que pertenecen al menos a uno de los conjuntos de la  
+  familia; es decir,\\
+  $\bigcup_{i \in I} A_i = \{ x | x \in A_i$ con $i\in I\}$
+\end{definicion}
+
+La función \texttt{(unionGeneral xss)} devuelve la unión general de la
+familia de conjuntos de la lista \texttt{xss}.
+
+\index{\texttt{unionGeneral}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [1,4..15]
+-- >>> let c2 = foldr inserta vacio [2,5..15]
+-- >>> let c3 = foldr inserta vacio [3,6..15]
+-- >>> unionGeneral [c1,c2,c3]
+-- {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+unionGeneral :: Ord a => [Conj a] -> Conj a
+unionGeneral = foldr unionConjuntos vacio
 \end{code}
 
 \subsection{Intersección de conjuntos}
@@ -281,22 +313,23 @@ unionConjuntos c1 c2
 \end{definicion}
 
 La función \texttt{(interseccion c1 c2)} devuelve la intersección de los
-conjuntos \texttt{c1} y \texttt{c2}. Por ejemplo,
-
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [1,3..20]
-ghci> let c2 = foldr inserta vacio [2,4..20]
-ghci> let c3 = foldr inserta vacio [2,4..30]
-ghci> let c4 = foldr inserta vacio [4,8..30]
-ghci> let c5 = foldr inserta vacio "noche"
-ghci> let c6 = foldr inserta vacio "dia"
-interseccion c1 c2  ==  {}
-interseccion c3 c4  ==  {4,8,12,16,20,24,28}
-interseccion c5 c6  ==  {}
-\end{sesion}
+conjuntos \texttt{c1} y \texttt{c2}.
 
 \index{\texttt{interseccion}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [1,3..20]
+-- >>> let c2 = foldr inserta vacio [2,4..20]
+-- >>> let c3 = foldr inserta vacio [2,4..30]
+-- >>> let c4 = foldr inserta vacio [4,8..30]
+-- >>> let c5 = foldr inserta vacio "noche"
+-- >>> let c6 = foldr inserta vacio "dia"
+-- >>> interseccion c1 c2
+-- {}
+-- >>> interseccion c3 c4
+-- {4,8,12,16,20,24,28}
+-- >>> interseccion c5 c6
+-- {}
 interseccion :: Ord a => Conj a -> Conj a -> Conj a
 interseccion c1 c2
     | esVacio c1 || esVacio c2 =  vacio
@@ -306,7 +339,6 @@ interseccion c1 c2
         inserta m1 (interseccion (elimina m1 c1) (elimina m2 c2))
              where m1 = minimoElemento c1
                    m2 = minimoElemento c2
-                        
 \end{code}
 
 \subsection{Producto cartesiano}
@@ -323,19 +355,17 @@ interseccion c1 c2
 \end{definicion}
 
 La función \texttt{(productoCartesiano c1 c2)} devuelve el producto cartesiano
-de xs e ys. Por ejemplo,
-
-\begin{sesion}
-ghci> let c1 = foldr inserta vacio [3,1]
-ghci> let c2 = foldr inserta vacio [2,4,7]
-ghci> productoCartesiano c1 c2
-{(1,2),(1,4),(1,7),(3,2),(3,4),(3,7)}
-ghci> productoCartesiano c2 c1
-{(2,1),(2,3),(4,1),(4,3),(7,1),(7,3)}
-\end{sesion}
+de xs e ys.
 
 \index{\texttt{productoCartesiano}}
 \begin{code}
+-- | Ejemplos
+-- >>> let c1 = foldr inserta vacio [3,1]
+-- >>> let c2 = foldr inserta vacio [2,4,7]
+-- >>> productoCartesiano c1 c2
+-- {(1,2),(1,4),(1,7),(3,2),(3,4),(3,7)}
+-- >>> productoCartesiano c2 c1
+-- {(2,1),(2,3),(4,1),(4,3),(7,1),(7,3)}
 productoCartesiano :: (Ord a, Ord b) => Conj a -> Conj b -> Conj (a,b)
 productoCartesiano c1 c2  
     | esVacio c1 || esVacio c2 = vacio
@@ -353,54 +383,9 @@ productoUnitario a c
     where min = minimoElemento
 \end{code}
 
-\subsection{Combinaciones}
+\ignora{
+  La validación es
 
-\begin{definicion}
-  Las \textbf{combinaciones} de un conjunto $S$ tomados en grupos 
-  de $n$ son todos los subconjuntos de $S$ con $n$ elementos.
-\end{definicion}
-
-La función \texttt{(combinaciones n xs)} devuelve las combinaciones de los
-elementos de \texttt{xs} en listas de \texttt{n} elementos. Por ejemplo,
-
-\begin{sesion}
-combinaciones 3 ['a'..'d']  ==  ["abc","abd","acd","bcd"]
-combinaciones 2 [2,4..8]    ==  [[2,4],[2,6],[2,8],[4,6],[4,8],[6,8]]
-\end{sesion}
-
-\index{\texttt{combinaciones}}
-\begin{code}
-combinaciones :: Integer -> [a] -> [[a]]
-combinaciones 0 _          = [[]]
-combinaciones _ []         = []
-combinaciones k (x:xs) = 
-    [x:ys | ys <- combinaciones (k-1) xs] ++ combinaciones k xs
-\end{code}
-
-\subsection{Variaciones con repetición}
-
-\begin{definicion}
-  Las \textbf{variaciones con repetición} de $m$ elementos tomados en grupos de
-  $n$ es el número de diferentes $n$--tuplas de un conjunto de $m$ elementos.
-\end{definicion}
-
-La función \texttt{(variacionesR n xs)} devuelve las variaciones con con
-repetición de los elementos de \texttt{xs} en listas de \texttt{n}
-elementos. Por ejemplo,
-
-\begin{sesion}
-ghci> variacionesR 3 ['a','b']
-["aaa","aab","aba","abb","baa","bab","bba","bbb"]
-ghci> variacionesR 2 [2,4..8]
-[[2,2],[2,4],[2,6],[2,8],[4,2],[4,4],[4,6],[4,8],
- [6,2],[6,4],[6,6],[6,8],[8,2],[8,4],[8,6],[8,8]]
-\end{sesion}
-
-\index{\texttt{variaciones}}
-\begin{code}
-variacionesR :: Int -> [a] -> [[a]]
-variacionesR _ [] = [[]]
-variacionesR 0 _  = [[]] 
-variacionesR k us =
-    [u:vs | u <- us, vs <- variacionesR (k-1) us]
-\end{code}
+  > doctest Conjuntos2.lhs 
+  Examples: 74  Tried: 74  Errors: 0  Failures: 0
+}  

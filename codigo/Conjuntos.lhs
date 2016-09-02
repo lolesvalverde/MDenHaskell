@@ -1,7 +1,6 @@
 \ignora{
 \begin{code}
-module Conjuntos (  conjuntoVacio
-                  , esVacio
+module Conjuntos (  sinRepetidos
                   , esUnitario
                   , esSubconjunto
                   , conjuntosIguales
@@ -31,19 +30,34 @@ import Data.List ( (\\)
 \end{definicion}
 
 \begin{nota}
-   En Haskell, para poder discernir si un objeto arbitrario pertenece a un conjunto, hay
-   que restringirse a tipos de la clase \texttt{Eq}.
+   En Haskell, para poder discernir si un objeto arbitrario pertenece a   
+   un conjunto, hay que restringirse a tipos de la clase \texttt{Eq}.
 \end{nota}
 
 \begin{nota}
-  Al trabajar con la representación de conjuntos como listas en Haskell, hemos
+  Al trabajar con la representación de conjuntos usando listas en Haskell, hemos
   de cuidar que los ejemplos con los que trabajemos no tengan elementos
-  repetidos. La función \texttt{(nub xs)} de la librería \texttt{Data.List}
+  repetidos. La función \texttt{(listaAconjunto xs)} del TAD de los conjuntos
   elimina los elementos repetidos de una lista. Además, deberemos  
-  indicar de qué tipo algebraico serán los elementos de un conjunto  
-  (necesariamente contenido en la clase de los comparables por igualdad (es
-  decir, la clase \texttt{Eq})).
+  indicar de qué tipo algebraico serán los elementos de un conjunto.
 \end{nota}
+
+A las funciones del TAD nombradas anteriormente añadimos además la  
+función \texttt{(sinRepetidos xs)} que se verifica si la lista 
+\texttt{xs} no tiene elementos repetidos.
+
+\index{\texttt{sinRepetidos}}
+\begin{code}
+-- | Ejemplos
+-- >>> sinRepetidos []
+-- True
+-- >>> sinRepetidos [1,2,3,4]
+-- True
+-- >>> sinRepetidos "cabeza"
+-- False
+sinRepetidos :: Eq a => [a] -> Bool
+sinRepetidos xs = nub xs == xs
+\end{code}
 
 Los conjuntos pueden definirse de manera explícita, citando todos sus elementos
 entre llaves, de manera implícita, dando una o varias características que
@@ -79,42 +93,10 @@ En caso  contrario escribiremos $a \not \in A$.
 La función \texttt{(pertenece x xs)} se verifica si \texttt{x}
 pertenece al conjunto \texttt{xs}. 
 
-\begin{code}
--- | Ejemplos
--- >>> 9 `pertenece` [1..6]
--- False
--- >>> 'c' `pertenece` "Roca"
--- True
-pertenece :: Eq a => a -> [a] -> Bool
-pertenece = elem
-\end{code}
-
-\subsection{Conjunto vacío}
-
 \begin{definicion}
   El conjunto que carece de elementos se denomina \textbf{conjunto vacío}
   y se denota por $\emptyset$.
 \end{definicion}
-
-La función \texttt{conjuntoVacio} devuelve el conjunto vacío y la
-función \texttt{(esVacio xs)} se verifica si el conjunto
-\texttt{xs} es vacío. 
-
-
-\index{\texttt{conjuntoVacio}}
-\index{\texttt{esVacio}}    
-\begin{code}
--- | Ejemplos
--- >>> esVacio [1..6]
--- False
--- >>> esVacio conjuntoVacio
--- True
-conjuntoVacio :: [a]
-conjuntoVacio = []
-
-esVacio :: [a] -> Bool
-esVacio = null
-\end{code}
 
 \subsection{Conjunto unitario}
 
@@ -151,7 +133,6 @@ esUnitario xs = length xs == 1
 
 La función \texttt{(esSubconjunto xs ys)} se verifica si \texttt{xs} es
 un subconjunto de \texttt{ys}.
-
 
 \index{\texttt{esSubconjunto}}
 \begin{code}
@@ -416,5 +397,5 @@ variacionesR k us =
   La validación es
 
   > doctest Conjuntos.lhs 
-  Examples: 29  Tried: 29  Errors: 0  Failures: 0
+  Examples: 34  Tried: 34  Errors: 0  Failures: 0
 }  
