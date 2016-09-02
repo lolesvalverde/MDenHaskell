@@ -64,7 +64,8 @@ import GrafoConListaDeAristas         ( Grafo
                                       , creaGrafo
                                       , vertices
                                       )
-import EjemplosGrafos                 ( bipartitoCompleto
+import EjemplosGrafos                 ( grafoNulo
+                                      , bipartitoCompleto
                                       , completo
                                       , grafoCiclo
                                       , grafoEstrella
@@ -491,6 +492,24 @@ eliminaArista g (a,b) =
             (aristas g \\ [(a,b),(b,a)])
 \end{code}
 
+La función \texttt{(eliminaLazos g)} devuelve un nuevo grafo, obtenido   
+a partir del grafo \texttt{g} eliminando todas las aristas que fueran  
+lazos.
+
+\index{\texttt{eliminaLazos}}
+\begin{code}
+-- | Ejemplos
+-- >>> eliminaLazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
+-- G [1,2] [(1,2)]
+-- >>> grafoCiclo 5
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
+-- >>> eliminaLazos (grafoCiclo 5)
+-- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
+eliminaLazos :: Ord a => Grafo a -> Grafo a
+eliminaLazos g = creaGrafo (vertices g)
+                           [(x,y) | (x,y) <- aristas g, x /= y]
+\end{code}
+
 \subsubsection{Eliminación un vértice}
 
 \begin{definicion}
@@ -521,21 +540,6 @@ eliminaVertice g v =
   where as = aristas g
 \end{code}
 
-
-\comentario{Añadir la especificación de eliminaLazos.}
-
-\begin{code}
--- | Ejemplos
--- >>> eliminaLazos (creaGrafo [1,2] [(1,1),(1,2),(2,2)])
--- G [1,2] [(1,2)]
--- >>> grafoCiclo 5
--- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
--- >>> eliminaLazos (grafoCiclo 5)
--- G [1,2,3,4,5] [(1,2),(1,5),(2,3),(3,4),(4,5)]
-eliminaLazos :: Ord a => Grafo a -> Grafo a
-eliminaLazos g = creaGrafo (vertices g)
-                           [(x,y) | (x,y) <- aristas g, x /= y]
-\end{code}
 \subsubsection{Suma de aristas}
 
 \begin{definicion}
@@ -606,8 +610,35 @@ prop_completos n = n >= 2 ==>
    completo n == sumaVertice (completo (n-1)) n
 \end{code}
 
-\comentario{A partir de esta propiedad, se puede dar una definición alternativa
-  de $K_n$ (completo2) y comprobar su equivalencia con la primera (completo).}
+A partir de esta propiedad, se puede dar una definición alternativa
+de la función \texttt{(completo n)}, que devuelve el grafo completo   
+$K_n$. La nueva función será \texttt{(completo2 n)}.
+
+\begin{code}
+completo2 :: Int -> Grafo Int
+completo2 0 = grafoNulo
+completo2 n = sumaVertice (completo2 (n-1)) n
+\end{code}
+
+Vamos a ver cuál de las definiciones es más eficiente:
+
+\begin{sesion}
+ghci> tamaño (completo 40)
+780
+(0.04 secs, 0 bytes)
+ghci> tamaño (completo2 40)
+780
+(0.20 secs, 0 bytes)
+ghci> tamaño (completo 100)
+4950
+(1.17 secs, 0 bytes)
+ghci> tamaño (completo2 100)
+4950
+(15.49 secs, 61,756,056 bytes)
+\end{sesion}
+
+La función \texttt{(completo n)} es más eficiente, así que será la que   
+seguiremos utilizando.
 
 \subsubsection{Suma de grafos}
 
