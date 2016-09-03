@@ -1,7 +1,6 @@
 \ignora{
 \begin{code}
-module Conjuntos (  sinRepetidos
-                  , esUnitario
+module Conjuntos ( esUnitario
                   , esSubconjunto
                   , conjuntosIguales
                   , esSubconjuntoPropio
@@ -11,16 +10,19 @@ module Conjuntos (  sinRepetidos
                   , unionGeneral
                   , interseccion
                   , productoCartesiano
-                  , combinaciones
-                  , variacionesR
                   ) where
 
-import Data.List ( (\\)
-                 , intersect
-                 , nub
-                 , union)
+import ConjuntosConListasOrdenadasSinRepeticion
+-- import ConjuntosConListas
+
+import Data.List  ( (\\)
+                  , union
+                  , intersect
+                  )
 \end{code}
 }
+
+\subsection{Definición de conjunto}
 
 \begin{definicion}
   Llamaremos \textbf{conjunto} a una colección de objetos, que llamaremos
@@ -29,35 +31,20 @@ import Data.List ( (\\)
   arbitrario está o no en él.
 \end{definicion}
 
+Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
+En caso  contrario escribiremos $a \not \in A$.
+
 \begin{nota}
-   En Haskell, para poder discernir si un objeto arbitrario pertenece a   
-   un conjunto, hay que restringirse a tipos de la clase \texttt{Eq}.
+  En Haskell, para poder discernir si un objeto arbitrario pertenece a un
+  conjunto se necesita que su tipo pertenezca a la clase \texttt{Eq}.
 \end{nota}
 
 \begin{nota}
-  Al trabajar con la representación de conjuntos usando listas en Haskell, hemos
+  Al trabajar con la representación de conjuntos como listas en Haskell, hemos
   de cuidar que los ejemplos con los que trabajemos no tengan elementos
-  repetidos. La función \texttt{(listaAconjunto xs)} del TAD de los conjuntos
-  elimina los elementos repetidos de una lista. Además, deberemos  
-  indicar de qué tipo algebraico serán los elementos de un conjunto.
+  repetidos. La función \texttt{(nub xs)} de la librería \texttt{Data.List}
+  elimina los elementos repetidos de una lista.
 \end{nota}
-
-A las funciones del TAD nombradas anteriormente añadimos además la  
-función \texttt{(sinRepetidos xs)} que se verifica si la lista 
-\texttt{xs} no tiene elementos repetidos.
-
-\index{\texttt{sinRepetidos}}
-\begin{code}
--- | Ejemplos
--- >>> sinRepetidos []
--- True
--- >>> sinRepetidos [1,2,3,4]
--- True
--- >>> sinRepetidos "cabeza"
--- False
-sinRepetidos :: Eq a => [a] -> Bool
-sinRepetidos xs = nub xs == xs
-\end{code}
 
 Los conjuntos pueden definirse de manera explícita, citando todos sus elementos
 entre llaves, de manera implícita, dando una o varias características que
@@ -85,44 +72,6 @@ forma algo más precisa, podemos dar la siguiente definición:
   tratamos.
 \end{definicion}
 
-\subsection{Pertenencia a un conjunto}
-
-Si el elemento $a$ pertenece al conjunto $A$, escribiremos $a \in A$. 
-En caso  contrario escribiremos $a \not \in A$.
-
-La función \texttt{(pertenece x xs)} se verifica si \texttt{x}
-pertenece al conjunto \texttt{xs}. 
-
-\begin{definicion}
-  El conjunto que carece de elementos se denomina \textbf{conjunto vacío}
-  y se denota por $\emptyset$.
-\end{definicion}
-
-\subsection{Conjunto unitario}
-
-\begin{definicion}
-  Un conjunto con un único elemento se denomina \textbf{unitario}.
-\end{definicion}
-    
-\begin{nota}
-  Notemos que, si $X=\{x\}$ es un conjunto unitario, debemos distinguir 
-  entre el conjunto $X$ y el elemento $x$.
-\end{nota}
-
-La función \texttt{(esUnitario xs)} se verifica si el conjunto 
-\texttt{xs} es unitario.
-
-\index{\texttt{unitario}}
-\begin{code}
--- | Ejemplos
--- >>> esUnitario [5]
--- True
--- >>> esUnitario [5,3]
--- False
-esUnitario :: Eq a => [a] -> Bool
-esUnitario xs = length xs == 1
-\end{code}
-
 \subsection{Subconjuntos}
 
 \begin{definicion}
@@ -131,24 +80,43 @@ esUnitario xs = length xs == 1
   $A \subseteq B$. En caso contrario se notará $A \not \subseteq B$.
 \end{definicion}
 
-La función \texttt{(esSubconjunto xs ys)} se verifica si \texttt{xs} es
-un subconjunto de \texttt{ys}.
+La función \texttt{(esSubconjunto c1 c2)} se verifica si \texttt{c1} es
+un subconjunto de \texttt{c2}.
+
+\index{\texttt{esSubconjunto'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [4,2]
+-- >>> let c2 = listaAConjunto [3,2,4]
+-- >>> let c3 = listaAConjunto [4,2,1]
+-- >>> let c4 = listaAConjunto [1,2,4]
+-- >>> c1 `esSubconjunto'` c2
+-- True
+-- >>> c1 `esSubconjunto'` vacio
+-- False
+-- >>> vacio `esSubconjunto'` c2
+-- True
+-- >>> c3 `esSubconjunto'` c4
+-- True
+-- >>> c2 `esSubconjunto'` c1
+-- False
+esSubconjunto' :: Ord a => Conj a -> Conj a -> Bool
+esSubconjunto' c1 c2
+    | esVacio c1             = True
+    | pertenece c2 (min c1)  = esSubconjunto' (elimina (min c1) c1) c2
+    | otherwise              = False
+      where min = minimoElemento
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, comprobar si       
+un conjunto está contenido en otro es más sencilla. La función 
+\texttt{(esSubconjunto c1 c2)} se verifica si \texttt{c1} es un
+subconjunto de \texttt{c2}.
 
 \index{\texttt{esSubconjunto}}
 \begin{code}
--- | Ejemplos
--- >>> [4,2] `esSubconjunto` [3,2,4]
--- True
--- >>> [1,2] `esSubconjunto` conjuntoVacio
--- False
--- >>> conjuntoVacio `esSubconjunto` [1,2]
--- True
--- >>> [4,2,1] `esSubconjunto` [1,2,4]
--- True
--- >>> [3,2,4] `esSubconjunto` [5,2]
--- False
 esSubconjunto :: Eq a => [a] -> [a] -> Bool
-esSubconjunto xs ys = all (`pertenece` ys) xs
+esSubconjunto c1 c2 = all (`elem` c2) c1
 \end{code}
 
 \subsection{Igualdad de conjuntos}
@@ -159,21 +127,36 @@ esSubconjunto xs ys = all (`pertenece` ys) xs
   $B \subseteq A$. Lo notaremos $A = B$.
 \end{definicion}
 
-La función \texttt{(conjuntosIguales xs ys)} se verifica si los conjuntos
+La función \texttt{(conjuntosIguales' c1 c2)} se verifica si los conjuntos
 \texttt{xs} y \texttt{ys} son iguales.
+
+\index{\texttt{conjuntosIguales'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [4,2]
+-- >>> let c2 = listaAConjunto [3,2,4]
+-- >>> let c3 = listaAConjunto [4,2,1]
+-- >>> let c4 = listaAConjunto [1,2,4]
+-- >>> let c5 = listaAConjunto [4,4,4,4,4,4,2]
+-- >>> conjuntosIguales' c1 c2
+-- False
+-- >>> conjuntosIguales' c3 c4
+-- True
+-- >>> conjuntosIguales' c1 c5
+-- True
+conjuntosIguales' :: Ord a => Conj a -> Conj a -> Bool
+conjuntosIguales' c1 c2 = 
+    esSubconjunto' c1 c2 && esSubconjunto' c2 c1
+\end{code}
+
+La definición equivalente solo válida para conjuntos como listas sin   
+duplicados sería:
 
 \index{\texttt{conjuntosIguales}}
 \begin{code}
--- | Ejemplos
--- >>> conjuntosIguales [4,2] [4,2,4]
--- True
--- >>> conjuntosIguales [4,2,3] [4,3,2]
--- True
--- >>> conjuntosIguales [5,2] [3,2,4]
--- False
 conjuntosIguales :: Eq a => [a] -> [a] -> Bool
-conjuntosIguales xs ys =
-    esSubconjunto xs ys && esSubconjunto ys xs
+conjuntosIguales c1 c2 = 
+    esSubconjunto c1 c2 && esSubconjunto c2 c1
 \end{code}
 
 \subsection{Subconjuntos propios}
@@ -183,39 +166,80 @@ conjuntosIguales xs ys =
   denominan \textbf{subconjuntos propios} de $A$.
 \end{definicion}
 
-La función \texttt{(esSubconjuntoPropio xs ys)} se verifica si \texttt{xs} es
-un subconjunto propio de \texttt{ys}. 
+La función \texttt{(esSubconjuntoPropio c1 c2)} se verifica si \texttt{c1} es
+un subconjunto propio de \texttt{c2}.
 
-\index{\texttt{esSubconjuntoPropio}}
+\index{\texttt{esSubconjuntoPropio'}}
 \begin{code}
 -- | Ejemplos
--- >>> [4,2] `esSubconjuntoPropio` [3,2,4]
--- True
--- >>> [4,2,1] `esSubconjuntoPropio` [1,2,4]
+-- >>> let u  = listaAConjunto [1..9]
+-- >>> let c1 = listaAConjunto [3,2,5,7]
+-- >>> esSubconjuntoPropio' u u
 -- False
+-- >>> esSubconjuntoPropio' c1 u
+-- True
+esSubconjuntoPropio' :: Ord a => Conj a -> Conj a -> Bool
+esSubconjuntoPropio' c1 c2
+    | esVacio c1 = False
+    | conjuntosIguales' c1 c2 = False
+    | otherwise = esSubconjunto' c1 c2
+\end{code}
+
+La definición equivalente solo válida para conjuntos como listas sin   
+duplicados sería:
+
+\index{texttt{esSubconjuntoPropio}}
+\begin{code}
 esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
-esSubconjuntoPropio xs ys =
-  xs `esSubconjunto` ys && not (conjuntosIguales xs ys) 
+esSubconjuntoPropio c1 c2
+    | null c1 = False
+    | conjuntosIguales c1 c2 = False
+    | otherwise = esSubconjunto c1 c2
 \end{code}
 
 \subsection{Complementario de un conjunto}
 
 \begin{definicion}
   Dado un conjunto $A$, se define el \textbf{complementario} de
-  $A$, que notaremos por $\overline{A}$ como:\\
-  $\overline{A} = \{x | x \in U, x \not \in A \}$
+  $A$, que notaremos por $\overline{A}$ como:
+\begin{equation*}
+  \overline{A} = \{x | x \in U, x \not \in A \}
+\end{equation*}
 \end{definicion}
 
-La función \texttt{(complementario xs ys)} devuelve el complementario de
-\texttt{ys} respecto de \texttt{xs}.
+La función \texttt{(complementario' u c)} devuelve el complementario del 
+conjunto \texttt{c} y en el universo \texttt{u}.
 
-\index{\texttt{complementario}}
+\index{\texttt{complementario'}}
 \begin{code}
--- | Ejemplo
--- >>> complementario [1..9] [3,2,5,7]
--- [1,4,6,8,9]
+-- | Ejemplos
+-- >>> let u  = listaAConjunto [1..9]
+-- >>> let c1 = listaAConjunto [3,2,5,7]
+-- >>> let c2 = listaAConjunto [1,4,6,8,9]
+-- >>> complementario' u c1
+-- {1,4,6,8,9}
+-- >>> complementario' u u
+-- {}
+-- >>> complementario' u vacio
+-- {1,2,3,4,5,6,7,8,9}
+-- >>> complementario' u c2
+-- {2,3,5,7}
+complementario' :: Ord a => Conj a -> Conj a -> Conj a
+complementario' u c
+    | esVacio c = u
+    | otherwise =
+        complementario' (elimina (min c) u) (elimina (min c) c)
+        where min = minimoElemento
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, la       
+definición de una función que devuelva el complementario de un           
+conjunto es mucho más sencilla. La función \texttt{(complementario c u)}
+devuelve el complementario de \texttt{c} en \texttt{u}.
+
+\begin{code}
 complementario :: Eq a => [a] -> [a] -> [a]
-complementario = (\\)
+complementario = (\\) 
 \end{code}
 
 \subsection{Cardinal de un conjunto}
@@ -225,95 +249,197 @@ complementario = (\\)
   de elementos que tiene y lo notaremos $|A|$.
 \end{definicion}
 
-La función \texttt{(cardinal xs)} devuelve el cardinal del conjunto
-\texttt{xs}. 
+La función \texttt{(cardinal' xs)} devuelve el cardinal del conjunto
+\texttt{xs}.
+
+\index{\texttt{cardinal'}}
+\begin{code}
+-- | Ejemplos
+-- >>> cardinal' vacio
+-- 0
+-- >>> cardinal' (listaAConjunto [1..10])
+-- 10
+-- >>> cardinal' (listaAConjunto "chocolate")
+-- 7
+cardinal' :: Ord a => Conj a -> Int
+cardinal' c | esVacio c = 0
+           | otherwise = 1 + cardinal' (elimina (min c) c)
+     where min = minimoElemento
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
+definir el cardinal de un conjunto como la longitud de la lista que lo        
+representa.
 
 \index{\texttt{cardinal}}
 \begin{code}
--- | Ejemplos
--- >>> cardinal conjuntoVacio
--- 0
--- >>> cardinal [1..10]
--- 10
-cardinal :: Eq a => [a] -> Int
+cardinal :: [a] -> Int
 cardinal = length
+\end{code}
+
+\subsection{Conjunto unitario}
+
+\begin{definicion}
+  Un conjunto con un único elemento se denomina \textbf{unitario}.
+\end{definicion}
+   
+\begin{nota}
+  Notemos que, si $X=\{x\}$ es un conjunto unitario, debemos distinguir 
+  entre el conjunto $X$ y el elemento $x$.
+\end{nota}
+
+La función \texttt{(esUnitario c)} se verifica si el conjunto 
+\texttt{c} es unitario.
+
+\index{\texttt{esUnitario'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto (take 10 (repeat 5))
+-- >>> let c2 = listaAConjunto "valverde"
+-- >>> let c3 = listaAConjunto "coco"
+-- >>> esUnitario' c1
+-- True
+-- >>> esUnitario' c2
+-- False
+-- >>> esUnitario' c2
+-- False
+esUnitario' :: Ord a => Conj a -> Bool
+esUnitario' c | esVacio c = False
+              | otherwise = esVacio (elimina (min c) c)
+     where min = minimoElemento
+\end{code}
+
+La definición equivalente solo válida para conjuntos como listas sin   
+duplicados sería:
+
+\index{texttt{esUnitario}}
+\begin{code}
+esUnitario :: [a] -> Bool
+esUnitario []     = False
+esUnitario (x:xs) = null xs
 \end{code}
 
 \subsection{Unión de conjuntos}
 
 \begin{definicion}
-  Dados dos conjuntos $A$ y $B$ se define la \texttt{unión} de $A$ y $B$,
+  Dados dos conjuntos $A$ y $B$ se define la \textbf{unión} de $A$ y $B$,
   notado $A \cup B$, como el conjunto formado por aquellos elementos que
   pertenecen al menos a uno de los dos conjuntos, $A$ ó $B$; es
-  decir,\\
-  $A \cup B = \{ x | x \in A \lor x \in B \}$
+  decir,
+\begin{equation*}
+  A \cup B = \{ x \;|\; x \in A \lor x \in B \}
+\end{equation*}
 \end{definicion}
 
-La función \texttt{(unionConjuntos xs ys)} devuelve la unión de los
+La función \texttt{(unionConjuntos' c1 c2)} devuelve la unión de los
 conjuntos \texttt{xs} y \texttt{ys}.
+
+\index{\texttt{unionConjuntos'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [1,3..9]
+-- >>> let c2 = listaAConjunto [2,4..9]
+-- >>> unionConjuntos' c1 c2
+-- {1,2,3,4,5,6,7,8,9}
+unionConjuntos' :: Ord a => Conj a  -> Conj a -> Conj a
+unionConjuntos' c1 c2
+    | esVacio c1 = c2
+    | esVacio c2 = c1
+    | otherwise =
+        unionConjuntos' (elimina (min c1) c1) (inserta (min c1) c2)
+        where min = minimoElemento
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
+usar la función \texttt{union} de la librería \texttt{Data.List}. 
 
 \index{\texttt{unionConjuntos}}
 \begin{code}
--- | Ejemplos
--- >>> unionConjuntos [1,3..9] [2,4..9]
--- [1,3,5,7,9,2,4,6,8]
--- >>> unionConjuntos "centri" "fugado"
--- "centrifugado"
 unionConjuntos :: Eq a => [a] -> [a] -> [a]
-unionConjuntos = union 
+unionConjuntos = union
 \end{code}
-
-\begin{nota}
-  Para ahorrar en escritura, en el futuro utilizaremos la función
-  \texttt{(union xs ys)} definida en el módulo \texttt{Data.List}, equivalente
-  a \texttt{(unionConjuntos xs ys)}
-\end{nota}
 
 \begin{definicion}
   Dada una familia de conjuntos $\{A\}_i$ con $i \in I$, se define la 
-  \texttt{unión general} de los conjuntos $A_i$ notado
+  \textbf{unión general} de los conjuntos $A_i$ notado
   $\bigcup_{i \in I} A_i$, como el conjunto formado por aquellos 
   elementos que pertenecen al menos a uno de los conjuntos de la  
-  familia; es decir,\\
-  $\bigcup_{i \in I} A_i = \{ x | x \in A_i$ con $i\in I\}$
+  familia; es decir,
+\begin{equation*}
+  \bigcup_{i \in I} A_i = \{ x\; |\; x \in A_i,\; \forall i\in I\}
+\end{equation*}
 \end{definicion}
 
-La función \texttt{(unionGeneral xss)} devuelve la unión general de la
+La función \texttt{(unionGeneral' xss)} devuelve la unión general de la
 familia de conjuntos de la lista \texttt{xss}.
+
+\index{\texttt{unionGeneral'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [1,4..15]
+-- >>> let c2 = listaAConjunto [2,5..15]
+-- >>> let c3 = listaAConjunto [3,6..15]
+-- >>> unionGeneral' [c1,c2,c3]
+-- {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+unionGeneral' :: Ord a => [Conj a] -> Conj a
+unionGeneral' = foldr unionConjuntos' vacio
+\end{code}
+
+La definición equivalente solo válida para conjuntos como listas sin   
+duplicados sería:
 
 \index{\texttt{unionGeneral}}
 \begin{code}
--- | Ejemplos
--- >>> unionGeneral [[1,4..15],[2,5..15],[3,6..15]]
--- [1,4,7,10,13,2,5,8,11,14,3,6,9,12,15]
--- >>> unionGeneral ["m","u","r","c","i","e","l","a","g","o"]
--- "murcielago"
 unionGeneral :: Eq a => [[a]] -> [a]
-unionGeneral = foldr union []
+unionGeneral = foldr unionConjuntos [] 
 \end{code}
 
 \subsection{Intersección de conjuntos}
 
 \begin{definicion}
-  Dados dos conjuntos $A$ y $B$ se define la \texttt{intersección} de $A$ y
+  Dados dos conjuntos $A$ y $B$ se define la \textbf{intersección} de $A$ y
   $B$, notado $A \cap B$, como el conjunto formado por aquellos elementos que
   pertenecen a cada uno de los dos conjuntos, $A$ y $B$, es
-  decir,\\
-  $A \cap B = \{ x | x \in A \land x \in B \}$
+  decir,
+\begin{equation*}
+  A \cap B = \{ x\; |\; x \in A \land x \in B \}
+\end{equation*}
 \end{definicion}
 
-La función \texttt{(interseccion xs ys)} devuelve la intersección de los
-conjuntos \texttt{xs} y \texttt{ys}. 
+La función \texttt{(interseccion' c1 c2)} devuelve la intersección de los
+conjuntos \texttt{c1} y \texttt{c2}.
+
+\index{\texttt{interseccion'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [1,3..20]
+-- >>> let c2 = listaAConjunto [2,4..20]
+-- >>> let c3 = listaAConjunto [2,4..30]
+-- >>> let c4 = listaAConjunto [4,8..30]
+-- >>> let c5 = listaAConjunto "noche"
+-- >>> let c6 = listaAConjunto "dia"
+-- >>> interseccion' c1 c2
+-- {}
+-- >>> interseccion' c3 c4
+-- {4,8,12,16,20,24,28}
+-- >>> interseccion' c5 c6
+-- {}
+interseccion' :: Ord a => Conj a -> Conj a -> Conj a
+interseccion' c1 c2
+    | esVacio c1 || esVacio c2 =  vacio
+    | m1 < m2 = interseccion' (elimina m1 c1) c2
+    | m1 > m2 = interseccion' c1 (elimina (m2) c2)
+    | otherwise =
+        inserta m1 (interseccion' (elimina m1 c1) (elimina m2 c2))
+             where m1 = minimoElemento c1
+                   m2 = minimoElemento c2
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
+usar la función \texttt{intersect} de la librería \texttt{Data.List}. 
 
 \index{\texttt{interseccion}}
 \begin{code}
--- | Ejemplos
--- >>> interseccion [1,3..20] [2,4..20]
--- []
--- >>> interseccion [2,4..30] [4,8..30]
--- [4,8,12,16,20,24,28]
--- >>> interseccion "noche" "dia"
--- ""
 interseccion :: Eq a => [a] -> [a] -> [a]
 interseccion = intersect
 \end{code}
@@ -328,20 +454,51 @@ interseccion = intersect
   de dos conjuntos $A$ y $B$ es una operación sobre ellos que resulta en
   un nuevo conjunto $A \times B$ que contiene a todos los pares ordenados
   tales que la primera componente pertenece a $A$ y la segunda pertenece
-  a $B$; es decir, $A \times B = \{(a,b) | a \in A, b \in B \}$.
+  a $B$; es decir, 
+\begin{equation*}
+A \times B = \{(a,b) \;|\; a \in A,\; b \in B \}
+\end{equation*}
 \end{definicion}
 
-La función \texttt{(productoCartesiano xs ys)} devuelve el producto cartesiano
-de xs e ys. 
+La función \texttt{(productoCartesiano' c1 c2)} devuelve el producto cartesiano
+de xs e ys.
+
+\index{\texttt{productoCartesiano'}}
+\begin{code}
+-- | Ejemplos
+-- >>> let c1 = listaAConjunto [3,1]
+-- >>> let c2 = listaAConjunto [2,4,7]
+-- >>> productoCartesiano' c1 c2
+-- {(1,2),(1,4),(1,7),(3,2),(3,4),(3,7)}
+-- >>> productoCartesiano' c2 c1
+-- {(2,1),(2,3),(4,1),(4,3),(7,1),(7,3)}
+productoCartesiano' :: (Ord a, Ord b) => Conj a -> Conj b -> Conj (a,b)
+productoCartesiano' c1 c2  
+    | esVacio c1 || esVacio c2 = vacio
+    | otherwise =
+        u (productoUnitario m1 c2) (productoCartesiano' (elimina m1 c1) c2)
+    where u = unionConjuntos'
+          m1 = minimoElemento c1
+          m2 = minimoElemento c2
+
+productoUnitario :: (Ord a, Ord b) => a -> Conj b -> Conj (a,b)
+productoUnitario a c
+    | esVacio c = vacio
+    | otherwise =
+        inserta (a, min c) (productoUnitario a (elimina (min c) c))
+    where min = minimoElemento
+\end{code}
+
+Cuando trabajamos con conjuntos como listas sin duplicados, la       
+definición de una función que devuelva el producto cartesiano de dos           
+conjuntos es mucho más sencilla. La función 
+\texttt{(productoCartesiano xs ys)} devuelve el producto cartesiano de
+los conjuntos \texttt{xs} e \texttt{ys}.
 
 \index{\texttt{productoCartesiano}}
 \begin{code}
--- | Ejemplo
--- >>> productoCartesiano [3,1] [2,4,7]
--- [(3,2),(3,4),(3,7),(1,2),(1,4),(1,7)]
 productoCartesiano :: [a] -> [b] -> [(a,b)]
-productoCartesiano xs ys =
-  [(x,y) | x <- xs, y <- ys]
+productoCartesiano xs ys = [ (x,y) | x <- xs , y <- ys]
 \end{code}
 
 \subsection{Combinaciones}
@@ -397,5 +554,5 @@ variacionesR k us =
   La validación es
 
   > doctest Conjuntos.lhs 
-  Examples: 34  Tried: 34  Errors: 0  Failures: 0
+  Examples: 75  Tried: 75  Errors: 0  Failures: 0
 }  

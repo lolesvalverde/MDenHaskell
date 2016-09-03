@@ -1,29 +1,34 @@
-A lo largo del trabajo, utilizaré la representación de conjuntos como
-listas ordenadas y sin duplicados, pensando en el trabajo que realizaré
-en secciones venideras.
-        
-En el módulo \texttt{ConjuntosConListas} se definen las funciones del   
-TAD de los conjuntos dando su representación usando listas sin repetición.
+En el módulo \texttt{ConjuntosConListas} se definen las funciones del 
+TAD de los conjuntos dando su representación como listas ordenadas sin
+elementos repetidos.
 
 \begin{code}
-module ConjuntosConListas ( vacio           -- [a]                         
-                          , inserta         -- Eq a => a -> [a] -> [a]
-                          , elimina         -- Eq a => a -> [a] -> [a]
-                          , pertenece       -- Eq a => [a] -> a -> Bool  
-                          , esVacio         -- [a] -> Bool
-                          , listaAconjunto  -- Eq a =>[a] -> [a]
-                          , minimoElemento  -- Ord a => [a] -> a
-                          ) where
+module ConjuntosConListas
+    ( Conj
+    , vacio           -- Conj a                         
+    , inserta         -- Eq a => a -> Conj a -> Conj a
+    , listaAConjunto  -- Eq a => Conj a -> Conj a
+    , elimina         -- Eq a => a -> Conj a -> Conj a
+    , pertenece       -- Eq a => Conj a -> a -> Bool  
+    , esVacio         -- Conj a -> Bool
+    , minimoElemento  -- Ord a => Conj a -> a
+    ) where
 \end{code}
-
-En las definiciones del presente módulo se usarán algunas funciones 
-de la librería \texttt{Data.List}
-
 \ignora{
 \begin{code}
 import Data.List
 \end{code}
 }
+
+En las definiciones del presente módulo se usarán algunas funciones 
+de la librería \texttt{Data.List}
+
+Vamos a definir un nuevo tipo de dato \texttt{(Conj a)} , que representa
+a los conjuntos como listas sin elementos repetidos.
+
+\begin{code}
+type Conj a = [a]
+\end{code}
 
 Las funciones básicas que definiremos a partir de este tipo coincidirán con las
 indicadas en el TAD de los conjuntos.
@@ -37,7 +42,7 @@ indicadas en el TAD de los conjuntos.
 -- | Ejemplo
 -- >>> vacio
 -- []
-vacio :: [a]                        
+vacio :: Conj a                        
 vacio = []
 \end{code}
 
@@ -51,21 +56,21 @@ elemento \texttt{x} al conjunto \texttt{c}.
 -- [5]
 -- >>> foldr inserta vacio [2,2,1,1,2,4,2]
 -- [1,4,2]
-inserta :: Eq a => a -> [a] -> [a]
+inserta :: Eq a => a -> Conj a -> Conj a
 inserta x [] = [x]
 inserta x ys | elem x ys = ys
              | otherwise = x:ys
 \end{code}
 
-El valor de \texttt{(listaAconjunto xs)} es el conjunto cuyos elementos son los
-de la lista \texttt{xs}.
+\item \texttt{(listaAConjunto xs)} devuelve el conjunto cuyos
+elementos son los de la lista \texttt{xs}.
 
 \begin{code}
 -- | Ejemplo
--- >>> listaAconjunto [2,2,1,1,2,4,2]
+-- >>> listaAConjunto [2,2,1,1,2,4,2]
 -- [2,1,4]
-listaAconjunto :: Eq a => [a] -> [a]
-listaAconjunto = nub
+listaAConjunto :: Eq a => [a] -> Conj a
+listaAConjunto = nub
 \end{code}
 
 \item \texttt{(esVacio c)} se verifica si \texttt{c} es el conjunto
@@ -74,11 +79,11 @@ vacío.
 \index{\texttt{esVacio}}
 \begin{code}
 -- | Ejemplos
--- >>> esVacio (listaAconjunto [2,5,1,3,7,5,3,2,1,9,0])
+-- >>> esVacio (listaAConjunto [2,5,1,3,7,5,3,2,1,9,0])
 -- False
 -- >>> esVacio vacio
 -- True
-esVacio :: [a] -> Bool                
+esVacio :: Conj a -> Bool                
 esVacio = null
 \end{code}
 
@@ -88,12 +93,12 @@ esVacio = null
 \index{\texttt{pertenece}}
 \begin{code}
 -- | Ejemplos
--- >>> let c1 = listaAconjunto [2,5,1,3,7,5,3,2,1,9,0]
+-- >>> let c1 = listaAConjunto [2,5,1,3,7,5,3,2,1,9,0]
 -- >>> pertenece c1 3 
 -- True
 -- >>> pertenece c1 4
 -- False
-pertenece :: Eq a => [a] -> a -> Bool 
+pertenece :: Eq a => Conj a -> a -> Bool 
 pertenece xs x = elem x xs
 \end{code}
 
@@ -103,12 +108,12 @@ pertenece xs x = elem x xs
 \index{\texttt{elimina}}
 \begin{code}
 -- | Ejemplos
--- >>> let c1 = listaAconjunto [2,5,1,3,7,5,3,2,1,9,0]
+-- >>> let c1 = listaAConjunto [2,5,1,3,7,5,3,2,1,9,0]
 -- >>> elimina 3 c1
 -- [2,5,1,7,9,0]
 -- >>> elimina 4 c1
 -- [2,5,1,3,7,9,0]
-elimina :: Eq a => a -> [a] -> [a]
+elimina :: Eq a => a -> Conj a -> Conj a
 elimina x xs = xs \\ [x]
 \end{code}
 
@@ -118,11 +123,11 @@ elimina x xs = xs \\ [x]
 \index{\texttt{minimoElemento}}
 \begin{code}
 -- | Ejemplos
--- >>> minimoElemento (listaAconjunto [2,5,1,3,7,5,3,2,1,9,0])
+-- >>> minimoElemento (listaAConjunto [2,5,1,3,7,5,3,2,1,9,0])
 -- 0
--- >>> minimoElemento (listaAconjunto (['a'..'e'] ++ ['A'..'E']))
+-- >>> minimoElemento (listaAConjunto (['a'..'e'] ++ ['A'..'E']))
 -- 'A'
-minimoElemento :: Ord a => [a] -> a
+minimoElemento :: Ord a => Conj a -> a
 minimoElemento = minimum
 \end{code}
 \end{itemize}
