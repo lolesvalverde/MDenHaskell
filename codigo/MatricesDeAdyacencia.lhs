@@ -327,14 +327,15 @@ prop_NumeroCaminosMatriz g = do
 \end{code}
 
 De este teorema se deducen las siguientes propiedades:
-\begin{corolario}
+\begin{teorema}
 Sea $G$ un grafo simplo. Siguiendo la notación del teorema anterior
 se tiene que:
 \begin{enumerate}
   \item $a_{i,i}^{(2)} = \delta(v_i)$.
   \item $a_{i,i}^{(3)}$ es el doble del número de triángulos que  
         contienen al vértice $v_i$.
-\end{corolario}
+\end{enumerate}
+\end{teorema}
 
 La comprobación con \texttt{quickCheck} es:
 
