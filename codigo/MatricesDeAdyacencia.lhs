@@ -24,6 +24,9 @@ import DefinicionesYPropiedades ( orden
                                 , esSimple
                                 )
 import Caminos                  ( numeroCaminosDeLongitud
+                                , longitudCamino
+                                , todosCiclos
+                                , triangulos
                                 ) 
 import Data.Matrix              ( Matrix
                                 , fromLists
@@ -34,6 +37,7 @@ import Data.Matrix              ( Matrix
                                 , getElem
                                 , multStd2
                                 , identity
+                                , nrows
                                 )
 import Data.List                ( subsequences
                                 )
@@ -108,11 +112,27 @@ es simétrica.
 -- ejemplo, 
 -- >>> esSimetrica (fromLists [[1,3,4],[3,5,7],[4,7,9]])
 -- True
--- >>> esSimetrica (fromLists [[1,3,4],[3,5,7],[4,9.7]])
+-- >>> esSimetrica (fromLists [[1,3,4],[3,5,7],[4,9,7]])
 -- False
 esSimetrica :: Eq a => Matrix a -> Bool
 esSimetrica p =
   transpose p == p
+\end{code}
+
+La función \texttt{(potencia p n)} devuelvela potencia $n-$ésima de la   
+matriz cuadrada \texttt{p}.
+
+\index{\texttt{potencia}}
+\begin{code}
+-- ejemplo, 
+-- >>> potencia (identity 3) 4
+-- 
+-- >>> potencia (fromLists [[1,3,4],[3,5,7],[4,7,9]]) 3
+-- 
+potencia :: Num a => Matrix a -> Int -> Matrix a
+potencia p n =
+    foldr multStd2 (identity r) (take n (repeat p))
+    where r = nrows p
 \end{code}
 
 \begin{teorema}
@@ -304,4 +324,42 @@ prop_NumeroCaminosMatriz g = do
     let mk = foldr (multStd2) (identity n)  (take k (repeat m))
     return (and [ getElem u v mk == numeroCaminosDeLongitud g u v k
                       |(u,v) <- productoCartesiano vs vs, u < v])    
+\end{code}
+
+De este teorema se deducen las siguientes propiedades:
+\begin{corolario}
+Sea $G$ un grafo simplo. Siguiendo la notación del teorema anterior
+se tiene que:
+\begin{enumerate}
+  \item $a_{i,i}^{(2)} = \delta(v_i)$.
+  \item $a_{i,i}^{(3)}$ es el doble del número de triángulos que  
+        contienen al vértice $v_i$.
+\end{corolario}
+
+La comprobación con \texttt{quickCheck} es:
+
+\begin{sesion}
+ghci> quickCheck prop_GradoCaminosMatriz
++++ OK, passed 100 tests.
+ghci> quickCheck prop_TriangulosMatriz
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{prop\_GradoMatriz}
+\begin{code}
+prop_GradoCaminosMatriz :: Grafo Int -> Bool
+prop_GradoCaminosMatriz g =
+    and [ grado g i == getElem i i m2 | i <- vertices g]
+    where m  = matrizAdyacencia g
+          m2 = multStd2 m m
+\end{code}
+
+\index{prop\_TriangulosMatriz}
+\begin{code}
+prop_TriangulosMatriz :: Property
+prop_TriangulosMatriz = 
+    forAll grafoSimple
+      (\g -> and [2*length (triangulos g v)
+                  == getElem v v (potencia (matrizAdyacencia g) 3)
+                  | v <- vertices g])
 \end{code}

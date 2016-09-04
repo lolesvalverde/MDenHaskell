@@ -1,6 +1,7 @@
 \ignora{
 \begin{code}
-module Conjuntos ( esUnitario
+module Conjuntos (  sinRepetidos
+                  , esUnitario
                   , esSubconjunto
                   , conjuntosIguales
                   , esSubconjuntoPropio
@@ -10,6 +11,8 @@ module Conjuntos ( esUnitario
                   , unionGeneral
                   , interseccion
                   , productoCartesiano
+                  , combinaciones
+                  , variacionesR
                   ) where
 
 import ConjuntosConListasOrdenadasSinRepeticion
@@ -18,6 +21,7 @@ import ConjuntosConListasOrdenadasSinRepeticion
 import Data.List  ( (\\)
                   , union
                   , intersect
+                  , nub
                   )
 \end{code}
 }
@@ -42,8 +46,19 @@ En caso  contrario escribiremos $a \not \in A$.
 \begin{nota}
   Al trabajar con la representación de conjuntos como listas en Haskell, hemos
   de cuidar que los ejemplos con los que trabajemos no tengan elementos
-  repetidos. La función \texttt{(nub xs)} de la librería \texttt{Data.List}
-  elimina los elementos repetidos de una lista.
+  repetidos. La función \texttt{(sinRepetidos xs)} se verifica si la  
+  lista \texttt{xs} no tiene ningún elemento repetido.
+
+\index{\texttt{sinRepetidos}}
+\begin{code}
+-- | Ejemplos
+-- >>> sinRepetidos []
+-- True
+-- >>> sinRepetidos [1,2,3,1]
+-- False
+sinRepetidos :: Eq a => [a] -> Bool
+sinRepetidos xs = nub xs == xs
+\end{code}
 \end{nota}
 
 Los conjuntos pueden definirse de manera explícita, citando todos sus elementos
@@ -554,5 +569,5 @@ variacionesR k us =
   La validación es
 
   > doctest Conjuntos.lhs 
-  Examples: 75  Tried: 75  Errors: 0  Failures: 0
+  Examples: 77  Tried: 77  Errors: 0  Failures: 0
 }  

@@ -16,6 +16,7 @@ module Caminos                  ( esCamino
                                 , distancia
                                 , esGeodesica
                                 , esCerrado
+                                , triangulos
                                 , esCircuito
                                 , esCiclo
                                 , todosCiclos
@@ -473,7 +474,8 @@ esGeodesica g c =
 
 \begin{definicion}
   Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos son
-  iguales.
+  iguales.  Diremos que un camino cerrado de longitud tres es  un 
+  \textbf{triángulo}.
 \end{definicion}
 
 La función \texttt{(esCerrado g c)} se verifica si el camino \texttt{c} es
@@ -493,6 +495,23 @@ esCerrado :: (Ord a) => Grafo a -> [a] -> Bool
 esCerrado _ []    = False
 esCerrado g (v:c) =
   esCamino g c && v == last c
+\end{code}
+
+La función \texttt{(triangulos g v)} devuelve la lista de todos los   
+triángulos que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
+
+\index{\texttt{triangulos}}
+\begin{code}
+-- | Ejemplos
+-- >>> triangulos 3 (completo 5)
+-- [[3,1,2,3],[3,1,4,3],[3,2,1,3],[3,2,4,3],[3,4,1,3],[3,4,2,3]]
+-- >>> triangulos 1 (grafoCiclo 6)
+-- []
+triangulos :: Ord a => Grafo a -> a -> [[a]]
+triangulos g u =
+    map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g, v <= w] 
+    where f c = u:c ++ [u]
+          us = adyacentes g u 
 \end{code}
 
 \subsection{Circuitos}
@@ -580,6 +599,8 @@ todosCiclos g x = if aristaEn (x,x) g
 \nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
   que el primer camino de la lista es de longitud mínima.}
+
+\subsection{Grafos acíclicos}
 
 \begin{definicion}
   Diremos que un grafo $G = (V,A)$ es \textbf{acíclico} si no contiene ningún

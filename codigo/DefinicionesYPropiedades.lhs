@@ -53,8 +53,9 @@ import Test.QuickCheck                ( Property
                                       )
 import Text.PrettyPrint.GenericPretty ( pp
                                       )
+import ConjuntosConListas             ( esVacio
+                                      )
 import Conjuntos                      ( esSubconjunto
-                                      , esVacio
                                       , conjuntosIguales
                                       )
 import GrafoConListaDeAristas         ( Grafo
