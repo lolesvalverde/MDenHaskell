@@ -122,8 +122,7 @@ vertices (G vs _) = vs
 -- [2,4,5]
 adyacentes :: Eq a => Grafo a -> a -> [a]
 adyacentes (G _ as) v =
-  [u | (u,x) <- as, x == v] `union`
-  [u | (x,u) <- as, x == v] 
+  [u | (u,x) <- as, x == v] `union` [u | (x,u) <- as, x == v] 
 \end{code}
 
 \item \texttt{(aristaEn a g)} se verifica si \texttt{a} es una arista del grafo

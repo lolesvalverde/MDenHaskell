@@ -137,14 +137,18 @@ caminos del grafo \texttt{g}.
 -- [[1,2,3]]
 componentesConexas :: Ord a => Grafo a -> [[a]]
 componentesConexas g
-    | esGrafoNulo g = []
-    | esCompleto g  = [vertices g]
-    | otherwise     =
-        clasesEquivalencia (vertices g) (estarConectadosCamino g)
+  | esGrafoNulo g = []
+  | esCompleto g  = [vertices g]
+  | otherwise     =
+      clasesEquivalencia (vertices g) (estarConectadosCamino g)
 \end{code}
 
-La función \texttt{(numeroComponentes g)} devuelve el número de   
-componentes conexas del grafo \texttt{g}.
+\comentario{Se puede hacer una primera definición de
+  \texttt{componentesConexas} directa (sin comprobar que es completo),
+  comprobar su equivalencia y comparar su eficiencia.}
+
+La función \texttt{(numeroComponentes g)} devuelve el número de componentes
+conexas del grafo \texttt{g}.
 
 \index{texttt{numeroComponentesConexas}}
 \begin{code}
@@ -159,6 +163,8 @@ numeroComponentes g
     | esCompleto g     = 1
     | otherwise        = length (componentesConexas g)
 \end{code}
+
+\comentario{La definición de \texttt{numeroComponentes} se puede simplificar.}
 
 \subsection{Grafos conexos}
 
@@ -185,8 +191,8 @@ esConexo g = length (componentesConexas g) == 1
 \comentario{Buscar definiciones más eficientes de esConexo.}
 
 \begin{teorema}
-  Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si $\forall  
-  u,v \in V$ existe un camino entre $u$ y $v$.
+  Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si
+  $\forall u, v \in V$ existe un camino entre $u$ y $v$.
 \end{teorema}
 
 Vamos a comprobar el resultado con QuickCheck.
@@ -479,6 +485,7 @@ ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_ConexionIsomorfismo1
 +++ OK, passed 100 tests.
 \end{sesion}
 
+donde
     
 \index{\texttt{prop\_ConexionIsomorfismo1}}
 \begin{code}
@@ -486,10 +493,16 @@ prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Property
 prop_ConexionIsomorfismo1 g h =
   isomorfos g h ==>
   and [ec g u v == ec h (imagen phi u) (imagen phi v)
-          | u <- vs, v <- vs, phi <- isomorfismos g h]
+      | u <- vs
+      , v <- vs
+      , phi <- isomorfismos g h]
       where vs = vertices g
             ec = estanConectados
 \end{code}
+
+\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo1} no es buena para
+  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
+  serán no isomorfos.}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
@@ -515,6 +528,10 @@ prop_ConexionIsomorfismo2 g h =
             aux f = map (sort . imagenConjunto f) ccg
 \end{code}
 
+\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo2} no es buena para
+  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
+  serán no isomorfos.}
+
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
   un isomorfismo. Entonces, $G$ y $G'$ tienen el mismo número de  
@@ -535,6 +552,10 @@ prop_ConexionIsomorfismo3 g h =
   isomorfos g h ==>
   numeroComponentes g == numeroComponentes h
 \end{code}
+
+\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo3} no es buena para
+  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
+  serán no isomorfos.}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 

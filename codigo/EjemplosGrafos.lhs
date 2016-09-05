@@ -241,8 +241,8 @@ completo n =
           {\textbf{grafo bipartito}}\
      \footnote{\url{https://es.wikipedia.org/wiki/Grafo_bipartito}}
   es un grafo $G=(V,A)$ verificando que el conjunto de sus vértices se puede
-  dividir en dos subconjuntos disjuntos $V_1,V_2$ tales que
-  $V_1\cup V_2 = V$ de manera que
+  dividir en dos subconjuntos disjuntos $V_1, V_2$ tales que
+  $V_1 \cup V_2 = V$ de manera que
   $\forall u_1,u_2 \in V_1[(u_1,u_2) \not\in A]$ y
   $\forall v_1,v_2 \in V_2[(v_1,v_2) \not\in A]$.
 
@@ -279,7 +279,7 @@ bipartitoCompleto n m =
             [(a,b) | a <- [1..n], b <- [n+1..n+m]]
 \end{code}
 
-La función \texttt{(esBipartito g m)} se verifica si el grafo \texttt{g}
+La función \texttt{(esBipartito g)} se verifica si el grafo \texttt{g}
 es bipartito.
 
 \index{\texttt{esBipartito}}
@@ -293,25 +293,27 @@ es bipartito.
 -- True
 esBipartito :: Ord a => Grafo a -> Bool
 esBipartito g | null (vertices g) = True
-              | otherwise = aux vs [v] [] []
-    where aux [] _ red blue =
-              and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
-          aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
-          aux (x:xs) [] r b = aux xs [x] r b
-          aux xs (x:ys) r b = if x `elem` r
-                              then aux (xs \\ (a x)) ys r (u (a x) b)
-                              else aux (xs \\ (a x)) ys (u (a x) r) b
-          (v:vs) = vertices g
-          f xs ys = filter p (subsequences xs ++ subsequences ys)
-                    where p zs = length zs == 2
-          a = adyacentes g
-          u = union
+              | otherwise         = aux vs [v] [] []
+  where aux [] _ red blue =
+          and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
+        aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
+        aux (x:xs) [] r b = aux xs [x] r b
+        aux xs (x:ys) r b = if x `elem` r
+                            then aux (xs \\ (a x)) ys r (u (a x) b)
+                            else aux (xs \\ (a x)) ys (u (a x) r) b
+        (v:vs) = vertices g
+        f xs ys = filter p (subsequences xs ++ subsequences ys)
+                  where p zs = length zs == 2
+        a = adyacentes g
+        u = union
 \end{code}
 
-La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve   
-\texttt{Nothing} si el grafo \texttt{g} no es bipartito y
-\texttt{Just(v1,v2)} si lo es, donde \texttt{xs},\texttt{ys} es una 
-partición disjunta de los vértices de \texttt{g}.
+\comentario{Simplificar la definición de \texttt{esBipartito}.}
+
+La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve \texttt{Nothing} si
+el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
+\texttt{xs}, \texttt{ys} es una partición disjunta de los vértices de
+\texttt{g}.
 
 \index{\texttt{conjuntosVerticesDisjuntos}}
 \begin{code}
@@ -341,7 +343,7 @@ conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
           u = union
 \end{code}
 
-\comentario{Tengo que mejorar la definición}
+\comentario{Simplificar la definición de \texttt{conjuntosVerticesDisjuntos}.} 
 
 \subsection{Grafo estrella}
 

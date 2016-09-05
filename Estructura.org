@@ -5,7 +5,9 @@
 * [[./texto/Introduccion.tex][Introduccion.tex]]: Introducción.
 
 * [[./texto/Conjuntos.tex][Conjuntos.tex]]: Conjuntos
-
+  + [[./codigo/ConjuntosConListasOrdenadasSinRepeticion.lhs][ConjuntosConListasOrdenadasSinRepeticion.lhs]]: Conjuntos como listas ordenadas sin repetición.
+  + [[./codigo/ConjuntosConListas.lhs][ConjuntosConListas.lhs]]: Conjuntos como listas sin repetición
+  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]]: Definiciones, operaciones y propiedades.
 * [[./texto/Relaciones_Y_Funciones.tex][Relaciones_Y_Funciones.tex]]: Relaciones y funciones.
   + [[./codigo/Relaciones.lhs][Relaciones.lhs]]: Relaciones binarias.
   + [[./codigo/RelacionesHomogeneas.lhs][RelacionesHomogeneas.lhs]]: Relaciones homogéneas.
@@ -17,7 +19,11 @@
   + [[./codigo/EjemplosGrafos.lhs][EjemplosGrafos.lhs]]: Ejemplos de grafos.
   + [[./codigo/DefinicionesYPropiedades.lhs][DefinicionesYPropiedades.lhs]]: Definiciones y propiedades.
   + [[./codigo/Morfismos.lhs][Morfismos.lhs]]: Morfismos de grafos.
-  + [[./codigo/ConectividadGrafos.lhs][ConectividadGrafos.lhs]]: Conectividad de grafos.
+  + [[./codigo/Caminos.lhs][Caminos.lhs]]: Caminos en grafos.
+  + [[./codigo/Conectividad.lhs][Conectividad.lhs]]: Conectividad de grafos.
+* [[./texto/Matrices_Asociadas_A_Grafos.tex][Matrices_Asociadas_A_Grafos.tex]]: Matrices asociadas a grafos.
+  + [[./codigo/GeneradorGrafosSimples.lhs][GeneradorGrafosSimples.lhs]]: Generador de grafos simples.
+  + [[./codigo/MatricesDeAdyacencia.lhs][MatricesDeAdyacencia.lhs]]: Matrices de adyacencia.
 
 * [[./texto/Apendices.tex][Apendices.tex]]
 

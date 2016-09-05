@@ -11,7 +11,8 @@ module Funciones ( esFuncion
                  , biyecciones  
                  , inversa
                  , imagenInversa
-                 ) where
+                 )
+       where
   
 import Conjuntos  ( esSubconjunto
                   , esUnitario

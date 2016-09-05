@@ -15,14 +15,15 @@ module Conjuntos (  sinRepetidos
                   , variacionesR
                   ) where
 
-import ConjuntosConListasOrdenadasSinRepeticion
--- import ConjuntosConListas
-
 import Data.List  ( (\\)
                   , union
                   , intersect
                   , nub
                   )
+
+import ConjuntosConListasOrdenadasSinRepeticion
+-- import ConjuntosConListas
+
 \end{code}
 }
 
@@ -46,8 +47,8 @@ En caso  contrario escribiremos $a \not \in A$.
 \begin{nota}
   Al trabajar con la representación de conjuntos como listas en Haskell, hemos
   de cuidar que los ejemplos con los que trabajemos no tengan elementos
-  repetidos. La función \texttt{(sinRepetidos xs)} se verifica si la  
-  lista \texttt{xs} no tiene ningún elemento repetido.
+  repetidos. La función \texttt{(sinRepetidos xs)} se verifica si la lista
+  \texttt{xs} no tiene ningún elemento repetido.
 
 \index{\texttt{sinRepetidos}}
 \begin{code}
@@ -117,14 +118,14 @@ un subconjunto de \texttt{c2}.
 -- False
 esSubconjunto' :: Ord a => Conj a -> Conj a -> Bool
 esSubconjunto' c1 c2
-    | esVacio c1             = True
-    | pertenece c2 (min c1)  = esSubconjunto' (elimina (min c1) c1) c2
-    | otherwise              = False
-      where min = minimoElemento
+  | esVacio c1             = True
+  | pertenece c2 (min c1)  = esSubconjunto' (elimina (min c1) c1) c2
+  | otherwise              = False
+  where min = minimoElemento
 \end{code}
 
-Cuando trabajamos con conjuntos como listas sin duplicados, comprobar si       
-un conjunto está contenido en otro es más sencilla. La función 
+Cuando trabajamos con conjuntos como listas sin duplicados, comprobar si
+un conjunto está contenido en otro es más sencilla. La función
 \texttt{(esSubconjunto c1 c2)} se verifica si \texttt{c1} es un
 subconjunto de \texttt{c2}.
 
@@ -161,7 +162,7 @@ La función \texttt{(conjuntosIguales' c1 c2)} se verifica si los conjuntos
 -- True
 conjuntosIguales' :: Ord a => Conj a -> Conj a -> Bool
 conjuntosIguales' c1 c2 = 
-    esSubconjunto' c1 c2 && esSubconjunto' c2 c1
+  esSubconjunto' c1 c2 && esSubconjunto' c2 c1
 \end{code}
 
 La definición equivalente solo válida para conjuntos como listas sin   
@@ -171,7 +172,7 @@ duplicados sería:
 \begin{code}
 conjuntosIguales :: Eq a => [a] -> [a] -> Bool
 conjuntosIguales c1 c2 = 
-    esSubconjunto c1 c2 && esSubconjunto c2 c1
+  esSubconjunto c1 c2 && esSubconjunto c2 c1
 \end{code}
 
 \subsection{Subconjuntos propios}
@@ -195,9 +196,9 @@ un subconjunto propio de \texttt{c2}.
 -- True
 esSubconjuntoPropio' :: Ord a => Conj a -> Conj a -> Bool
 esSubconjuntoPropio' c1 c2
-    | esVacio c1 = False
-    | conjuntosIguales' c1 c2 = False
-    | otherwise = esSubconjunto' c1 c2
+  | esVacio c1              = False
+  | conjuntosIguales' c1 c2 = False
+  | otherwise               = esSubconjunto' c1 c2
 \end{code}
 
 La definición equivalente solo válida para conjuntos como listas sin   
@@ -207,16 +208,16 @@ duplicados sería:
 \begin{code}
 esSubconjuntoPropio :: Eq a => [a] -> [a] -> Bool
 esSubconjuntoPropio c1 c2
-    | null c1 = False
-    | conjuntosIguales c1 c2 = False
-    | otherwise = esSubconjunto c1 c2
+  | null c1                = False
+  | conjuntosIguales c1 c2 = False
+  | otherwise              = esSubconjunto c1 c2
 \end{code}
 
 \subsection{Complementario de un conjunto}
 
 \begin{definicion}
-  Dado un conjunto $A$, se define el \textbf{complementario} de
-  $A$, que notaremos por $\overline{A}$ como:
+  Dado un conjunto $A$, se define el \textbf{complementario} de $A$, que
+  notaremos por $\overline{A}$ como:
 \begin{equation*}
   \overline{A} = \{x | x \in U, x \not \in A \}
 \end{equation*}
@@ -241,16 +242,16 @@ conjunto \texttt{c} y en el universo \texttt{u}.
 -- {2,3,5,7}
 complementario' :: Ord a => Conj a -> Conj a -> Conj a
 complementario' u c
-    | esVacio c = u
-    | otherwise =
-        complementario' (elimina (min c) u) (elimina (min c) c)
-        where min = minimoElemento
+  | esVacio c = u
+  | otherwise =
+      complementario' (elimina (min c) u) (elimina (min c) c)
+  where min = minimoElemento
 \end{code}
 
-Cuando trabajamos con conjuntos como listas sin duplicados, la       
-definición de una función que devuelva el complementario de un           
-conjunto es mucho más sencilla. La función \texttt{(complementario c u)}
-devuelve el complementario de \texttt{c} en \texttt{u}.
+Cuando trabajamos con conjuntos como listas sin duplicados, la definición de
+una función que devuelva el complementario de un conjunto es mucho más
+sencilla. La función \texttt{(complementario c u)} devuelve el complementario
+de \texttt{c} en \texttt{u}.
 
 \begin{code}
 complementario :: Eq a => [a] -> [a] -> [a]
@@ -277,13 +278,14 @@ La función \texttt{(cardinal' xs)} devuelve el cardinal del conjunto
 -- >>> cardinal' (listaAConjunto "chocolate")
 -- 7
 cardinal' :: Ord a => Conj a -> Int
-cardinal' c | esVacio c = 0
-           | otherwise = 1 + cardinal' (elimina (min c) c)
-     where min = minimoElemento
+cardinal' c
+  | esVacio c = 0
+  | otherwise = 1 + cardinal' (elimina (min c) c)
+  where min = minimoElemento
 \end{code}
 
-Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
-definir el cardinal de un conjunto como la longitud de la lista que lo        
+Cuando trabajamos con conjuntos como listas sin duplicados, podemos
+definir el cardinal de un conjunto como la longitud de la lista que lo
 representa.
 
 \index{\texttt{cardinal}}
@@ -319,9 +321,10 @@ La función \texttt{(esUnitario c)} se verifica si el conjunto
 -- >>> esUnitario' c2
 -- False
 esUnitario' :: Ord a => Conj a -> Bool
-esUnitario' c | esVacio c = False
-              | otherwise = esVacio (elimina (min c) c)
-     where min = minimoElemento
+esUnitario' c
+  | esVacio c = False
+  | otherwise = esVacio (elimina (min c) c)
+  where min = minimoElemento
 \end{code}
 
 La definición equivalente solo válida para conjuntos como listas sin   
@@ -333,6 +336,8 @@ esUnitario :: [a] -> Bool
 esUnitario []     = False
 esUnitario (x:xs) = null xs
 \end{code}
+
+\comentario{La definición de \texttt{esUnitario} se puede simplificar.}
 
 \subsection{Unión de conjuntos}
 
@@ -358,11 +363,11 @@ conjuntos \texttt{xs} y \texttt{ys}.
 -- {1,2,3,4,5,6,7,8,9}
 unionConjuntos' :: Ord a => Conj a  -> Conj a -> Conj a
 unionConjuntos' c1 c2
-    | esVacio c1 = c2
-    | esVacio c2 = c1
-    | otherwise =
-        unionConjuntos' (elimina (min c1) c1) (inserta (min c1) c2)
-        where min = minimoElemento
+  | esVacio c1 = c2
+  | esVacio c2 = c1
+  | otherwise =
+      unionConjuntos' (elimina (min c1) c1) (inserta (min c1) c2)
+  where min = minimoElemento
 \end{code}
 
 Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
@@ -381,7 +386,7 @@ unionConjuntos = union
   elementos que pertenecen al menos a uno de los conjuntos de la  
   familia; es decir,
 \begin{equation*}
-  \bigcup_{i \in I} A_i = \{ x\; |\; x \in A_i,\; \forall i\in I\}
+  \bigcup_{i \in I} A_i = \{ x\; |\; x \in A_i,\; \forall i \in I\}
 \end{equation*}
 \end{definicion}
 
@@ -441,13 +446,13 @@ conjuntos \texttt{c1} y \texttt{c2}.
 -- {}
 interseccion' :: Ord a => Conj a -> Conj a -> Conj a
 interseccion' c1 c2
-    | esVacio c1 || esVacio c2 =  vacio
-    | m1 < m2 = interseccion' (elimina m1 c1) c2
-    | m1 > m2 = interseccion' c1 (elimina (m2) c2)
-    | otherwise =
-        inserta m1 (interseccion' (elimina m1 c1) (elimina m2 c2))
-             where m1 = minimoElemento c1
-                   m2 = minimoElemento c2
+  | esVacio c1 || esVacio c2 =  vacio
+  | m1 < m2 = interseccion' (elimina m1 c1) c2
+  | m1 > m2 = interseccion' c1 (elimina m2 c2)
+  | otherwise =
+      inserta m1 (interseccion' (elimina m1 c1) (elimina m2 c2))
+  where m1 = minimoElemento c1
+        m2 = minimoElemento c2
 \end{code}
 
 Cuando trabajamos con conjuntos como listas sin duplicados, podemos       
@@ -489,19 +494,19 @@ de xs e ys.
 -- {(2,1),(2,3),(4,1),(4,3),(7,1),(7,3)}
 productoCartesiano' :: (Ord a, Ord b) => Conj a -> Conj b -> Conj (a,b)
 productoCartesiano' c1 c2  
-    | esVacio c1 || esVacio c2 = vacio
-    | otherwise =
-        u (productoUnitario m1 c2) (productoCartesiano' (elimina m1 c1) c2)
-    where u = unionConjuntos'
-          m1 = minimoElemento c1
-          m2 = minimoElemento c2
+  | esVacio c1 || esVacio c2 = vacio
+  | otherwise =
+      u (productoUnitario m1 c2) (productoCartesiano' (elimina m1 c1) c2)
+  where u  = unionConjuntos'
+        m1 = minimoElemento c1
+        m2 = minimoElemento c2
 
 productoUnitario :: (Ord a, Ord b) => a -> Conj b -> Conj (a,b)
 productoUnitario a c
-    | esVacio c = vacio
-    | otherwise =
-        inserta (a, min c) (productoUnitario a (elimina (min c) c))
-    where min = minimoElemento
+  | esVacio c = vacio
+  | otherwise =
+      inserta (a, min c) (productoUnitario a (elimina (min c) c))
+  where min = minimoElemento
 \end{code}
 
 Cuando trabajamos con conjuntos como listas sin duplicados, la       

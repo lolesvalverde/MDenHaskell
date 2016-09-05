@@ -55,19 +55,8 @@ import Test.QuickCheck          ( Gen
 
 \subsection{Definición y propiedades}
 
-\begin{definicion}
-  Sea $G=(V,A)$ un grafo simple con $V=\{v_1, \dots, v_n\}$. Se define su  
-  matriz de adyacencia como $\mathcal{A}_{n \times n} = (a_{i,j})$ donde  
-  el elemento $a_{i,j}$ toma el valor $1$ si existe alguna arista en $A$
-  uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
-\end{definicion} 
-
-\begin{nota}
-  La matriz de adyacencia depende del etiquetado del grafo.
-\end{nota}
-
-La función \texttt{(imprimeMatriz p)} imprime por pantalla la matriz
-\texttt{p} con una fila por línea.
+Usaremos la función \texttt{(imprimeMatriz p)} para imprimir por pantalla la
+matriz \texttt{p} con una fila por línea.
 
 \index{\texttt{imprimeMatriz}}
 \begin{code}
@@ -80,6 +69,17 @@ imprimeMatriz :: Show a => Matrix a -> IO ()
 imprimeMatriz p =
   mapM_ print (toLists p)
 \end{code}
+
+\begin{definicion}
+  Sea $G=(V,A)$ un grafo simple con $V = \{v_1, \dots, v_n\}$. Se define su  
+  matriz de adyacencia como $\mathcal{A}_{n \times n} = (a_{i,j})$ donde  
+  el elemento $a_{i,j}$ toma el valor $1$ si existe alguna arista en $A$
+  uniendo los vértices $v_i$ y $v_j$ y $0$ en caso contrario.
+\end{definicion} 
+
+\begin{nota}
+  La matriz de adyacencia depende del etiquetado del grafo.
+\end{nota}
 
 La función \texttt{(matrizAdyacencia g)} es la matriz de adyacencia 
 del grafo \texttt{g}.
@@ -119,26 +119,33 @@ esSimetrica p =
   transpose p == p
 \end{code}
 
-La función \texttt{(potencia p n)} devuelvela potencia $n-$ésima de la   
+\comentario{Agrupar las funciones sobre matrices que no usan grafos en una
+  sección.}
+
+La función \texttt{(potencia p n)} devuelvela potencia $n$--ésima de la   
 matriz cuadrada \texttt{p}.
 
 \index{\texttt{potencia}}
 \begin{code}
--- ejemplo, 
--- >>> potencia (identity 3) 4
--- 
+-- Ejemplo 
 -- >>> potencia (fromLists [[1,3,4],[3,5,7],[4,7,9]]) 3
--- 
+-- (  408  735  975 )
+-- (  735 1323 1755 )
+-- (  975 1755 2328 )
 potencia :: Num a => Matrix a -> Int -> Matrix a
 potencia p n =
     foldr multStd2 (identity r) (take n (repeat p))
     where r = nrows p
 \end{code}
 
+\comentario{La definición de \texttt{potencia} se puede simplificar.}
+
 \begin{teorema}
   Para todo $n$, la matriz de adyacencia del grafo ciclo de orden $n$,
   $C_n$ es simétrica.
 \end{teorema}
+
+\comentario{El teorema anterior se puede generalizar e incluir el siguiente.}
 
 La comprobación del teorema para $n \leq 30$ es:
 
@@ -193,7 +200,7 @@ tamañoM g = sum (toList (matrizAdyacencia g)) `div` 2
 La comprobación del teorema con QuickCheck es:
 
 \begin{sesion}
-ghci> quickCheck prop_tamaño
+ghci> quickCheck prop_TamañoMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
@@ -206,9 +213,15 @@ prop_TamañoMatriz =
 \end{code}
 
 \begin{teorema}
-  Si un grafo $G=(V,A)$ tiene un vértice aislado $v_i$, tanto la fila como la 
-  columna $i-$ésima de su matriz de adyacencia estarán formadas por ceros.
+  Si un grafo $G = (V,A)$ tiene un vértice aislado $v_i$, tanto la fila como la 
+  columna $i$--ésima de su matriz de adyacencia estarán formadas por ceros.
 \end{teorema}
+
+
+\comentario{Definir \texttt{esAisladoM g v} que se verifique si \texttt{v} es
+  un vértice aislado del grafo \texttt{g}, usando su matriz de
+  ayacencia. Después, comprobar la equivalencia entre las definiciones de
+  \texttt{esAislado} y \texttt{esAisladoM}.}
 
 La comprobación del teorema es:
 
@@ -227,14 +240,17 @@ prop_verticeAislado g =
 \end{code}
 
 \begin{teorema}
-  Sea un grafo $G=(V,A)$ no dirigido con $V=\{v_1, \dots, v_n\}$. La  
-  suma de los elementos de la fila (o columna) $i-$ésima de su matriz 
-  de adyacencia coincide con el grado del vértice $v_i$. Es decir,
+  Sea un grafo $G = (V,A)$ simple no dirigido con $V = \{v_1, \dots, v_n\}$. La
+  suma de los elementos de la fila (o columna) $i$--ésima de su matriz de
+  adyacencia coincide con el grado del vértice $v_i$. Es decir,
 
 \begin{equation*}
 \delta(v_i) = \sum_{j=1}^{n} a_{i,j} = \sum_{j=1}^{n} a_{j,i} 
 \end{equation*}
 \end{teorema}
+
+\comentario{Definir (gradoM g v)que calcule el grado de v en g, usando su
+  matriz de adyacencia, y comprobar su equivalencia con grado.}
 
 La comprobación del teorema es:
 
@@ -260,10 +276,12 @@ prop_GradoMatriz g =
   $$A_1 = P^t A_2 P$$
 \end{teorema}
 
+\comentario{Falta la versión computacional del teorema anterior.}
+
 \begin{teorema}
-  Sea $G=(V,A)$ un grafo bipartito de conjuntos de vértices disjuntos 
-  $V_1 = \{v_1,\dots,v_k\}$ y $V_2=\{v_{k+1},\dots,v_n\}$, tal que 
-  $V=V_1\cup V_2$ y sólo existen aristas que conectan vértices de $V_1$ 
+  Sea $G = (V,A)$ un grafo bipartito de conjuntos de vértices disjuntos 
+  $V_1 = \{v_1,\dots,v_k\}$ y $V_2 = \{v_{k+1},\dots,v_n\}$, tal que 
+  $V = V_1\cup V_2$ y sólo existen aristas que conectan vértices de $V_1$ 
   con vértices de $V_2$. Entonces, con este etiquetado de $V$, la matriz
   de adyacencia de $G$ tiene la forma:
 $$
@@ -293,6 +311,9 @@ prop_BipartitoMatriz g =
               m = matrizAdyacencia g
 \end{code}
 
+\comentario{La propiedad prop\_BipartitoMatriz no es adecuada para QuickCheck
+  porque la mayoría de los grafos generados no cumplen la condición.}
+
 \subsection{Caminos y arcos}
 
 En esta sección, se presentará la información que contiene la matriz de   
@@ -300,11 +321,14 @@ adyacencia de un grafo en relación a los caminos que se encuentran en
 él.
 
 \begin{teorema}
-  Sea $G=(V,A)$ un grafo con $V=\{v_1,\dots,v_n\}$ y matriz de adyacencia
+  Sea $G = (V,A)$ un grafo con $V = \{v_1,\dots,v_n\}$ y matriz de adyacencia
   $A = (a_{i,j})$. Entonces, $\forall k \geq 0$ el elemento $(i,j)$ de  
   $A^k$, que denotaremos por $a^k_{i,j}$, es el número de caminos de
   longitud $k$ desde el vértice $v_i$ al vértice $v_j$.
 \end{teorema}
+
+\comentario{Definir numeroCaminosDeLongitudM que sea equivalente a
+  numeroCaminosDeLongitud y comprobar la equivalencia.}
 
 La comprobación del teorema para $k \leq 6$ es:
 
@@ -328,7 +352,7 @@ prop_NumeroCaminosMatriz g = do
 
 De este teorema se deducen las siguientes propiedades:
 \begin{teorema}
-Sea $G$ un grafo simplo. Siguiendo la notación del teorema anterior
+Sea $G$ un grafo simple. Siguiendo la notación del teorema anterior
 se tiene que:
 \begin{enumerate}
   \item $a_{i,i}^{(2)} = \delta(v_i)$.
@@ -337,7 +361,9 @@ se tiene que:
 \end{enumerate}
 \end{teorema}
 
-La comprobación con \texttt{quickCheck} es:
+\comentario{Definir gradoM y comprobar su equivalencia con grado.}
+
+La comprobación con QuickCheck es:
 
 \begin{sesion}
 ghci> quickCheck prop_GradoCaminosMatriz
@@ -354,6 +380,10 @@ prop_GradoCaminosMatriz g =
     where m  = matrizAdyacencia g
           m2 = multStd2 m m
 \end{code}
+
+\comentario{Definir numeroTriangulosM y comprobar sun equivalencia con
+  numeroTrangulos (la primera usando matrices y la segunda sin matrices) y
+  comprobar su equivalencia.}
 
 \index{prop\_TriangulosMatriz}
 \begin{code}

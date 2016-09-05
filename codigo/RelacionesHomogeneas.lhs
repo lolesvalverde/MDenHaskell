@@ -11,12 +11,12 @@ module RelacionesHomogeneas ( esRelacionHomogenea
                             , clasesEquivalencia
                             ) where
 
-import Conjuntos  ( esSubconjunto
-                  )
-import Relaciones ( esRelacion
-                  )
-import Data.List  ( (\\)
-                  )
+import Conjuntos            ( esSubconjunto
+                            )
+import Relaciones           ( esRelacion
+                            )
+import Data.List            ( (\\)
+                            )
 \end{code}
 }
 

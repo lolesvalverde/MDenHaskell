@@ -493,9 +493,8 @@ eliminaArista g (a,b) =
             (aristas g \\ [(a,b),(b,a)])
 \end{code}
 
-La función \texttt{(eliminaLazos g)} devuelve un nuevo grafo, obtenido   
-a partir del grafo \texttt{g} eliminando todas las aristas que fueran  
-lazos.
+La función \texttt{(eliminaLazos g)} devuelve un nuevo grafo, obtenido a partir
+del grafo \texttt{g} eliminando todas las aristas que fueran lazos.
 
 \index{\texttt{eliminaLazos}}
 \begin{code}
@@ -611,9 +610,9 @@ prop_completos n = n >= 2 ==>
    completo n == sumaVertice (completo (n-1)) n
 \end{code}
 
-A partir de esta propiedad, se puede dar una definición alternativa
-de la función \texttt{(completo n)}, que devuelve el grafo completo   
-$K_n$. La nueva función será \texttt{(completo2 n)}.
+A partir de esta propiedad, se puede dar una definición alternativa de la
+función \texttt{(completo n)}, que devuelve el grafo completo $K_n$. La nueva
+función será \texttt{(completo2 n)}.
 
 \begin{code}
 completo2 :: Int -> Grafo Int
@@ -621,15 +620,12 @@ completo2 0 = grafoNulo
 completo2 n = sumaVertice (completo2 (n-1)) n
 \end{code}
 
+\comentario{Comprobar la equivalencia de las definiciones de \texttt{completo}
+  con QuickCheck.}
+
 Vamos a ver cuál de las definiciones es más eficiente:
 
 \begin{sesion}
-ghci> tamaño (completo 40)
-780
-(0.04 secs, 0 bytes)
-ghci> tamaño (completo2 40)
-780
-(0.20 secs, 0 bytes)
 ghci> tamaño (completo 100)
 4950
 (1.17 secs, 0 bytes)

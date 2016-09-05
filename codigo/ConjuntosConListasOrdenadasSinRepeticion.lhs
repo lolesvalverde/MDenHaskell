@@ -76,8 +76,8 @@ inserta x (Cj s) = Cj (agrega x s)
                      | otherwise = s
 \end{code}
 
-\item \texttt{(listaAConjunto xs)} devuelve el conjunto cuyos      
-elementos son los de la lista \texttt{xs}.
+\item \texttt{(listaAConjunto xs)} devuelve el conjunto cuyos elementos son los
+  de la lista \texttt{xs}.
 
 \begin{code}
 -- | Ejemplo

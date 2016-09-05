@@ -120,12 +120,12 @@ verticesCamino c = nub c
 
 
 \begin{definicion}
-  Se llama \textbf{longitud} de un camino al número de veces que
-  se atraviesa una arista en dicho camino.
+  Se llama \textbf{longitud} de un camino al número de veces que se atraviesa
+  una arista en dicho camino.
 \end{definicion}
 
 La función \texttt{(longitudCamino c)} devuelve la longitud del camino
-\texttt{c}. 
+\texttt{c}.
 
 \index{\texttt{longitudCamino}}
 \begin{code}
@@ -136,9 +136,9 @@ longitudCamino :: [a] -> Int
 longitudCamino c = length c - 1
 \end{code}
 
-La función \texttt{(todosCaminos g u v k)} devuelve todos los caminos   
-entre los vértices \texttt{u} y \texttt{v} en el grafo \texttt{g} que      
-tienen longitud \texttt{k}.
+La función \texttt{(todosCaminos g u v k)} devuelve todos los caminos entre los
+vértices \texttt{u} y \texttt{v} en el grafo \texttt{g} que tienen longitud
+\texttt{k}.
 
 \index{\texttt{todosCaminos}}
 \begin{code}
@@ -160,9 +160,13 @@ todosCaminos g u v k =
           f xs = u:xs ++ [v]
 \end{code}
 
-La función \texttt{(numeroCaminosDeLongitud g u v k)} es el número de   
-caminos de longitud \texttt{k} uniendo los vértices \texttt{u} y        
-\texttt{v} en el grafo \texttt{g}.
+\comentario{La definición de \texttt{todosCaminos} se puede simplificar.}
+
+\comentario{¿Se usará la función \texttt{todosCaminos} fuera de este módulo?}
+
+La función \texttt{(numeroCaminosDeLongitud g u v k)} es el número de caminos
+de longitud \texttt{k} uniendo los vértices \texttt{u} y \texttt{v} en el grafo
+\texttt{g}.
 
 \index{\texttt{numeroCaminosDeLongitud}}
 \begin{code}
@@ -174,6 +178,12 @@ caminos de longitud \texttt{k} uniendo los vértices \texttt{u} y
 numeroCaminosDeLongitud :: Ord a => Grafo a -> a -> a -> Int -> Int
 numeroCaminosDeLongitud g u v = length . todosCaminos g u v
 \end{code}
+
+\comentario{La definición de \texttt{numeroCaminosDeLongitud} se puede
+  mejorar.} 
+
+\comentario{¿Se usará la función \texttt{numeroCaminosDeLongitud} fuera de este
+  módulo?} 
 
 \subsection{Recorridos}
 
@@ -266,7 +276,7 @@ los caminos simples posibles en el grafo \texttt{g} entre los vértices
 en anchura sobre el grafo \texttt{g}. Este algoritmo recorre el grafo   
 por niveles, de forma que el primer camino de la lista es de longitud mínima. 
 
-\index{\texttt{todosArcos}}
+\index{\texttt{todosArcosBA}}
 \begin{code}
 -- | Ejemplos
 -- >>> grafoCiclo 4
@@ -361,9 +371,9 @@ prop_todosArcosBP g =
                                    minimum (map longitudCamino zss))
 \end{code}
 
-La función \texttt{(numeroArcosDeLongitud g u v k)} devuelve el número de   
-caminos entre los vértices \texttt{u} y \texttt{v} en el grafo        
-\texttt{g} que tienen longitud \texttt{k}.
+La función \texttt{(numeroArcosDeLongitud g u v k)} devuelve el número de
+caminos entre los vértices \texttt{u} y \texttt{v} en el grafo \texttt{g} que
+tienen longitud \texttt{k}.
 
 \index{\texttt{numeroArcosDeLongitud}}
 \begin{code}
@@ -474,7 +484,7 @@ esGeodesica g c =
 
 \begin{definicion}
   Un camino en un grafo $G$ se dice \textbf{cerrado} si sus extremos son
-  iguales.  Diremos que un camino cerrado de longitud tres es  un 
+  iguales. Diremos que un camino cerrado de longitud tres es un 
   \textbf{triángulo}.
 \end{definicion}
 
@@ -497,22 +507,25 @@ esCerrado g (v:c) =
   esCamino g c && v == last c
 \end{code}
 
-La función \texttt{(triangulos g v)} devuelve la lista de todos los   
-triángulos que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
+La función \texttt{(triangulos g v)} devuelve la lista de todos los triángulos
+que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
 
 \index{\texttt{triangulos}}
 \begin{code}
 -- | Ejemplos
--- >>> triangulos 3 (completo 5)
+-- >>> triangulos (completo 5) 3
 -- [[3,1,2,3],[3,1,4,3],[3,2,1,3],[3,2,4,3],[3,4,1,3],[3,4,2,3]]
--- >>> triangulos 1 (grafoCiclo 6)
+-- >>> triangulos (grafoCiclo 6) 1
 -- []
 triangulos :: Ord a => Grafo a -> a -> [[a]]
 triangulos g u =
-    map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g, v <= w] 
-    where f c = u:c ++ [u]
-          us = adyacentes g u 
+  map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g, v <= w] 
+  where f c = u:c ++ [u]
+        us = adyacentes g u 
 \end{code}
+
+\comentario{La definición de \texttt{triangulos} es incorrecta. En el primer
+  ejemplo faltan triágulos como el [3,2,1,3].}
 
 \subsection{Circuitos}
 
@@ -595,6 +608,8 @@ todosCiclos g x = if aristaEn (x,x) g
         eliminaLazos h = creaGrafo (vertices h)
                                    [(x,y) | (x,y) <- aristas h, x /= y]
 \end{code}
+
+\comentario{La definición de \texttt{todosCiclos} se puede simplificar.}
 
 \nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma

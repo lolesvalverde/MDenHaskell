@@ -8,12 +8,13 @@ module Relaciones ( esRelacion
                   , esFuncional
                   ) where
 
-import Conjuntos ( esSubconjunto
-                 , esUnitario
-                 , productoCartesiano
-                 )
-import Data.List ( nub
-                 )
+import Conjuntos  ( esSubconjunto
+                  , esUnitario
+                  , productoCartesiano
+                  )
+                  
+import Data.List  ( nub
+                  )
 \end{code}
 }
 

@@ -1,6 +1,5 @@
-En el módulo \texttt{ConjuntosConListas} se definen las funciones del 
-TAD de los conjuntos dando su representación como listas ordenadas sin
-elementos repetidos.
+En el módulo \texttt{ConjuntosConListas} se definen las funciones del TAD de
+los conjuntos dando su representación como listas sin elementos repetidos.
 
 \begin{code}
 module ConjuntosConListas
@@ -46,8 +45,8 @@ vacio :: Conj a
 vacio = []
 \end{code}
 
-\item \texttt{(inserta x c)} es el conjunto obtenido añadiendo el 
-elemento \texttt{x} al conjunto \texttt{c}.
+\item \texttt{(inserta x c)} es el conjunto obtenido añadiendo el elemento
+  \texttt{x} al conjunto \texttt{c}.
 
 \index{\texttt{inserta}}
 \begin{code}
@@ -62,8 +61,8 @@ inserta x ys | elem x ys = ys
              | otherwise = x:ys
 \end{code}
 
-\item \texttt{(listaAConjunto xs)} devuelve el conjunto cuyos
-elementos son los de la lista \texttt{xs}.
+\item \texttt{(listaAConjunto xs)} devuelve el conjunto cuyos elementos son los
+  de la lista \texttt{xs}.
 
 \begin{code}
 -- | Ejemplo
@@ -73,8 +72,7 @@ listaAConjunto :: Eq a => [a] -> Conj a
 listaAConjunto = nub
 \end{code}
 
-\item \texttt{(esVacio c)} se verifica si \texttt{c} es el conjunto
-vacío.
+\item \texttt{(esVacio c)} se verifica si \texttt{c} es el conjunto vacío.
 
 \index{\texttt{esVacio}}
 \begin{code}
@@ -102,6 +100,9 @@ pertenece :: Eq a => Conj a -> a -> Bool
 pertenece xs x = elem x xs
 \end{code}
 
+\comentario{Cambiar el orden de los argumentos de pertenece para simplificar la
+  definición.} 
+
 \item \texttt{(elimina x c)} es el conjunto obtenido eliminando el elemento
   \texttt{x} del conjunto \texttt{c}.
 
@@ -116,6 +117,8 @@ pertenece xs x = elem x xs
 elimina :: Eq a => a -> Conj a -> Conj a
 elimina x xs = xs \\ [x]
 \end{code}
+
+\comentario{Se puede mejorar usando \texttt{delete}.}
 
 \item \texttt{(minimoElemento c)} devuelve el mínimo elemento del conjunto
   \texttt{c}.
