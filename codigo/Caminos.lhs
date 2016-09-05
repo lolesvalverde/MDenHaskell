@@ -514,7 +514,7 @@ que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
 \begin{code}
 -- | Ejemplos
 -- >>> triangulos (completo 5) 3
--- [[3,1,2,3],[3,1,4,3],[3,2,1,3],[3,2,4,3],[3,4,1,3],[3,4,2,3]]
+-- [[3,1,2,3],[3,1,4,3],[3,1,5,3],[3,2,4,3],[3,2,5,3],[3,4,5,3]]
 -- >>> triangulos (grafoCiclo 6) 1
 -- []
 triangulos :: Ord a => Grafo a -> a -> [[a]]
@@ -525,7 +525,7 @@ triangulos g u =
 \end{code}
 
 \comentario{La definición de \texttt{triangulos} es incorrecta. En el primer
-  ejemplo faltan triágulos como el [3,2,1,3].}
+  ejemplo faltan triángulos como el [3,2,1,3].}
 
 \subsection{Circuitos}
 
