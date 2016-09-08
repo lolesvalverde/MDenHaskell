@@ -11,7 +11,8 @@ module RelacionesHomogeneas ( esRelacionHomogenea
                             , clasesEquivalencia
                             ) where
 
-import Conjuntos            ( esSubconjunto
+import Conjuntos            ( listaAConjunto
+                            , esSubconjunto
                             )
 import Relaciones           ( esRelacion
                             )
@@ -44,7 +45,7 @@ es una relación binaria homogénea en el conjunto \texttt{xs}.
 -- False
 -- >>> esRelacionHomogenea [1..4] [(1,2),(3,4),(4,1)]
 -- True
-esRelacionHomogenea :: Eq a => [a] -> [(a,a)] -> Bool
+esRelacionHomogenea :: Ord a => [a] -> [(a,a)] -> Bool
 esRelacionHomogenea xs = esRelacion xs xs
 \end{code}
 
@@ -63,7 +64,7 @@ está relacionado con \texttt{y} en la relación homogénea \texttt{r}.
 -- True
 -- >>> estaRelacionado [(1,3),(2,5),(4,6)] 2 3
 -- False
-estaRelacionado :: Eq a => [(a,a)] -> a -> a -> Bool
+estaRelacionado :: Ord a => [(a,a)] -> a -> a -> Bool
 estaRelacionado r x y = (x,y) `elem` r
 \end{code}
 
@@ -85,7 +86,7 @@ La función \texttt{(esReflexiva xs r)} se verifica si la relación \texttt{r} e
 -- True 
 -- >>> esReflexiva [1,2] [(1,1),(1,2)]
 -- False 
-esReflexiva :: Eq a => [a] -> [(a,a)] -> Bool
+esReflexiva :: Ord a => [a] -> [(a,a)] -> Bool
 esReflexiva xs r = zip xs xs `esSubconjunto` r 
 \end{code}
 
@@ -116,8 +117,9 @@ simétrica.
 -- True
 -- >>> esSimetrica [(1,1),(1,2),(2,2)]
 -- False
-esSimetrica :: Eq a => [(a,a)] -> Bool
-esSimetrica r = [(y,x) | (x,y) <- r] `esSubconjunto` r 
+esSimetrica :: Ord a => [(a,a)] -> Bool
+esSimetrica r =
+  listaAConjunto [(y,x) | (x,y) <- r] `esSubconjunto` r 
 \end{code}
 
 \begin{nota}
@@ -144,7 +146,7 @@ es antisimétrica.
 -- True
 -- >>> esAntisimetrica [(1,2),(2,1)]
 -- False
-esAntisimetrica :: Eq a => [(a,a)] -> Bool
+esAntisimetrica :: Ord a => [(a,a)] -> Bool
 esAntisimetrica r = 
   and [x == y | (x,y) <- r, (y,x) `elem` r]
 \end{code}
@@ -173,13 +175,13 @@ transitiva.
 \index{\texttt{esTransitiva}}
 \begin{code}
 -- | Ejemplos
--- >>> esTransitiva [(1,2),(2,3),(1,3)]
+-- >>> esTransitiva [(1,2),(1,3),(2,3)]
 -- True
 -- >>> esTransitiva [(1,2),(2,3)]
 -- False
-esTransitiva :: Eq a => [(a,a)] -> Bool
+esTransitiva :: Ord a => [(a,a)] -> Bool
 esTransitiva r = 
-  [(x,z) | (x,y) <- r, (w,z) <- r, y == w] `esSubconjunto` r 
+  listaAConjunto [(x,z) | (x,y) <- r, (w,z) <- r, y == w] `esSubconjunto` r 
 \end{code}
 
 \begin{nota}
@@ -206,13 +208,13 @@ La función \texttt{(esRelacionEquivalencia xs r)} se verifica si
 \index{\texttt{esRelacionEquivalencia}}
 \begin{code}
 -- | Ejemplos
--- >>> esRelacionEquivalencia [1..3] [(1,1),(2,2),(3,3),(1,2),(2,1)]
+-- >>> esRelacionEquivalencia [1..3] [(1,1),(1,2),(2,1),(2,2),(3,3)]
 -- True
--- >>> esRelacionEquivalencia [1..3] [(2,2),(3,3),(1,2),(2,1)]
+-- >>> esRelacionEquivalencia [1..3] [(1,2),(2,1),(2,2),(3,3)]
 -- False
--- >>> esRelacionEquivalencia [1..3] [(1,1),(2,2),(3,3),(1,2)]
+-- >>> esRelacionEquivalencia [1..3] [(1,1),(1,2),(2,2),(3,3)]
 -- False
-esRelacionEquivalencia :: Eq a => [a] -> [(a,a)] -> Bool
+esRelacionEquivalencia :: Ord a => [a] -> [(a,a)] -> Bool
 esRelacionEquivalencia xs r =
   esReflexiva xs r   &&
   esSimetrica r      &&
@@ -239,7 +241,7 @@ relación de orden en \texttt{xs}.
 -- | Ejemplo
 -- >>> esRelacionOrden [1..3] [(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)]
 -- True
-esRelacionOrden :: Eq a => [a] -> [(a,a)] -> Bool
+esRelacionOrden :: Ord a => [a] -> [(a,a)] -> Bool
 esRelacionOrden xs r =
   esReflexiva xs r  &&
   esAntisimetrica r &&
@@ -275,7 +277,7 @@ relación de equivalencia \texttt{r} en \texttt{xs}.
 -- >>> let r = [(x,y) | x <- [1..5], y <- [1..5], even (x-y)]
 -- >>> clasesEquivalencia [1..5] r
 -- [[1,3,5],[2,4]]
-clasesEquivalencia :: Eq a => [a] -> [(a,a)] -> [[a]]
+clasesEquivalencia :: Ord a => [a] -> [(a,a)] -> [[a]]
 clasesEquivalencia _ [] = []
 clasesEquivalencia [] _ = []
 clasesEquivalencia (x:xs) r = (x:c) : clasesEquivalencia (xs \\ c) r

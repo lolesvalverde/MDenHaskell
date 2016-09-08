@@ -5,14 +5,14 @@
 * [[./texto/Introduccion.tex][Introduccion.tex]]: Introducción.
 
 * [[./texto/Conjuntos.tex][Conjuntos.tex]]: Conjuntos
-  + [[./codigo/ConjuntosConListasOrdenadasSinRepeticion.lhs][ConjuntosConListasOrdenadasSinRepeticion.lhs]]: Conjuntos como listas ordenadas sin repetición.
+  + [[./codigo/ConjuntosConListasOrdenadasSinRepeticion.lhs][ConjuntosConListasOrdenadasSinRepeticion.lhs]]: Conjuntos como listas
+    ordenadas sin repetición. 
   + [[./codigo/ConjuntosConListas.lhs][ConjuntosConListas.lhs]]: Conjuntos como listas sin repetición
-  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]]: Definiciones, operaciones y propiedades.
+  + [[./codigo/Conjuntos.lhs][Conjuntos.lhs]]: Elección de la representación de conjuntos.
 * [[./texto/Relaciones_Y_Funciones.tex][Relaciones_Y_Funciones.tex]]: Relaciones y funciones.
   + [[./codigo/Relaciones.lhs][Relaciones.lhs]]: Relaciones binarias.
   + [[./codigo/RelacionesHomogeneas.lhs][RelacionesHomogeneas.lhs]]: Relaciones homogéneas.
   + [[./codigo/Funciones.lhs][Funciones.lhs]]: Funciones.
-
 * [[./texto/Introduccion_Teoria_Grafos.tex][Introduccion_Teoria_Grafos.tex]]: Introducción a la teoría de grafos.
   + [[./codigo/GrafoConListaDeAristas.lhs][GrafoConListaDeAristas.lhs]]: Grafos como listas de aristas.
   + [[./codigo/GeneradorGrafos.lhs][GeneradorGrafos.lhs]]: Generadores de grafos.

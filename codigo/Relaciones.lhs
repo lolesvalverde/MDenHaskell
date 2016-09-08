@@ -10,6 +10,7 @@ module Relaciones ( esRelacion
 
 import Conjuntos  ( esSubconjunto
                   , esUnitario
+                  , listaAConjunto  
                   , productoCartesiano
                   )
                   
@@ -35,11 +36,11 @@ relación binaria de \texttt{xs} en \texttt{ys}.  Por ejemplo,
 \index{\texttt{esRelacion}}
 \begin{code}
 -- | Ejemplos
--- >>> esRelacion [3,1] [2,4,7] [(3,4),(1,2)]
+-- >>> esRelacion [3,1] [2,4,7] [(1,2),(3,4)]
 -- True
--- >>> esRelacion [3,1] [2,4,7] [(3,1),(1,2)]
+-- >>> esRelacion [3,1] [2,4,7] [(1,2),(3,1)]
 -- False
-esRelacion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
+esRelacion :: (Ord a, Ord b) => [a] -> [b] -> [(a,b)] -> Bool
 esRelacion xs ys r =
   r `esSubconjunto` productoCartesiano xs ys 
 \end{code}
@@ -63,7 +64,7 @@ en la relación \texttt{r}.
 -- [5]
 -- >>> imagenRelacion [(1,3),(2,5),(1,4)] 3
 -- []
-imagenRelacion :: (Eq a, Eq b) => [(a,b)] -> a -> [b]
+imagenRelacion :: (Ord a, Ord b) => [(a,b)] -> a -> [b]
 imagenRelacion r x =
   nub [y | (z,y) <- r, z == x] 
 \end{code}
@@ -82,8 +83,8 @@ La función \texttt{(dominio r)} devuelve el dominio de la relación r.
 -- | Ejemplo
 -- >>> dominio [(3,2),(5,1),(3,4)]
 -- [3,5]
-dominio :: Eq a => [(a,b)] -> [a]
-dominio r = nub (map fst r)
+dominio :: Ord a => [(a,b)] -> [a]
+dominio r = listaAConjunto (map fst r)
 \end{code}
 
 \subsection{Rango de una relación}
@@ -101,8 +102,8 @@ La función \texttt{(rango r)} devuelve el rango de la relación binaria
 -- | Ejemplo
 -- >>> rango [(3,2),(5,2),(3,4)]
 -- [2,4]
-rango :: Eq b => [(a,b)] -> [b]
-rango r = nub (map snd r)  
+rango :: Ord b => [(a,b)] -> [b]
+rango r = listaAConjunto (map snd r)  
 \end{code}
 
 \subsection{Antiimagen por una relación}
@@ -120,7 +121,7 @@ relación binaria \texttt{r}.
 -- | Ejemplo
 -- >>> antiImagenRelacion [(1,3),(2,3),(7,4)] 3
 -- [1,2]
-antiImagenRelacion :: (Eq a, Eq b) => [(a,b)] -> b -> [a]
+antiImagenRelacion :: (Ord a, Ord b) => [(a,b)] -> b -> [a]
 antiImagenRelacion r y =
   nub [x | (x,z) <- r, z == y]   
 \end{code}
@@ -144,7 +145,7 @@ La función \texttt{(esFuncional r)} se verifica si la relación
 -- False
 -- >>> esFuncional [(3,2),(5,1),(3,2)]
 -- True
-esFuncional :: (Eq a, Eq b) => [(a,b)] -> Bool
+esFuncional :: (Ord a, Ord b) => [(a,b)] -> Bool
 esFuncional r =
   and [esUnitario (imagenRelacion r x) | x <- dominio r] 
 \end{code}

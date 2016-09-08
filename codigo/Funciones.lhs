@@ -16,6 +16,8 @@ module Funciones ( esFuncion
   
 import Conjuntos  ( esSubconjunto
                   , esUnitario
+                  , conjuntosIguales
+                  , listaAConjunto
                   , variacionesR
                   )
 import Relaciones ( antiImagenRelacion
@@ -26,6 +28,7 @@ import Relaciones ( antiImagenRelacion
                   , rango
                   )
 import Data.List  ( nub
+                  , sort  
                   , permutations
                   )
 import Text.PrettyPrint.GenericPretty (pp)
@@ -44,13 +47,13 @@ función de \texttt{xs} en \texttt{ys}.
 \index{\texttt{esFuncion}}
 \begin{code}
 -- | Ejemplos
--- >>> esFuncion [3,1] [2,4,7] [(1,7),(3,2)]
+-- >>> esFuncion [1,3] [2,4,7] [(1,7),(3,2)]
 -- True
--- >>> esFuncion [3,1] [2,4,7] [(1,7)]
+-- >>> esFuncion [1,3] [2,4,7] [(1,7)]
 -- False
--- >>> esFuncion [3,1] [2,4,7] [(1,7),(3,2),(1,4)]
+-- >>> esFuncion [1,3] [2,4,7] [(1,4),(1,7),(3,2)]
 -- False
-esFuncion :: (Eq a, Eq b) => [a] -> [b] -> [(a,b)] -> Bool
+esFuncion :: (Ord a, Ord b) => [a] -> [b] -> [(a,b)] -> Bool
 esFuncion xs ys f =
   esRelacion xs ys f &&
   xs `esSubconjunto` dominio f &&
@@ -106,7 +109,7 @@ función \texttt{f}.
 -- 7
 -- >>> imagen [(1,7),(3,2)] 3
 -- 2
-imagen :: (Eq a, Eq b) => Funcion a b -> a -> b
+imagen :: (Ord a, Ord b) => Funcion a b -> a -> b
 imagen f x = head (imagenRelacion f x)
 \end{code}
 
@@ -120,7 +123,7 @@ La función \texttt{(imagenConjunto f xs)} es la imagen del conjunto
 -- [7,3]
 -- >>> imagenConjunto [(1,7),(3,2)] [3,1]
 -- [2,7]
-imagenConjunto :: (Eq a, Eq b) => Funcion a b -> [a] -> [b]
+imagenConjunto :: (Ord a, Ord b) => Funcion a b -> [a] -> [b]
 imagenConjunto f xs = nub (map (imagen f) xs)
 \end{code}
 
@@ -148,7 +151,7 @@ inyectiva.
 -- False
 -- >>> esInyectiva [(1,4),(2,5),(3,6),(3,6)]
 -- True
-esInyectiva :: (Eq a, Eq b) => Funcion a b -> Bool
+esInyectiva :: (Ord a, Ord b) => Funcion a b -> Bool
 esInyectiva f =
   all esUnitario [antiImagenRelacion f y | y <- rango f] 
 \end{code}
@@ -176,7 +179,7 @@ La función \texttt{(esSobreyectiva xs ys f)} se verifica si la función
 -- False
 -- >>> esSobreyectiva [1,2,3] [4,5,6] [(1,4),(2,4),(3,6),(3,6)]
 -- False
-esSobreyectiva :: (Eq a,Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esSobreyectiva :: (Ord a,Ord b) => [a] -> [b] -> Funcion a b -> Bool
 esSobreyectiva _ ys f = ys `esSubconjunto` rango f 
 \end{code}
 
@@ -202,7 +205,7 @@ La función \texttt{(esBiyectiva xs ys f)} se verifica si la función
 -- False
 -- >>> esBiyectiva [1,2,3] [4,5,6,7] [(1,4),(2,5),(3,6)]
 -- False
-esBiyectiva :: (Eq a, Eq b) => [a] -> [b] -> Funcion a b -> Bool
+esBiyectiva :: (Ord a, Ord b) => [a] -> [b] -> Funcion a b -> Bool
 esBiyectiva xs ys f =
   esInyectiva f && esSobreyectiva xs ys f
 \end{code}
@@ -230,11 +233,11 @@ ghci> length (biyecciones2 [1..6] ['a'..'g'])
 \end{sesion}
 
 \begin{code}
-biyecciones1 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones1 :: (Ord a, Ord b) => [a] -> [b] -> [Funcion a b]
 biyecciones1 xs ys =
   filter (esBiyectiva xs ys) (funciones xs ys)
 
-biyecciones2 :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones2 :: (Ord a, Ord b) => [a] -> [b] -> [Funcion a b]
 biyecciones2 xs ys
   | length xs /= length ys = []
   | otherwise              = [zip xs zs | zs <- permutations ys]
@@ -246,7 +249,7 @@ que la redefiniremos como \texttt{biyecciones}.
 
 \index{\texttt{biyecciones}}
 \begin{code}
-biyecciones :: (Eq a, Eq b) => [a] -> [b] -> [Funcion a b]
+biyecciones :: (Ord a, Ord b) => [a] -> [b] -> [Funcion a b]
 biyecciones = biyecciones2
 \end{code}
 \end{nota}
@@ -270,10 +273,10 @@ El valor de \texttt{(inversa f)} es la función inversa de \texttt{f}.
 -- | Ejemplos
 -- >>> inversa [(1,4),(2,5),(3,6)]
 -- [(4,1),(5,2),(6,3)]
--- >>> inversa [(1,'f'),(2,'m'),(3,'a')]
--- [('f',1),('m',2),('a',3)]
-inversa :: (Eq a, Eq b) => Funcion a b -> Funcion b a
-inversa f = [(y,x) | (x,y) <- f]
+-- >>> sort (inversa [(1,'f'),(2,'m'),(3,'a')])
+-- [('a',3),('f',1),('m',2)]
+inversa :: (Ord a, Ord b) => Funcion a b -> Funcion b a
+inversa f = listaAConjunto [(y,x) | (x,y) <- f]
 \end{code}
 
 \begin{nota}
@@ -293,7 +296,7 @@ de salida de la función \texttt{f} tal que su imagen es \texttt{y}.
 -- 2
 -- >>> imagenInversa [(1,'f'),(2,'m'),(3,'a')] 'a'
 -- 3
-imagenInversa :: (Eq a, Eq b) => Funcion a b -> b -> a 
+imagenInversa :: (Ord a, Ord b) => Funcion a b -> b -> a 
 imagenInversa f = imagen (inversa f)
 \end{code}
 

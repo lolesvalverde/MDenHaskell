@@ -63,7 +63,7 @@ elaborar el contenido se han utilizado los siguientes recursos bibliográficos:
 
 \label{sec:TAD_conjuntos}
 
-En la presente sección, se defininen las operaciones básicas necesarias
+En la presente sección, se definen las operaciones básicas necesarias
 para trabajar con conjuntos en un lenguaje funcional. En nuestro caso, 
 el lenguaje que utilizaremos será Haskell. Daremos la signatura del Tipo
 Abstracto de Dato (TAD) de los conjuntos y daremos algunos ejemplos de 
@@ -141,22 +141,11 @@ trabajar con conjuntos en Haskell:
 
 \entrada{ConjuntosConListas}
 
-\section{Definiciones, operaciones y propiedades}
-
-En esta sección se van a dar definiciones, operaciones y propiedades de los
-conjuntos. Todas las funciones que terminan en <<'>> en esta sección son
-válidas para las dos representaciones de conjuntos que hemos presentado en la
-sección anterior \ref{sec:rep_conjuntos}. La representación utilizada para los
-ejemplos será la de conjuntos como listas ordenadas sin repetición.
-
-Teniendo en cuenta que en las secciones venideras vamos a trabajar con
-conjuntos como listas sin duplicados, para cada definición se da además una
-función equivalente a la dada sólo compatible con dicha representación. En
-general esta segunda definición será mucho más sencilla y eficiente.
+\section{Elección de la representación de conjuntos}
 
 \begin{nota}
-El módulo \texttt{Conjuntos} exporta exlusivamente las funciones definidas   
-para conjuntos como listas sin elementos repetidos. 
+En el módulo \texttt{Conjuntos} se elige la representación de conjunto con la
+que se trabajará.
 \end{nota}
 
 \entrada{Conjuntos}
