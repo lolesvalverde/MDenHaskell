@@ -106,7 +106,7 @@ La función \texttt{(tamaño g)} devuelve el orden del grafo \texttt{g}.
 
 \index{\texttt{tamaño}}
 \begin{code}
--- | Ejempolos
+-- | Ejemplos
 -- >>> tamaño (grafoCiclo 4)
 -- 4
 -- >>> tamaño grafoPetersen
@@ -678,7 +678,6 @@ sumaGrafos g1 g2 =
 
 La función \texttt{(unionGrafos g g')} une los grafos \texttt{g} y   
 \texttt{g'}. Por ejemplo,
-
 
 \index{\texttt{sumaGrafos}}
 \begin{code}
