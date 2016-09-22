@@ -116,7 +116,7 @@ esVacio = null
 -- False
 pertenece :: Ord a => Conj a -> a -> Bool 
 pertenece ys x =
-  [x] == take 1 (dropWhile (<x) ys)
+  x == head (dropWhile (<x) ys)
 \end{code}
 
 \item \texttt{(elimina x c)} es el conjunto obtenido eliminando el elemento
@@ -227,7 +227,7 @@ un subconjunto de \texttt{c2}.
 esSubconjunto :: Ord a => Conj a -> Conj a -> Bool
 esSubconjunto [] _ = True
 esSubconjunto (x:xs) ys =
-  [x] == take 1 vs && esSubconjunto xs (drop 1 vs)
+  x == head vs && esSubconjunto xs (tail vs)
   where (us,vs) = span (<x) ys
 \end{code}
 

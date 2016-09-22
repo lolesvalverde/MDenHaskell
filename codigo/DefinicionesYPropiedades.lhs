@@ -620,8 +620,17 @@ completo2 0 = grafoNulo
 completo2 n = sumaVertice (completo2 (n-1)) n
 \end{code}
 
-\comentario{Comprobar la equivalencia de las definiciones de \texttt{completo}
-  con QuickCheck.}
+Vamos a comprobar la equivalencia de ambas deficiones:
+
+\begin{sesion}
+ghci> prop_EquiCompleto
+True
+\end{sesion}
+
+\begin{code}
+prop_EquiCompleto :: Bool
+prop_EquiCompleto = and [completo n == completo2 n | n <- [0..50]]
+\end{code}
 
 Vamos a ver cuál de las definiciones es más eficiente:
 

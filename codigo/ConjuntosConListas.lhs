@@ -109,12 +109,9 @@ esVacio = null
 -- True
 -- >>> pertenece c1 4
 -- False
-pertenece :: Eq a => Conj a -> a -> Bool 
-pertenece xs x = elem x xs
+pertenece :: Eq a => a -> Conj a -> Bool 
+pertenece = elem
 \end{code}
-
-\comentario{Cambiar el orden de los argumentos de pertenece para simplificar la
-  definición.} 
 
 \item \texttt{(elimina x c)} es el conjunto obtenido eliminando el elemento
   \texttt{x} del conjunto \texttt{c}.
@@ -128,10 +125,8 @@ pertenece xs x = elem x xs
 -- >>> elimina 4 c1
 -- [2,5,1,3,7,9,0]
 elimina :: Eq a => a -> Conj a -> Conj a
-elimina x xs = xs \\ [x]
+elimina = delete
 \end{code}
-
-\comentario{Se puede mejorar usando \texttt{delete}.}
 
 \item \texttt{(minimoElemento c)} devuelve el mínimo elemento del conjunto
   \texttt{c}.
@@ -377,12 +372,9 @@ La función \texttt{(esUnitario c)} se verifica si el conjunto
 -- False
 -- >>> esUnitario c2
 -- False
-esUnitario :: [a] -> Bool
-esUnitario []     = False
-esUnitario (x:xs) = null xs
+esUnitario :: Eq a => [a] -> Bool
+esUnitario c = c == take 1 c
 \end{code}
-
-\comentario{La definición de \texttt{esUnitario} se puede simplificar.}
 
 \subsection{Unión de conjuntos}
 
