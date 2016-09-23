@@ -395,7 +395,7 @@ conjuntos \texttt{xs} y \texttt{ys}.
 -- >>> let c2 = listaAConjunto [2,4..9]
 -- >>> unionConjuntos c1 c2
 -- [1,2,3,4,5,6,7,8,9]
-unionConjuntos :: Ord a => Conj a  -> Conj a -> Conj a
+unionConjuntos :: Ord a => Conj a -> Conj a -> Conj a
 unionConjuntos [] [] = []
 unionConjuntos [] ys = ys
 unionConjuntos xs [] = xs

@@ -31,7 +31,11 @@ import Test.QuickCheck          ( Gen
                                 , sample
                                 , arbitrary
                                 )
-import Conjuntos                ( conjuntosIguales
+import Conjuntos                ( inserta
+                                , esUnitario
+                                , unionConjuntos
+                                , unionGeneral
+                                , conjuntosIguales
                                 )
 import RelacionesHomogeneas     ( esRelacionEquivalencia
                                 , clasesEquivalencia
@@ -43,7 +47,8 @@ import GrafoConListaDeAristas   ( Grafo
                                 , creaGrafo
                                 , vertices
                                 )
-import EjemplosGrafos           ( esGrafoNulo
+import EjemplosGrafos           ( grafoNulo
+                                , esGrafoNulo
                                 , grafoCiclo
                                 , grafoAmistad
                                 , completo
@@ -57,7 +62,9 @@ import EjemplosGrafos           ( esGrafoNulo
                                 , grafoMoebiusCantor
                                 )
 import DefinicionesYPropiedades ( orden
+                                , tamaño
                                 , esCompleto
+                                , esAislado
                                 )
 import Funciones                ( imagen
                                 , imagenConjunto
@@ -123,10 +130,10 @@ prop_conectadosRelEqui g =
   \textbf{componentes conexas por caminos} de $G$.
 \end{definicion}
 
-La función \texttt{(componentesConexas g)} devuelve las componentes conexas por
+La función \texttt{(componentesConexas1 g)} devuelve las componentes conexas por
 caminos del grafo \texttt{g}. 
 
-\index{\texttt{componentesConexas}}
+\index{\texttt{componentesConexas1}}
 \begin{code}
 -- | Ejemplos
 -- >>> componentesConexas (creaGrafo [1..5] [(1,2),(2,3)])
@@ -135,17 +142,120 @@ caminos del grafo \texttt{g}.
 -- [[1,2,3],[4,5]]
 -- >>> componentesConexas (creaGrafo [1..3] [(1,2),(2,3)])
 -- [[1,2,3]]
-componentesConexas :: Ord a => Grafo a -> [[a]]
-componentesConexas g
+componentesConexas1 :: Ord a => Grafo a -> [[a]]
+componentesConexas1 g =
+  clasesEquivalencia (vertices g) (estarConectadosCamino g)
+\end{code}
+
+Vamos a definir dos nuevas funciones: una que compruebe si el grafo es      
+nulo o completo, pues en dichos casos, las componentes serán el conjunto vacío
+y el conjunto del conjunto de vértices respectivamente y otra con un  
+algoritmo algo más complejo.
+
+\index{\texttt{componentesConexas2}}
+\begin{code}
+componentesConexas2 :: Ord a => Grafo a -> [[a]]
+componentesConexas2 g
   | esGrafoNulo g = []
   | esCompleto g  = [vertices g]
   | otherwise     =
       clasesEquivalencia (vertices g) (estarConectadosCamino g)
 \end{code}
 
-\comentario{Se puede hacer una primera definición de
-  \texttt{componentesConexas} directa (sin comprobar que es completo),
-  comprobar su equivalencia y comparar su eficiencia.}
+\index{\texttt{componentesConexas3}}
+\begin{code}
+componentesConexas3 :: Ord a => Grafo a -> [[a]]
+componentesConexas3 g = aux (vertices g) [] []
+    where aux [] [] []     = []
+          aux [] xs ys     = [xs]
+          aux (v:vs) [] [] =
+              aux (vs \\ (a v)) (i v (a v)) (a v)
+          aux vs xs ys | null ((ug [a v | v <- ys]) \\ xs) =
+                           xs: aux vs [] []
+                       | otherwise =
+                           aux (vs \\ ug [a v | v <- ys])
+                               (u xs (ug [a v | v <- ys]))
+                               (ug [a v | v <- ys] \\ ys)
+          a  = adyacentes g
+          i  = inserta
+          ug = unionGeneral
+          u  = unionConjuntos
+\end{code}
+
+La comprobación con \texttt{QuickCheck} de la equivalencia de las   
+definiciones es:
+
+\begin{sesion}
+ghci> quickCheck prop_EquiComponentesConexas
++++ OK, passed 100 tests.
+ghci> quickCheck prop_EquiComponentesConexas2
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{code}
+prop_EquiComponentesConexas :: Grafo Int -> Bool
+prop_EquiComponentesConexas g =
+    componentesConexas1 g == componentesConexas2 g
+\end{code}
+
+\begin{code}
+prop_EquiComponentesConexas2 :: Grafo Int -> Bool
+prop_EquiComponentesConexas2 g =
+    componentesConexas1 g == componentesConexas3 g
+\end{code}
+
+Comparemos ahora la eficiencia de las definiciones:
+
+\begin{sesion}
+ghci> componentesConexas1 grafoNulo
+[]
+(0.03 secs, 0 bytes)
+ghci> componentesConexas2 grafoNulo
+[]
+(0.01 secs, 0 bytes)
+ghci> componentesConexas3 grafoNulo
+[]
+(0.01 secs, 0 bytes)
+ghci> length (componentesConexas1 (completo 50))
+1
+(0.23 secs, 0 bytes)
+ghci> length (componentesConexas2 (completo 50))
+1
+(0.16 secs, 0 bytes)
+ghci> length (componentesConexas3 (completo 50))
+1
+(0.08 secs, 0 bytes)
+ghci> length (componentesConexas1 (completo 100))
+1
+(2.17 secs, 205,079,912 bytes)
+ghci> length (componentesConexas2 (completo 100))
+1
+(2.85 secs, 0 bytes)
+ghci> length (componentesConexas3 (completo 100))
+1
+(1.19 secs, 0 bytes)
+ghci> length (componentesConexas1 (completo 150))
+1
+(12.95 secs, 742,916,792 bytes)
+ghci> length (componentesConexas2 (completo 150))
+1
+(20.48 secs, 0 bytes)
+ghci> length (componentesConexas3 (completo 150))
+1
+(9.64 secs, 0 bytes)
+\end{sesion}
+
+Con grafos completos de gran tamaño, \texttt{Haskell} tarda más tiempo    
+en comprobar que es completo que en calcular directamente sus clases de   
+equivalencia y para grafos nulos apenas hay diferencia en el coste entre
+la primera y la segunda definición. Por otra parte, la tercera   
+definición es la más eficiente en todos los casos y, será por tanto la
+que utilizaremos a lo largo del trabajo.
+
+\begin{code}
+componentesConexas :: Ord a => Grafo a -> [[a]]
+componentesConexas = componentesConexas3
+\end{code}
 
 La función \texttt{(numeroComponentes g)} devuelve el número de componentes
 conexas del grafo \texttt{g}.
@@ -160,11 +270,13 @@ conexas del grafo \texttt{g}.
 numeroComponentes :: Ord a => Grafo a -> Int
 numeroComponentes g
     | null (aristas g) = orden g
-    | esCompleto g     = 1
     | otherwise        = length (componentesConexas g)
 \end{code}
 
-\comentario{La definición de \texttt{numeroComponentes} se puede simplificar.}
+\begin{nota}
+Hemos comprobado para la definición anterior que comprobar si un grafo      
+es completo es muy costoso, luego, no conviene añadirlo como patrón.
+\end{nota}
 
 \subsection{Grafos conexos}
 
@@ -187,6 +299,48 @@ es conexo.
 esConexo :: Ord a => Grafo a -> Bool
 esConexo g = length (componentesConexas g) == 1
 \end{code}
+
+\begin{code}
+esConexo2 :: Ord a => Grafo a -> Bool
+esConexo2 g | esGrafoNulo g = False
+            | esUnitario (vertices g) = True
+            | otherwise = aux (vertices g) [] []
+            where aux [] [] [] = False
+                  aux [] xs _ = True
+                  aux (v:vs) [] [] | null vs = True
+                                   | null (a v) = False
+                                   | otherwise =
+                                       aux (vs \\ a v) (i v (a v)) (a v)
+                  aux vs xs ys | null ((ug [a v | v <- xs]) \\ xs) = False
+                               | otherwise =
+                                   aux (vs \\ (ug [a v | v <- xs]))
+                                       (u (ug [a v | v <- xs]) xs)
+                                       ((ug [a v | v <- xs]) \\ xs)
+                  a  = adyacentes g
+                  ug = unionGeneral
+                  i = inserta
+                  u = unionConjuntos
+\end{code}
+
+La comprobación de la equivalencia de las definiciones con   
+\texttt{QuickCheck} es:
+
+\begin{sesion}
+ghci> quickCheck prop_EquiEsConexo
++++ OK, passed 100 tests.
+\end{sesion}
+
+\begin{code}
+prop_EquiEsConexo :: Grafo Int -> Bool
+prop_EquiEsConexo g =
+    esConexo g == esConexo2 g
+\end{code}
+
+Vamos a comparar ahora su eficiencia:
+
+\begin{sesion}
+
+\end{sesion}
 
 \comentario{Buscar definiciones más eficientes de esConexo.}
 
