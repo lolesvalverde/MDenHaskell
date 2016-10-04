@@ -36,6 +36,7 @@ import Test.QuickCheck          ( Gen
                                 )
 import Conjuntos                ( variacionesR
                                 , sinRepetidos
+                                , conjuntosIguales
                                 )
 import GrafoConListaDeAristas   ( Grafo
                                 , adyacentes
@@ -155,14 +156,12 @@ todosCaminos g u v 1 = if aristaEn (u,v) g
                        then [[u,v]]
                        else []
 todosCaminos g u v k =
-    filter (esCamino g) (map f (variacionesR (k-1) vs))
-    where vs = vertices g
-          f xs = u:xs ++ [v]
+    filter p [u:vs | n <- [1..k-1], w <- adyacentes g u,
+                          vs <- todosCaminos g w v n]
+       where p xs = longitudCamino xs == k
 \end{code}
 
 \comentario{La definición de \texttt{todosCaminos} se puede simplificar.}
-
-\comentario{¿Se usará la función \texttt{todosCaminos} fuera de este módulo?}
 
 La función \texttt{(numeroCaminosDeLongitud g u v k)} es el número de caminos
 de longitud \texttt{k} uniendo los vértices \texttt{u} y \texttt{v} en el grafo
@@ -180,10 +179,7 @@ numeroCaminosDeLongitud g u v = length . todosCaminos g u v
 \end{code}
 
 \comentario{La definición de \texttt{numeroCaminosDeLongitud} se puede
-  mejorar.} 
-
-\comentario{¿Se usará la función \texttt{numeroCaminosDeLongitud} fuera de este
-  módulo?} 
+  mejorar.}
 
 \subsection{Recorridos}
 
@@ -514,12 +510,12 @@ que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
 \begin{code}
 -- | Ejemplos
 -- >>> triangulos (completo 5) 3
--- [[3,1,2,3],[3,1,4,3],[3,1,5,3],[3,2,4,3],[3,2,5,3],[3,4,5,3]]
+-- [[3,1,2,3],[3,1,4,3],[3,1,5,3],[3,2,1,3],[3,2,4,3],[3,2,5,3],[3,4,1,3],[3,4,2,3],[3,4,5,3],[3,5,1,3],[3,5,2,3],[3,5,4,3]]
 -- >>> triangulos (grafoCiclo 6) 1
 -- []
 triangulos :: Ord a => Grafo a -> a -> [[a]]
 triangulos g u =
-  map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g, v <= w] 
+  map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g] 
   where f c = u:c ++ [u]
         us = adyacentes g u 
 \end{code}
@@ -586,27 +582,21 @@ La función \texttt{(todosCiclos g v)} devuelve todos los ciclos en el grafo
 \begin{code}
 -- | Ejemplos
 -- >>> todosCiclos (grafoCiclo 4) 3
--- [[3,4,1,2,3],[3,2,1,4,3]]
+-- [[3,2,1,4,3],[3,4,1,2,3]]
 -- >>> todosCiclos (completo 3) 2
--- [[2,3,1,2],[2,1,3,2]]
+-- [[2,1,3,2],[2,3,1,2]]
 -- >>> todosCiclos (creaGrafo [1,2,3] [(1,1),(1,2),(1,3),(2,3)]) 1
--- [[1],[1,3,2,1],[1,2,3,1]]
+-- [[1],[1,2,3,1],[1,3,2,1]]
 -- >>> todosCiclos (creaGrafo [1,2] [(1,2),(2,2),(2,3)]) 2
 -- [[2]]
 todosCiclos :: Ord a => Grafo a -> a -> [[a]]
 todosCiclos g x = if aristaEn (x,x) g
-                  then [x] : aux [[x]]
-                  else aux [[x]]
-  where aux []       = []
-        aux [[z]]    = aux [v:[z] | v <- adyacentes g' z \\ [x]]
-        aux ([]:zss) = aux zss
-        aux ((z:zs):zss)
-          | z == x    = (z:zs) : aux zss
-          | otherwise = aux (zss ++ [v:z:zs | v <- adyacentes g' z \\
-                                                   (head zs:(zs \\ [x]))])
-        g' = eliminaLazos g
-        eliminaLazos h = creaGrafo (vertices h)
-                                   [(x,y) | (x,y) <- aristas h, x /= y]
+                  then [x]:[x:vs | w <- adyacentes g x,
+                                   vs <- todosArcosBA g w x,
+                                   longitudCamino vs > 1]
+                  else [x:vs | w <- adyacentes g x,
+                                   vs <- todosArcosBA g w x,
+                                   longitudCamino vs > 1]
 \end{code}
 
 \comentario{La definición de \texttt{todosCiclos} se puede simplificar.}
@@ -643,5 +633,5 @@ esAciclico g =
  La validación es:
 
  > doctest Caminos.lhs
- Examples: 181  Tried: 181  Errors: 0  Failures: 0
+ Examples: 223  Tried: 223  Errors: 0  Failures: 0
 }

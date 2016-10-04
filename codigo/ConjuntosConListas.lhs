@@ -105,9 +105,9 @@ esVacio = null
 \begin{code}
 -- | Ejemplos
 -- >>> let c1 = listaAConjunto [2,5,1,3,7,5,3,2,1,9,0]
--- >>> pertenece c1 3 
+-- >>> pertenece 3 c1 
 -- True
--- >>> pertenece c1 4
+-- >>> pertenece 4 c1
 -- False
 pertenece :: Eq a => a -> Conj a -> Bool 
 pertenece = elem
