@@ -308,6 +308,25 @@ esBipartito g | null (vertices g) = True
         u = union
 \end{code}
 
+\index{\texttt{esBipartito2}}
+\begin{code}
+-- | Ejemplo
+-- >>> esBipartito2 (bipartitoCompleto 3 4)
+-- True
+-- >>> esBipartito2 (grafoCiclo 5)
+-- False
+-- >>> esBipartito2 (grafoCiclo 6)
+-- True
+esBipartito2 :: Ord a => Grafo a -> Bool
+esBipartito2 g | null (vertices g) = True
+               | otherwise         = aux (vertices g) [] []
+  where aux [] red blue     = True
+        aux (v:vs) red blue
+            | null [u | u <- red, aristaEn (v,u) g]  = aux vs (v:red) blue
+            | null [u | u <- blue, aristaEn (v,u) g] = aux vs red (v:blue)
+            | otherwise = False
+\end{code}
+
 \comentario{Simplificar la definición de \texttt{esBipartito}.}
 
 La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve \texttt{Nothing} si
@@ -342,6 +361,8 @@ conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
           a = adyacentes g
           u = union
 \end{code}
+
+
 
 \comentario{Simplificar la definición de \texttt{conjuntosVerticesDisjuntos}.} 
 
@@ -770,5 +791,5 @@ grafoMoebiusCantor = grafoPetersenGen 8 3
   La validación es
 
   > doctest EjemplosGrafos.lhs
-  Examples: 31  Tried: 31  Errors: 0  Failures: 0
+  Examples: 34  Tried: 34  Errors: 0  Failures: 0
 }
