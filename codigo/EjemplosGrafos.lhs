@@ -320,10 +320,10 @@ esBipartito g | null (vertices g) = True
 esBipartito2 :: Ord a => Grafo a -> Bool
 esBipartito2 g | null (vertices g) = True
                | otherwise         = aux (vertices g) [] []
-  where aux [] red blue     = True
-        aux (v:vs) red blue
-            | null [u | u <- red, aristaEn (v,u) g]  = aux vs (v:red) blue
-            | null [u | u <- blue, aristaEn (v,u) g] = aux vs red (v:blue)
+  where aux [] r b = True
+        aux (v:vs) r b
+            | null [u | u <- r, aristaEn (v,u) g] = aux vs (v:r) b
+            | null [u | u <- b, aristaEn (v,u) g] = aux vs r (v:b)
             | otherwise = False
 \end{code}
 
@@ -338,18 +338,18 @@ el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 \begin{code}
 -- | Ejemplo
 -- >>> conjuntosVerticesDisjuntos (bipartitoCompleto 3 4)
--- Just ([1,2,3],[4,5,6,7])
+-- Just ([3,2,1],[7,6,5,4])
 -- >>> conjuntosVerticesDisjuntos (grafoCiclo 5)
 -- Nothing
 -- >>> conjuntosVerticesDisjuntos (grafoCiclo 6)
--- Just ([1,5,3],[2,6])
+-- Just ([5,3,1],[6,4,2])
 conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
 conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
-                              | otherwise = aux (vertices g) [] []
+                             | otherwise = aux (vertices g) [] []
     where aux [] r b = Just (r,b) 
           aux (v:vs) r b
-              | null [u | u <- r, aristaEn (v,u) g] = aux vs (r ++ [v]) b
-              | null [u | u <- b, aristaEn (v,u) g] = aux vs r (b ++ [v])
+              | null [u | u <- r, aristaEn (v,u) g] = aux vs (v:r) b
+              | null [u | u <- b, aristaEn (v,u) g] = aux vs r (v:b)
               | otherwise = Nothing
 \end{code}
 
