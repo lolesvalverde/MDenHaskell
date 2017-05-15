@@ -345,24 +345,13 @@ el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 -- Just ([1,5,3],[2,6])
 conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
 conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
-                             | otherwise = aux vs [v] [] []
-    where aux [] _ red blue =
-              if and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
-              then Just (red,blue)
-              else Nothing
-          aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
-          aux (x:xs) [] r b = aux xs [x] r b
-          aux xs (x:ys) r b = if x `elem` r
-                              then aux (xs \\ (a x)) ys r (u (a x) b)
-                              else aux (xs \\ (a x)) ys (u (a x) r) b
-          (v:vs) = vertices g
-          f xs ys = filter p (subsequences xs ++ subsequences ys)
-                    where p zs = length zs == 2
-          a = adyacentes g
-          u = union
+                              | otherwise = aux (vertices g) [] []
+    where aux [] r b = Just (r,b) 
+          aux (v:vs) r b
+              | null [u | u <- r, aristaEn (v,u) g] = aux vs (r ++ [v]) b
+              | null [u | u <- b, aristaEn (v,u) g] = aux vs r (b ++ [v])
+              | otherwise = Nothing
 \end{code}
-
-
 
 \comentario{Simplificar la definición de \texttt{conjuntosVerticesDisjuntos}.} 
 
