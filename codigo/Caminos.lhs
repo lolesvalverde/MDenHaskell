@@ -161,6 +161,24 @@ todosCaminos g u v k =
        where p xs = longitudCamino xs == k
 \end{code}
 
+\index{\texttt{todosCaminos2}}
+\begin{code}
+-- | Ejemplo
+-- >>> todosCaminos2 (creaGrafo [1,2] [(1,2)]) 1 2 3
+-- [[1,2,1,2]]
+-- >>> todosCaminos2 (bipartitoCompleto 2 3) 1 3 3
+-- [[1,3,1,3],[1,3,2,3],[1,4,1,3],[1,4,2,3],[1,5,1,3],[1,5,2,3]]
+todosCaminos2 :: Ord a => Grafo a -> a -> a -> Int -> [[a]]
+todosCaminos2 g u v 0 = if u == v && elem u (vertices g)
+                        then [[u]]
+                        else []
+todosCaminos2 g u v 1 = if aristaEn (u,v) g
+                        then [[u,v]]
+                        else []
+todosCaminos2 g u v k =
+    map (u:) (concat [todosCaminos2 g w v (k-1) | w <- adyacentes g u])
+\end{code}
+
 \comentario{La definición de \texttt{todosCaminos} se puede simplificar.}
 
 La función \texttt{(numeroCaminosDeLongitud g u v k)} es el número de caminos
