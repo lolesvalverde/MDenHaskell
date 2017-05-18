@@ -172,14 +172,12 @@ todosCaminos2 :: Ord a => Grafo a -> a -> a -> Int -> [[a]]
 todosCaminos2 g u v 0 = if u == v && elem u (vertices g)
                         then [[u]]
                         else []
-todosCaminos2 g u v 1 = if aristaEn (u,v) g
-                        then [[u,v]]
-                        else []
 todosCaminos2 g u v k =
     map (u:) (concat [todosCaminos2 g w v (k-1) | w <- adyacentes g u])
 \end{code}
 
-\comentario{La definición de \texttt{todosCaminos} se puede simplificar.}
+\comentario{La definición de \texttt{todosCaminos} se puede               
+simplificar. X}
 
 La función \texttt{(numeroCaminosDeLongitud g u v k)} es el número de caminos
 de longitud \texttt{k} uniendo los vértices \texttt{u} y \texttt{v} en el grafo
@@ -532,14 +530,11 @@ que pasan por el vértice \texttt{v} en el grafo \texttt{g}.
 -- >>> triangulos (grafoCiclo 6) 1
 -- []
 triangulos :: Ord a => Grafo a -> a -> [[a]]
-triangulos g u =
-  map f [ [v,w] | v <- us, w <- us, aristaEn (v,w) g] 
-  where f c = u:c ++ [u]
-        us = adyacentes g u 
+triangulos g u = todosCaminos2 g u u 3 
 \end{code}
 
 \comentario{La definición de \texttt{triangulos} es incorrecta. En el primer
-  ejemplo faltan triángulos como el [3,2,1,3].}
+  ejemplo faltan triángulos como el [3,2,1,3]. X}
 
 \subsection{Circuitos}
 
@@ -617,7 +612,26 @@ todosCiclos g x = if aristaEn (x,x) g
                                    longitudCamino vs > 1]
 \end{code}
 
-\comentario{La definición de \texttt{todosCiclos} se puede simplificar.}
+\index{todosCiclos2}
+\begin{code}
+-- | Ejemplos
+-- >>> todosCiclos2 (grafoCiclo 4) 3
+-- [[3,2,1,4,3],[3,4,1,2,3]]
+-- >>> todosCiclos2 (completo 3) 2
+-- [[2,1,3,2],[2,3,1,2]]
+-- >>> todosCiclos2 (creaGrafo [1,2,3] [(1,1),(1,2),(1,3),(2,3)]) 1
+-- [[1],[1,2,3,1],[1,3,2,1]]
+-- >>> todosCiclos2 (creaGrafo [1,2] [(1,2),(2,2),(2,3)]) 2
+-- [[2]]
+todosCiclos2 :: Ord a => Grafo a -> a -> [[a]]
+todosCiclos2 g x =
+    map f (filter p (concat [todosArcosBA g x u | u <- adyacentes g x]))
+    where p c = longitudCamino c /= 1
+          f c | longitudCamino c == 0 = c
+              | otherwise = c ++[x]
+\end{code}
+
+\comentario{La definición de \texttt{todosCiclos} se puede simplificar.X}
 
 \nota{El algoritmo utilizado en la definición de \texttt{(todosCiclos g)} es el
   de búsqueda en anchura. Este algoritmo recorre el grafo por niveles, de forma
@@ -651,5 +665,5 @@ esAciclico g =
  La validación es:
 
  > doctest Caminos.lhs
- Examples: 223  Tried: 223  Errors: 0  Failures: 0
+ Examples: 228  Tried: 228  Errors: 0  Failures: 0
 }
