@@ -319,15 +319,22 @@ esBipartito g | null (vertices g) = True
 -- True
 esBipartito2 :: Ord a => Grafo a -> Bool
 esBipartito2 g | null (vertices g) = True
-               | otherwise         = aux (vertices g) [] []
-  where aux [] r b = True
-        aux (v:vs) r b
-            | null [u | u <- r, aristaEn (v,u) g] = aux vs (v:r) b
-            | null [u | u <- b, aristaEn (v,u) g] = aux vs r (v:b)
-            | otherwise = False
+               | otherwise         = aux (vertices g) [] [] []
+  where aux [] [] r b = True
+        aux (v:vs) [] r b
+              | null [u | u <- r, aE (v,u) g] = aux vs (f v vs) (v:r) b
+              | null [u | u <- b, aE (v,u) g] = aux vs (f v vs) r (v:b)
+              | otherwise = False
+        aux vs (w:ws) r b
+              | null [u | u <- r, aE (w,u) g] = aux (vs \\ [w]) ws (w:r) b
+              | null [u | u <- b, aE (w,u) g] = aux (vs \\ [w]) ws r (w:b)
+              | otherwise = False
+        a = adyacentes
+        aE = aristaEn
+        f u us = filter (`elem` us) (a g u)
 \end{code}
 
-\comentario{Simplificar la definición de \texttt{esBipartito}.}
+\comentario{Simplificar la definición de \texttt{esBipartito}.*}
 
 La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve \texttt{Nothing} si
 el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
@@ -345,15 +352,23 @@ el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 -- Just ([5,3,1],[6,4,2])
 conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
 conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
-                             | otherwise = aux (vertices g) [] []
-    where aux [] r b = Just (r,b) 
-          aux (v:vs) r b
-              | null [u | u <- r, aristaEn (v,u) g] = aux vs (v:r) b
-              | null [u | u <- b, aristaEn (v,u) g] = aux vs r (v:b)
+                             | otherwise = aux (vertices g) [] [] []
+    where aux [] [] r b = Just (r,b) 
+          aux (v:vs) [] r b
+              | null [u | u <- r, aE (v,u) g] = aux vs (f v vs) (v:r) b
+              | null [u | u <- b, aE (v,u) g] = aux vs (f v vs) r (v:b)
               | otherwise = Nothing
+          aux vs (w:ws) r b
+              | null [u | u <- r, aE (w,u) g] = aux (vs \\ [w]) ws (w:r) b
+              | null [u | u <- b, aE (w,u) g] = aux (vs \\ [w]) ws r (w:b)
+              | otherwise = Nothing
+          a = adyacentes
+          aE = aristaEn
+          f u us = filter (`elem` us) (a g u)
 \end{code}
 
-\comentario{Simplificar la definición de \texttt{conjuntosVerticesDisjuntos}.} 
+\comentario{Simplificar la definición de                        
+\texttt{conjuntosVerticesDisjuntos}.*} 
 
 \subsection{Grafo estrella}
 
