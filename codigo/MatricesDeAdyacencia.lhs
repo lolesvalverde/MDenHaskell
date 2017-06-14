@@ -104,6 +104,8 @@ matrizAdyacencia g = matrix n n f
                 | otherwise          = 0
 \end{code}
 
+\subsection{Propiedades básicas de las matrices}
+
 La función \texttt{(esSimetrica p)} se verifica si la matriz \texttt{p}
 es simétrica.
 
@@ -140,29 +142,10 @@ potencia p n =
 
 \comentario{La definición de \texttt{potencia} se puede simplificar.}
 
+\subsection{Definiciones sobre grafos usando matrices de adyacencia} 
+
 \begin{teorema}
   Para todo $n$, la matriz de adyacencia del grafo ciclo de orden $n$,
-  $C_n$ es simétrica.
-\end{teorema}
-
-\comentario{El teorema anterior se puede generalizar e incluir el siguiente.}
-
-La comprobación del teorema para $n \leq 30$ es:
-
-\begin{sesion}
-ghci> all prop_simetricaAdyacenciaCiclo [1..30]
-True
-\end{sesion}
-
-\index{\texttt{prop\_simetricaAdyacenciaCiclo}}
-\begin{code}
-prop_simetricaAdyacenciaCiclo :: Int -> Bool
-prop_simetricaAdyacenciaCiclo n =
-  esSimetrica (matrizAdyacencia (grafoCiclo n))
-\end{code}
-
-\begin{teorema}
-  Para todo $n$, la matriz de adyacencia del grafo completo de orden $n$,
   $C_n$ es simétrica.
 \end{teorema}
 
@@ -217,11 +200,33 @@ prop_TamañoMatriz =
   columna $i$--ésima de su matriz de adyacencia estarán formadas por ceros.
 \end{teorema}
 
+\index{\texttt{esAisladoM}}
+\begin{code}
+esAisladoM :: Grafo Int -> Int -> Bool
+esAisladoM g v = if (all (==0)
+                         (((toLists (ma g)) !! (v-1))
+                          ++((toLists (t (ma g))) !! (v-1))))
+                 then True
+                 else False
+        where  ma = matrizAdyacencia
+               t = transpose
+\end{code}
 
-\comentario{Definir \texttt{esAisladoM g v} que se verifique si \texttt{v} es
-  un vértice aislado del grafo \texttt{g}, usando su matriz de
-  ayacencia. Después, comprobar la equivalencia entre las definiciones de
-  \texttt{esAislado} y \texttt{esAisladoM}.}
+La comprobación de la equivalencia con \texttt{esAislado} es:
+
+\begin{sesion}
+ghci> quickCheck prop_esAisladoMatriz
++++ OK, passed 100 tests.
+\end{sesion}
+
+\index{\texttt{prop\_esAisladoMatriz}}
+\begin{code}
+prop_esAisladoMatriz :: Property
+prop_esAisladoMatriz =
+  forAll grafoSimple  
+         (\g -> and [esAislado g v == esAisladoM g v
+                    | v <- vertices g])
+\end{code}
 
 La comprobación del teorema es:
 
@@ -235,8 +240,8 @@ ghci> quickCheck prop_verticeAislado
 prop_verticeAislado :: Grafo Int -> Bool
 prop_verticeAislado g = 
     all p (filter (esAislado g) (vertices g))
-        where p v = all (==0) ((toLists (ma g)) !! (v-1))
-              ma = matrizAdyacencia
+    where p v = all (==0) ((toLists (ma g)) !! (v-1))
+          ma = matrizAdyacencia
 \end{code}
 
 \begin{teorema}
@@ -249,34 +254,27 @@ prop_verticeAislado g =
 \end{equation*}
 \end{teorema}
 
-\comentario{Definir (gradoM g v)que calcule el grado de v en g, usando su
-  matriz de adyacencia, y comprobar su equivalencia con grado.}
+\index{\texttt{gradoM}}
+\begin{code}
+gradoM :: Grafo Int -> Int -> Int
+gradoM g v = sum ((toLists (ma g)) !! (v-1))
+    where  ma = matrizAdyacencia
+\end{code}
 
 La comprobación del teorema es:
 
 \begin{sesion}
-ghci> quickCheck prop_GradoMatriz
+ghci> quickCheck prop_gradoMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop\_GradoMatriz}}
+\index{\texttt{prop\_gradoMatriz}}
 \begin{code}
-prop_GradoMatriz :: Grafo Int -> Bool
-prop_GradoMatriz g = 
-    and [grado g u == sumaf u && grado g u == sumac u | u <- vertices g]
-        where sumaf v = sum ((toLists (ma g)) !! (v-1))
-              sumac v = sum ((toLists (transpose (ma g))) !! (v-1))
-              ma = matrizAdyacencia
+prop_gradoMatriz :: Property
+prop_gradoMatriz =
+  forAll grafoSimple  
+         (\g -> and [grado g v == gradoM g v | v <- vertices g])
 \end{code}
-
-\begin{teorema}
-  Sean $G_1,G_2$ dos grafos isomorfos y sean $A_1$ y $A_2$ sus matrices 
-  de adyacencia respectivas. Entonces existe una matriz de paso $P$, 
-  que es regular y verifica:
-  $$A_1 = P^t A_2 P$$
-\end{teorema}
-
-\comentario{Falta la versión computacional del teorema anterior.}
 
 \begin{teorema}
   Sea $G = (V,A)$ un grafo bipartito de conjuntos de vértices disjuntos 
@@ -320,27 +318,34 @@ adyacencia de un grafo en relación a los caminos que se encuentran en
   longitud $k$ desde el vértice $v_i$ al vértice $v_j$.
 \end{teorema}
 
+\index{\texttt{numeroCaminosDeLongitugM}}
+\begin{code}
+numeroCaminosDeLongitudM :: Grafo Int -> Int -> Int -> Int -> Int
+numeroCaminosDeLongitudM g u v k = getElem u v mk
+    where  ma = matrizAdyacencia g
+           n = orden g
+           mk = foldr (multStd2) (identity n)  (take k (repeat ma))
+\end{code}
+
 \comentario{Definir numeroCaminosDeLongitudM que sea equivalente a
   numeroCaminosDeLongitud y comprobar la equivalencia.}
 
 La comprobación del teorema para $k \leq 6$ es:
 
 \begin{sesion}
-ghci> quickCheck prop_NumeroCaminosMatriz
+ghci> quickCheck prop_numeroCaminosMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop\_NumeroCaminosMatriz}}
+\index{\texttt{prop\_numeroCaminosMatriz}}
 \begin{code}
-prop_NumeroCaminosMatriz :: Grafo Int -> Gen Bool
-prop_NumeroCaminosMatriz g = do
+prop_numeroCaminosMatriz :: Grafo Int -> Gen Bool
+prop_numeroCaminosMatriz g = do
     k <- choose (0,6)
     let vs = vertices g
-    let n = orden g
-    let m = matrizAdyacencia g
-    let mk = foldr (multStd2) (identity n)  (take k (repeat m))
-    return (and [ getElem u v mk == numeroCaminosDeLongitud g u v k
-                      |(u,v) <- productoCartesiano vs vs, u < v])    
+    return (and [ numeroCaminosDeLongitud g u v k ==
+                  numeroCaminosDeLongitudM g u v k
+                  |(u,v) <- productoCartesiano vs vs, u < v])    
 \end{code}
 
 De este teorema se deducen las siguientes propiedades:
@@ -349,12 +354,25 @@ Sea $G$ un grafo simple. Siguiendo la notación del teorema anterior
 se tiene que:
 \begin{enumerate}
   \item $a_{i,i}^{(2)} = \delta(v_i)$.
-  \item $a_{i,i}^{(3)}$ es el doble del número de triángulos que  
+  \item $a_{i,i}^{(3)}$ es el número de triángulos que  
         contienen al vértice $v_i$.
 \end{enumerate}
 \end{teorema}
 
-\comentario{Definir gradoM y comprobar su equivalencia con grado.}
+\index{\texttt{gradoM}}
+\begin{code}
+gradoCaminosM :: Grafo Int -> Int -> Int
+gradoCaminosM g v = getElem v v m2
+    where m = matrizAdyacencia g
+          m2 = multStd2 m m
+\end{code}
+
+\index{\texttt{numeroTriangulosM}}
+\begin{code}
+numeroTriangulosM :: Grafo Int -> Int -> Int
+numeroTriangulosM g v = getElem v v (potencia m 3)
+    where m = matrizAdyacencia g
+\end{code}
 
 La comprobación con QuickCheck es:
 
@@ -369,21 +387,14 @@ ghci> quickCheck prop_TriangulosMatriz
 \begin{code}
 prop_GradoCaminosMatriz :: Grafo Int -> Bool
 prop_GradoCaminosMatriz g =
-    and [ grado g i == getElem i i m2 | i <- vertices g]
-    where m  = matrizAdyacencia g
-          m2 = multStd2 m m
+    and [ grado g v == gradoCaminosM g v | v <- vertices g]
 \end{code}
-
-\comentario{Definir numeroTriangulosM y comprobar sun equivalencia con
-  numeroTrangulos (la primera usando matrices y la segunda sin matrices) y
-  comprobar su equivalencia.}
 
 \index{prop\_TriangulosMatriz}
 \begin{code}
 prop_TriangulosMatriz :: Property
 prop_TriangulosMatriz = 
     forAll grafoSimple
-      (\g -> and [2*length (triangulos g v)
-                  == getElem v v (potencia (matrizAdyacencia g) 3)
-                  | v <- vertices g])
+      (\g -> and [length (triangulos g v) ==
+                  numeroTriangulosM g v | v <- vertices g])
 \end{code}
