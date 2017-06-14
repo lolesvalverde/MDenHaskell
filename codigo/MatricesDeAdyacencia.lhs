@@ -292,13 +292,6 @@ B^t     &\theta
 $$
 \end{teorema}
 
-La comprobación del teorema es:
-
-\begin{sesion}
-ghci> quickCheck prop_BipartitoMatriz
-+++ OK, passed 100 tests.
-\end{sesion}
-
 \index{\texttt{prop\_BipartitoMatriz}}
 \begin{code}
 prop_BipartitoMatriz :: Grafo Int -> Property
@@ -312,7 +305,7 @@ prop_BipartitoMatriz g =
 \end{code}
 
 \comentario{La propiedad prop\_BipartitoMatriz no es adecuada para QuickCheck
-  porque la mayoría de los grafos generados no cumplen la condición.}
+  porque la mayoría de los grafos generados no cumplen la condición.X}
 
 \subsection{Caminos y arcos}
 

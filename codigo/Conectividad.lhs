@@ -631,15 +631,6 @@ True
   isomorfismo. Entonces, dados $u,v \in V$, $u ∼ v$ si y solamente si
   $\phi(u) ∼ \phi(v)$.
 \end{teorema}
-
-La comprobación del teorema con QuickCheck es:
-
-\begin{sesion}
-ghci> quickCheckWith stdArgs {maxDiscardRatio = 20} prop_ConexionIsomorfismo1
-+++ OK, passed 100 tests.
-\end{sesion}
-
-donde
     
 \index{\texttt{prop\_ConexionIsomorfismo1}}
 \begin{code}
@@ -656,20 +647,13 @@ prop_ConexionIsomorfismo1 g h =
 
 \comentario{La propiedad \texttt{prop\_ConexionIsomorfismo1} no es buena para
   comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.}
+  serán no isomorfos.X}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
   un isomorfismo. Entonces, $\phi$ lleva cada componente conexa de $G$
   en una componente conexa de $G'$.
 \end{teorema}
-
-La comprobación del teorema con QuickCheck es:
-
-\begin{sesion}
-ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo2
-+++ OK, passed 100 tests.
-\end{sesion}
 
 \index{\texttt{prop\_ConexionIsomorfismo2}}
 \begin{code}
@@ -684,20 +668,13 @@ prop_ConexionIsomorfismo2 g h =
 
 \comentario{La propiedad \texttt{prop\_ConexionIsomorfismo2} no es buena para
   comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.}
+  serán no isomorfos.X}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
   un isomorfismo. Entonces, $G$ y $G'$ tienen el mismo número de  
   componentes conexas.
 \end{teorema}
-
-La comprobación del teorema con QuickCheck es:
-
-\begin{sesion}
-ghci> quickCheckWith stdArgs {maxDiscardRatio = 15} prop_ConexionIsomorfismo3
-+++ OK, passed 100 tests.
-\end{sesion}
 
 \index{\texttt{prop\_ConexionIsomorfismo3}}
 \begin{code}
@@ -709,7 +686,7 @@ prop_ConexionIsomorfismo3 g h =
 
 \comentario{La propiedad \texttt{prop\_ConexionIsomorfismo3} no es buena para
   comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.}
+  serán no isomorfos.X}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 
