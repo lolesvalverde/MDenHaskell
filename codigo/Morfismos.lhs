@@ -183,7 +183,91 @@ morfismos g h =
      , conservaAdyacencia g h f]
 \end{code}
 
-\comentario{Introducir el problema de decidir si dos grafos son homomorfos.}
+\subsection{Complejidad del problema de homomorfismo de grafos}
+
+En general en computación un problema algorítmico consta de un conjunto 
+$I$ de todas las posibles entradas para el problema, llamado el conjunto 
+de instancias, y de una pregunta $Q$ sobre esas instancias. Resolver uno 
+de estos problemas consiste en desarrollar un algoritmo cuya entrada es 
+una instancia del problema y cuya salida es una respuesta a la pregunta
+del problema.
+
+Decimos que un problema es de decisión cuando las posibles respuestas
+a la pregunta son ``sí'' o ``no''. Un ejemplo de problema de este tipo sería,  
+dados dos grafos, decidir si estos son homomorfos o no.
+
+A la hora de implementar un algoritmo que dé solución al problema que  
+estemos considerando, es importante tener en cuenta el número de pasos        
+que efectúa hasta encontrar una respuesta. Un \textbf{algoritmo de tiempo    
+polinomial} se define como aquel con función de complejidad temporal 
+en $O(p(n))$ para alguna función polinómica $p$, donde $n$ denota el 
+tamaño de la entrada. Cualquier algoritmo cuya función de complejidad 
+temporal no pueda ser acotada de esta manera, se denomina 
+\textbf{algoritmo de tiempo exponencial}.
+
+La mayoría de los algoritmos de tiempo exponencial son simples   
+variaciones de una búsqueda exhaustiva, mientras que los algoritmos de
+tiempo polinomial, usualmente se obtienen mediante un análisis más       
+profundo de la estructura del problema. En la Teoría de la complejidad 
+computacional, existe el consenso de que un problema no está ``bien resuelto'' 
+hasta que se conozca un algoritmo de tiempo polinomial que lo resuelva.
+Por tanto, nos referiremos a un problema como ``intratable'', si es tan    
+difícil que no existe algoritmo de tiempo polinomial capaz de        
+resolverlo.
+
+Los problemas de decisión para los que existen algoritmos polinomiales 
+constituyen la clase $P$ y son llamados \textbf{polinomiales}.
+Un problema de decisión es \textbf{no-determinístico polinomial} cuando 
+cualquier instancia que produce respuesta ``sí'' posee una comprobación de
+correctitud (también llamada certificado) verificable en tiempo            
+polinomia en el tamaño de la instancia. Estos problemas de decisión 
+se dice que pertenecen a la clase $NP$.
+Claramente, $P \subseteq NP$. Sin embargo, no se sabe si esta inclusión es 
+estricta: uno de los principales problemas abiertos en Teoría de la          
+computación es saber si $P \neq NP$.
+
+Una reducción es una transformación de un problema en otro problema. 
+Intuitivamente, un problema $Q$ puede ser reducido a otro problema $Q'$,
+si cualquier instancia del problema $Q$ puede ser ``fácilmente'' expresada
+como una instancia del problema $Q'$, y cuya solución proporcione una 
+solución para la instancia de $Q$.
+
+Las reducciones en tiempo polinomial nos dotan de elementos para probar, 
+de una manera formal, que un problema es al menos tan difícil que otro,
+con una diferencia de un factor polinomial. Estas son esenciales para    
+definir a los problemas NP-completos, además de ayudar a comprender los
+mismos.
+
+La clase de los problemas NP-completos contiene a los problemas más   
+difíciles en $NP$, en el sentido de que son los que estén más lejos de
+estar en $P$. Debido a que el problema $P = NP$ no ha sido resuelto,      
+el hecho 
+de reducir un problema $B$, a otro problema $A$, indicaría que no se conoce 
+solución en tiempo polinomial para $A$. Esto es debido a que una solución 
+en tiempo polinomial para $A$, tendría como consecuencia la existencia de
+una solución polinomial para $B$. De manera similar, debido a que todos 
+los problemas NP pueden ser reducidos a este conjunto, encontrar un    
+problema NP-completo que pueda ser resuelto en un tiempo polinomial 
+significaría que $P = NP$.
+
+El problema de decidir si dos grafos son homomorfos es un problema de   
+decisión NP-completo. La NP-completitud del problema se demuestra         
+mediante la reducción de este problema al 
+\href{https://es.wikipedia.org/wiki/Problema_de_la_clique}
+     {\textbf{problema de la clique},}\
+     \footnote{\url{https://es.wikipedia.org/wiki/Problema_de_la_clique}}.
+
+
+En el proceso de recopilación de imformación acerca de la Teoría de la   
+complejidad, se ha trabajado con dos fuentes:
+\begin{itemize}
+  \item la tesis de licenciatura de Pablo Burzyn ``Complejidad  
+computacional en problemas de modificación de aristas en grafos'' 
+(\cite{Tesis-Pablo}) y
+  \item el artículo ``Teoría de la complejidad computacional'' 
+(\cite{Wikipedia-complejidad}) de la Wikipedia.
+\end{itemize}
+\comentario{Introducir el problema de decidir si dos grafos son homomorfos.X}
 
 \subsection{Isomorfismos}
 
