@@ -1,6 +1,24 @@
 \ignora{
 \begin{code}
-module MatricesDeAdyacencia where
+module MatricesDeAdyacencia     ( imprimeMatriz
+                                , matrizAdyacencia
+                                , esSimetrica
+                                , potencia
+                                , prop_simetricaAdyacenciaCompleto
+                                , tamañoM
+                                , prop_tamañoMatriz
+                                , esAisladoM
+                                , prop_esAisladoMatriz
+                                , gradoM
+                                , prop_gradoMatriz
+                                , prop_BipartitoMatriz
+                                , numeroCaminosDeLongitudM
+                                , prop_numeroCaminosMatriz
+                                , gradoCaminosM
+                                , numeroTriangulosM
+                                , prop_GradoCaminosMatriz
+                                , prop_TriangulosMatriz
+                                ) where
 
 import Conjuntos                ( productoCartesiano
                                 )
@@ -121,9 +139,6 @@ esSimetrica p =
   transpose p == p
 \end{code}
 
-\comentario{Agrupar las funciones sobre matrices que no usan grafos en una
-  sección.}
-
 La función \texttt{(potencia p n)} devuelvela potencia $n$--ésima de la   
 matriz cuadrada \texttt{p}.
 
@@ -135,14 +150,16 @@ matriz cuadrada \texttt{p}.
 -- (  735 1323 1755 )
 -- (  975 1755 2328 )
 potencia :: Num a => Matrix a -> Int -> Matrix a
-potencia p n =
-    foldr multStd2 (identity r) (take n (repeat p))
-    where r = nrows p
+potencia p 1 = p
+potencia p n = if (odd n)
+               then (m p (potencia (m p p) (div (n-1) 2)))
+               else (potencia (m p p) (div (n-1) 2))
+    where m = multStd2
 \end{code}
 
-\comentario{La definición de \texttt{potencia} se puede simplificar.}
+\comentario{La definición de \texttt{potencia} se puede simplificar.X}
 
-\subsection{Definiciones sobre grafos usando matrices de adyacencia} 
+\subsection{Propiedades de las matrices de adyacencia} 
 
 \begin{teorema}
   Para todo $n$, la matriz de adyacencia del grafo ciclo de orden $n$,
@@ -183,14 +200,14 @@ tamañoM g = sum (toList (matrizAdyacencia g)) `div` 2
 La comprobación del teorema con QuickCheck es:
 
 \begin{sesion}
-ghci> quickCheck prop_TamañoMatriz
+ghci> quickCheck prop_tamañoMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{\texttt{prop\_TamañoMatriz}}
+\index{\texttt{prop\_tamañoMatriz}}
 \begin{code}
-prop_TamañoMatriz :: Property
-prop_TamañoMatriz =
+prop_tamañoMatriz :: Property
+prop_tamañoMatriz =
   forAll grafoSimple  
          (\g -> tamaño g == tamañoM g)
 \end{code}
@@ -212,7 +229,7 @@ esAisladoM g v = if (all (==0)
                t = transpose
 \end{code}
 
-La comprobación de la equivalencia con \texttt{esAislado} es:
+La comprobación del teorema es:
 
 \begin{sesion}
 ghci> quickCheck prop_esAisladoMatriz
@@ -226,22 +243,6 @@ prop_esAisladoMatriz =
   forAll grafoSimple  
          (\g -> and [esAislado g v == esAisladoM g v
                     | v <- vertices g])
-\end{code}
-
-La comprobación del teorema es:
-
-\begin{sesion}
-ghci> quickCheck prop_verticeAislado
-+++ OK, passed 100 tests.
-\end{sesion}
-
-\index{\texttt{prop\_verticeAislado}}
-\begin{code}
-prop_verticeAislado :: Grafo Int -> Bool
-prop_verticeAislado g = 
-    all p (filter (esAislado g) (vertices g))
-    where p v = all (==0) ((toLists (ma g)) !! (v-1))
-          ma = matrizAdyacencia
 \end{code}
 
 \begin{teorema}
@@ -302,9 +303,6 @@ prop_BipartitoMatriz g =
               m = matrizAdyacencia g
 \end{code}
 
-\comentario{La propiedad prop\_BipartitoMatriz no es adecuada para QuickCheck
-  porque la mayoría de los grafos generados no cumplen la condición.X}
-
 \subsection{Caminos y arcos}
 
 En esta sección, se presentará la información que contiene la matriz de   
@@ -326,9 +324,6 @@ numeroCaminosDeLongitudM g u v k = getElem u v mk
            n = orden g
            mk = foldr (multStd2) (identity n)  (take k (repeat ma))
 \end{code}
-
-\comentario{Definir numeroCaminosDeLongitudM que sea equivalente a
-  numeroCaminosDeLongitud y comprobar la equivalencia.}
 
 La comprobación del teorema para $k \leq 6$ es:
 
@@ -383,14 +378,14 @@ ghci> quickCheck prop_TriangulosMatriz
 +++ OK, passed 100 tests.
 \end{sesion}
 
-\index{prop\_GradoMatriz}
+\index{\texttt{prop\_GradoMatriz}}
 \begin{code}
 prop_GradoCaminosMatriz :: Grafo Int -> Bool
 prop_GradoCaminosMatriz g =
     and [ grado g v == gradoCaminosM g v | v <- vertices g]
 \end{code}
 
-\index{prop\_TriangulosMatriz}
+\index{\texttt{prop\_TriangulosMatriz}}
 \begin{code}
 prop_TriangulosMatriz :: Property
 prop_TriangulosMatriz = 

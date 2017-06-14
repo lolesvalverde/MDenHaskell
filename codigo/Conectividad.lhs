@@ -260,7 +260,7 @@ componentesConexas = componentesConexas3
 La función \texttt{(numeroComponentes g)} devuelve el número de componentes
 conexas del grafo \texttt{g}.
 
-\index{texttt{numeroComponentesConexas}}
+\index{\texttt{numeroComponentesConexas}}
 \begin{code}
 -- Ejemplos
 -- >>> numeroComponentes (creaGrafo [1..5] [(1,2),(2,3),(4,5)])

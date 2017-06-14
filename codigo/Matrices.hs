@@ -1,8 +1,6 @@
 -- Matrices y grafos
 -- =====================================================================
 
-module Matrices where
-
 import GrafoConListaDeAristas   ( Grafo
                                 , aristaEn
                                 , creaGrafo

@@ -9,7 +9,8 @@ module Caminos                  ( esCamino
                                 , esCaminoSimple
                                 , longitudCamino
                                 , todosArcosBP 
-                                , todosArcosBA 
+                                , todosArcosBA
+                                , parDeVertices
                                 , prop_todosArcosBA
                                 , numeroArcosDeLongitud
                                 , estanConectados
@@ -333,7 +334,7 @@ ghci> sample (parDeVertices (creaGrafo [1..9] []))
 (7,2)
 \end{sesion}
 
-\index{texttt{parDeVertices}}
+\index{\texttt{parDeVertices}}
 \begin{code}
 parDeVertices :: Grafo Int -> Gen (Int,Int)
 parDeVertices g = do
@@ -591,7 +592,7 @@ esCiclo g c =
 La función \texttt{(todosCiclos g v)} devuelve todos los ciclos en el grafo
 \texttt{g} que pasan por el vértice \texttt{v}.
 
-\index{todosCiclos}
+\index{\texttt{todosCiclos}}
 \begin{code}
 -- | Ejemplos
 -- >>> todosCiclos (grafoCiclo 4) 3
@@ -612,7 +613,7 @@ todosCiclos g x = if aristaEn (x,x) g
                                    longitudCamino vs > 1]
 \end{code}
 
-\index{todosCiclos2}
+\index{\texttt{todosCiclos2}}
 \begin{code}
 -- | Ejemplos
 -- >>> todosCiclos2 (grafoCiclo 4) 3
