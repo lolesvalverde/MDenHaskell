@@ -49,7 +49,11 @@ import GrafoConListaDeAristas ( Grafo
                               , vertices
                               , adyacentes
                               , aristaEn
-                              )                              
+                              )
+import Conjuntos              ( unionGeneral
+                              , interseccion
+                              )
+
 \end{code}
 }
 
@@ -320,18 +324,14 @@ esBipartito g | null (vertices g) = True
 esBipartito2 :: Ord a => Grafo a -> Bool
 esBipartito2 g | null (vertices g) = True
                | otherwise         = aux (vertices g) [] [] []
-  where aux [] [] r b = True
-        aux (v:vs) [] r b
-              | null [u | u <- r, aE (v,u) g] = aux vs (f v vs) (v:r) b
-              | null [u | u <- b, aE (v,u) g] = aux vs (f v vs) r (v:b)
-              | otherwise = False
-        aux vs (w:ws) r b
-              | null [u | u <- r, aE (w,u) g] = aux (vs \\ [w]) ws (w:r) b
-              | null [u | u <- b, aE (w,u) g] = aux (vs \\ [w]) ws r (w:b)
-              | otherwise = False
-        a = adyacentes
-        aE = aristaEn
-        f u us = filter (`elem` us) (a g u)
+  where u = union
+        a = adyacentes g
+        aux [] _  r b  = null (interseccion r b)
+        aux (v:vs) [] [] [] = aux (u (a v) vs) [v] [v] []
+        aux (v:vs) cs r b
+            | null (adyacentes g v) = aux vs (v:cs) (v:r) b
+            | elem (head cs) r = aux (u ((a v) \\ cs) vs) (v:cs) r (v:b)
+            | otherwise = aux (u ((a v) \\ cs) vs) (v:cs) (v:r) b
 \end{code}
 
 \comentario{Simplificar la definición de \texttt{esBipartito}.*}
@@ -353,18 +353,15 @@ el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
 conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
                              | otherwise = aux (vertices g) [] [] []
-    where aux [] [] r b = Just (r,b) 
-          aux (v:vs) [] r b
-              | null [u | u <- r, aE (v,u) g] = aux vs (f v vs) (v:r) b
-              | null [u | u <- b, aE (v,u) g] = aux vs (f v vs) r (v:b)
-              | otherwise = Nothing
-          aux vs (w:ws) r b
-              | null [u | u <- r, aE (w,u) g] = aux (vs \\ [w]) ws (w:r) b
-              | null [u | u <- b, aE (w,u) g] = aux (vs \\ [w]) ws r (w:b)
-              | otherwise = Nothing
-          a = adyacentes
-          aE = aristaEn
-          f u us = filter (`elem` us) (a g u)
+    where u = union
+          a = adyacentes g
+          aux [] _  r b  = Just (r,b)
+          aux (v:vs) [] [] [] = aux (u (a v) vs) [v] [v] []
+          aux (v:vs) c r b
+              | null (adyacentes g v) = aux vs (v:c) (v:r) b
+              | elem (head c) r = aux (u ((a v) \\ c) vs) (v:c) r (v:b)
+              | otherwise = aux (u ((a v) \\ c) vs) (v:c) (v:r) b
+          
 \end{code}
 
 \comentario{Simplificar la definición de                        

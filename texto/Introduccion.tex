@@ -10,6 +10,68 @@ discreta en Haskell. Los puntos de partida son
     approach'' (\cite{Rabhi+Lapalme-99}) y
   \item el artículo ``Graph theory'' (\cite{Wikipedia-grafos}) de la Wikipedia.  
 \end{itemize}
+
+Haskell es un lenguaje de programación funcional desarrollado en los últimos
+años por la comunidad de programadores con la intención de usarlo como
+instrumento para la enseñanza de programación funcional. La motivación de este
+desarrollo es hacer el análisis y diseño de programas más simple y permitir que
+los algoritmos sean fácilmente adaptables a otros lenguajes de programación 
+funcionales.
+
+En comparación con otros lenguajes de programación imperativos, la sintaxis de 
+Haskell permite definir funciones de forma más clara y compacta. En Haskell las
+funciones se consideran valores, al mismo nivel que los tipos enteros o cadenas
+en cualquier lenguaje. Por ello, al igual que es habitual que en todos los 
+lenguajes una función reciba datos de entrada (de tipo entero, flotante, cadena,
+etc) y devuelva datos (de los mismos tipos), en los lenguajes funcionales una
+función puede recibir como dato de entrada una función y devolver otra función
+como salida, que puede ser construida a partir de sus entradas y por operaciones
+entre funciones, como la composición. Esta capacidad nos proporciona métodos más
+potentes para construir y combinar los diversos módulos de los que se compone
+un programa. Por ejemplo, emulando la forma de operar sobre funciones que 
+habitualmente se usa en matemáticas.
+
+La matemática discreta consiste en el estudio de las propiedades de los 
+conjuntos finitos o infinitos numerables, lo que hace posible su directa
+implementación computacional. En particular, la asignatura ``Matemática 
+Discreta'' del grado se centra en estudiar propiedades y algoritmos de la 
+combinatoria y la teoría de grafos. A lo largo del trabajo implementaré 
+en Haskell definiciones y algoritmos con los que ya he tenido una primera 
+aproximación teórica durante el grado.
+
+Los dos primeros capítulos del trabajo sientan la base que me permitirá en los
+dos siguientes aproximarme a la teoría de grafos. En el primero, hago
+una introducción a la teoría de conjuntos y doy dos posibles representaciones
+de conjuntos con las que trabajar en Haskell. En el segundo presento los
+conceptos de ``relación'' y de ``función'' que, al igual que los conjuntos, son
+necesarios para definir aplicaciones de los grafos. Para su redacción me he 
+apoyado en la primera parte de la asignatura ``Álgebra Básica'' del grado.
+
+En el tercer capítulo del trabajo hago una introducción a la teoría de grafos.
+En primer lugar doy una representación con la que trabajar en Haskell y un
+generador de grafos que nos servirá para comprobar propiedades con 
+\texttt{QuickCheck}. Seguidamente hago una galería de grafos conocidos y los
+utilizo como ejemplos para las definiciones y los algoritmos que doy en las 
+secciones siguientes. Las primeras serán algunas deficiones básicas y después
+trato los conceptos de ``morfismos'', ``caminos'' y ``conectividad'' en 
+grafos.
+
+Por último, en el cuarto capítulo doy una representación de los grafos a través
+de la matriz de adyacencia. Implemento algunos de los resultados que Javier 
+Franco Galvín expuso en su Trabajo Fin de Grado: \textit{Aspectos algebraicos 
+en teoría de grafos} y compruebo que concuerdan con el desarrollo hecho en el 
+capítulo anterior.
+
+Me gustaría destacar el trabajo con los diferentes sistemas que he realizado
+a lo largo del proyecto y con diferentes programas: 
+\itemize{
+\item las librerías de Haskell \texttt{Data.List}, \texttt{Data.Matrix} y 
+\texttt{Data.QuickCheck},
+\item el paquete \textit{Tikz} de \LaTeX{}, mediante el que he dado la 
+representación gráfica de los ejemplos de grafos,
+\item \textit{GitHub} como sistema de control de versiones,
+\item y \textit{Hspec} como sistema de validación de módulos.
+}
  
 %%% Local Variables: 
 %%% mode: latex
