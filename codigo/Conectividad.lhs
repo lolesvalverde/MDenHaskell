@@ -339,10 +339,33 @@ prop_EquiEsConexo g =
 Vamos a comparar ahora su eficiencia:
 
 \begin{sesion}
-
+ghci> let g1 = grafoCiclo 100
+(0.00 secs, 0 bytes)
+ghci> let g = creaGrafo (vertices g1) (aristas g1 \\ [(2,3),(98,99)])
+(0.00 secs, 0 bytes)
+ghci> esConexo g
+False
+(1.17 secs, 151,632,168 bytes)
+ghci> esConexo2 g
+False
+(0.01 secs, 0 bytes)
+ghci> esConexo (grafoCiclo 500)
+True
+(73.41 secs, 10,448,270,712 bytes)
+ghci> esConexo2 (grafoCiclo 500)
+True
+(189.39 secs, 18,468,849,096 bytes)
+ghci> esConexo (grafoCiclo 500)
+True
+(73.41 secs, 10,448,270,712 bytes)
+ghci> esConexo2 (grafoCiclo 500)
+True
+(189.39 secs, 18,468,849,096 bytes)
 \end{sesion}
 
-\comentario{Buscar definiciones más eficientes de esConexo.}
+En principio no nos proporciona ninguna ventaja la segunda definición,   
+así que trabajaremos con la primera que hemos dado, ya que es mucho más
+sencilla.
 
 \begin{teorema}
   Sea $G$ un grafo, $G = (V,A)$ es conexo si y solamente si
@@ -632,11 +655,18 @@ True
   $\phi(u) ∼ \phi(v)$.
 \end{teorema}
     
+La comprobación del teorema con QuickCheck es: 
+
+\begin{sesion}
+ghci> quickCheck prop_ConexionIsomorfismo1
++++ OK, passed 100 tests.
+\end{sesion}
+
 \index{\texttt{prop\_ConexionIsomorfismo1}}
 \begin{code}
-prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo1 :: Grafo Int -> Grafo Int -> Bool
 prop_ConexionIsomorfismo1 g h =
-  isomorfos g h ==>
+  not (isomorfos g h) || 
   and [ec g u v == ec h (imagen phi u) (imagen phi v)
       | u <- vs
       , v <- vs
@@ -645,30 +675,29 @@ prop_ConexionIsomorfismo1 g h =
             ec = estanConectados
 \end{code}
 
-\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo1} no es buena para
-  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.X}
-
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
   un isomorfismo. Entonces, $\phi$ lleva cada componente conexa de $G$
   en una componente conexa de $G'$.
 \end{teorema}
 
+La comprobación del teorema con QuickCheck es: 
+
+\begin{sesion}
+ghci> quickCheck prop_ConexionIsomorfismo2
++++ OK, passed 100 tests.
+\end{sesion}
+
 \index{\texttt{prop\_ConexionIsomorfismo2}}
 \begin{code}
-prop_ConexionIsomorfismo2 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo2 :: Grafo Int -> Grafo Int -> Bool
 prop_ConexionIsomorfismo2 g h =
-  isomorfos g h ==>
+  not(isomorfos g h) ||
   and [conjuntosIguales cch (aux f) | f <- isomorfismos g h]
       where cch = componentesConexas h
             ccg = componentesConexas g
             aux f = map (sort . imagenConjunto f) ccg
 \end{code}
-
-\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo2} no es buena para
-  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.X}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ grafos isomorfos con $\phi: V \to V'$ 
@@ -676,17 +705,21 @@ prop_ConexionIsomorfismo2 g h =
   componentes conexas.
 \end{teorema}
 
+La comprobación del teorema con QuickCheck es: 
+
+\begin{sesion}
+ghci> quickCheck prop_ConexionIsomorfismo3
++++ OK, passed 100 tests.
+\end{sesion}
+
 \index{\texttt{prop\_ConexionIsomorfismo3}}
 \begin{code}
-prop_ConexionIsomorfismo3 :: Grafo Int -> Grafo Int -> Property
+prop_ConexionIsomorfismo3 :: Grafo Int -> Grafo Int -> Bool
 prop_ConexionIsomorfismo3 g h =
-  isomorfos g h ==>
+  not (isomorfos g h) || 
   numeroComponentes g == numeroComponentes h
 \end{code}
 
-\comentario{La propiedad \texttt{prop\_ConexionIsomorfismo3} no es buena para
-  comprobarla con QuickCheck porque la mayoría de los pares de grafos generados
-  serán no isomorfos.X}
 
 \begin{teorema}
   Sean $G = (V,A)$ y $G' = (V',A')$ dos grafos y $\phi: V \to V'$ un 

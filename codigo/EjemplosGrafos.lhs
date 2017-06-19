@@ -41,7 +41,10 @@ import Data.List ( sort
                  , union
                  , intersect
                  , subsequences
+                 , delete
                  )
+import Data.Maybe (isJust
+                  )
 import Text.PrettyPrint.GenericPretty (pp)
 import GrafoConListaDeAristas ( Grafo
                               , aristas
@@ -283,59 +286,6 @@ bipartitoCompleto n m =
             [(a,b) | a <- [1..n], b <- [n+1..n+m]]
 \end{code}
 
-La función \texttt{(esBipartito g)} se verifica si el grafo \texttt{g}
-es bipartito.
-
-\index{\texttt{esBipartito}}
-\begin{code}
--- | Ejemplo
--- >>> esBipartito (bipartitoCompleto 3 4)
--- True
--- >>> esBipartito (grafoCiclo 5)
--- False
--- >>> esBipartito (grafoCiclo 6)
--- True
-esBipartito :: Ord a => Grafo a -> Bool
-esBipartito g | null (vertices g) = True
-              | otherwise         = aux vs [v] [] []
-  where aux [] _ red blue =
-          and [not (aristaEn (u,v) g) | [u,v] <- f red blue]
-        aux xs [x] [] [] = aux (xs \\ (a x)) (a x) [x] (a x)
-        aux (x:xs) [] r b = aux xs [x] r b
-        aux xs (x:ys) r b = if x `elem` r
-                            then aux (xs \\ (a x)) ys r (u (a x) b)
-                            else aux (xs \\ (a x)) ys (u (a x) r) b
-        (v:vs) = vertices g
-        f xs ys = filter p (subsequences xs ++ subsequences ys)
-                  where p zs = length zs == 2
-        a = adyacentes g
-        u = union
-\end{code}
-
-\index{\texttt{esBipartito2}}
-\begin{code}
--- | Ejemplo
--- >>> esBipartito2 (bipartitoCompleto 3 4)
--- True
--- >>> esBipartito2 (grafoCiclo 5)
--- False
--- >>> esBipartito2 (grafoCiclo 6)
--- True
-esBipartito2 :: Ord a => Grafo a -> Bool
-esBipartito2 g | null (vertices g) = True
-               | otherwise         = aux (vertices g) [] [] []
-  where u = union
-        a = adyacentes g
-        aux [] _  r b  = null (interseccion r b)
-        aux (v:vs) [] [] [] = aux (u (a v) vs) [v] [v] []
-        aux (v:vs) cs r b
-            | null (adyacentes g v) = aux vs (v:cs) (v:r) b
-            | elem (head cs) r = aux (u ((a v) \\ cs) vs) (v:cs) r (v:b)
-            | otherwise = aux (u ((a v) \\ cs) vs) (v:cs) (v:r) b
-\end{code}
-
-\comentario{Simplificar la definición de \texttt{esBipartito}.*}
-
 La función \texttt{(conjuntosVerticesDisjuntos g)} devuelve \texttt{Nothing} si
 el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 \texttt{xs}, \texttt{ys} es una partición disjunta de los vértices de
@@ -351,21 +301,62 @@ el grafo \texttt{g} no es bipartito y \texttt{Just(xs,ys)} si lo es, donde
 -- >>> conjuntosVerticesDisjuntos (grafoCiclo 6)
 -- Just ([5,3,1],[6,4,2])
 conjuntosVerticesDisjuntos :: Ord a => Grafo a -> Maybe ([a],[a])
-conjuntosVerticesDisjuntos g | null (vertices g) = Just ([],[])
-                             | otherwise = aux (vertices g) [] [] []
+conjuntosVerticesDisjuntos g
+    | null (vertices g) = Just ([],[])
+    | otherwise = aux (vertices g) [] [] [] []
     where u = union
           a = adyacentes g
-          aux [] _  r b  = Just (r,b)
-          aux (v:vs) [] [] [] = aux (u (a v) vs) [v] [v] []
-          aux (v:vs) c r b
-              | null (adyacentes g v) = aux vs (v:c) (v:r) b
-              | elem (head c) r = aux (u ((a v) \\ c) vs) (v:c) r (v:b)
-              | otherwise = aux (u ((a v) \\ c) vs) (v:c) (v:r) b
-          
+          d xs x = xs \\ [x] 
+          aux [] _ _ r b  = if (null (intersect r b))
+                            then (Just (r,b))
+                            else Nothing
+          aux (v:vs) [] [] [] [] = aux vs (a v) [v] [v] []
+          aux (v:vs) [] c r b
+              | null (a v) = aux vs [] (v:c) (v:r) b
+              | null ((a v) \\ c) =
+                  if (or [elem u r | u <- (a v)])
+                  then (if (or [elem u b | u <- (a v)])
+                        then Nothing
+                        else (aux vs [] (v:c) r (v:b)))
+                  else (aux vs [] (v:c) (v:r) b)
+              | otherwise =
+                  if (or [elem u r | u <- (a v)])
+                  then (if (or [elem u b | u <- (a v)])
+                        then Nothing
+                        else (aux vs ((a v) \\ c) (v:c) r (v:b)))
+                  else (aux vs ((a v) \\ c) (v:c) (v:r) b)
+          aux vs (q:qs) c r b      
+              | null ((a q) \\ c) =
+                  if (or [elem u r | u <- (a q)])
+                  then (if (or [elem u b | u <- (a q)])
+                        then Nothing
+                        else (aux (d vs q) qs (q:c) r (q:b)))
+                  else (aux (d vs q) qs (q:c) (q:r) b)
+              | otherwise =
+                  if (or [elem u r | u <- (a q)])
+                  then (if (or [elem u b | u <- (a q)])
+                        then Nothing
+                        else (aux (d vs q) (u ((a q) \\ c) qs)
+                                  (q:c) r (q:b)))
+                  else (aux (d vs q) (u ((a q) \\ c) qs)
+                            (q:c) (q:r) b)
 \end{code}
 
-\comentario{Simplificar la definición de                        
-\texttt{conjuntosVerticesDisjuntos}.*} 
+La función \texttt{(esBipartito g)} se verifica si el grafo \texttt{g}
+es bipartito.
+
+\index{\texttt{esBipartito}}
+\begin{code}
+-- | Ejemplo
+-- >>> esBipartito (bipartitoCompleto 3 4)
+-- True
+-- >>> esBipartito (grafoCiclo 5)
+-- False
+-- >>> esBipartito (grafoCiclo 6)
+-- True
+esBipartito :: Ord a => Grafo a -> Bool
+esBipartito g = isJust (conjuntosVerticesDisjuntos g)
+\end{code}
 
 \subsection{Grafo estrella}
 
@@ -792,5 +783,5 @@ grafoMoebiusCantor = grafoPetersenGen 8 3
   La validación es
 
   > doctest EjemplosGrafos.lhs
-  Examples: 34  Tried: 34  Errors: 0  Failures: 0
+  Examples: 105  Tried: 105  Errors: 0  Failures: 0
 }

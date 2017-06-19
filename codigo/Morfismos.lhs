@@ -267,7 +267,6 @@ computacional en problemas de modificación de aristas en grafos''
   \item el artículo ``Teoría de la complejidad computacional'' 
 (\cite{Wikipedia-complejidad}) de la Wikipedia.
 \end{itemize}
-\comentario{Introducir el problema de decidir si dos grafos son homomorfos.X}
 
 \subsection{Isomorfismos}
 
@@ -488,8 +487,6 @@ con grafos "poco regulares", sin embargo, cuando todos los vértices
 tienen el mismo grado, \texttt{(isomorfismos2 g h)} sigue siendo mejor       
 opción (aunque no hay mucha diferencia en el coste computacional).
 \end{nota}
-
-\comentario{Buscar definiciones más eficientes que isomorfismos3.}
 
 
 \begin{sesion}

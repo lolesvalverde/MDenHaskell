@@ -157,8 +157,6 @@ potencia p n = if (odd n)
     where m = multStd2
 \end{code}
 
-\comentario{La definición de \texttt{potencia} se puede simplificar.X}
-
 \subsection{Propiedades de las matrices de adyacencia} 
 
 \begin{teorema}
