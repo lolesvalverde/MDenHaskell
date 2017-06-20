@@ -35,44 +35,165 @@ La matemática discreta consiste en el estudio de las propiedades de los
 conjuntos finitos o infinitos numerables, lo que hace posible su directa
 implementación computacional. En particular, la asignatura ``Matemática 
 Discreta'' del grado se centra en estudiar propiedades y algoritmos de la 
-combinatoria y la teoría de grafos. A lo largo del trabajo implementaré 
-en Haskell definiciones y algoritmos con los que ya he tenido una primera 
+combinatoria y la teoría de grafos. A lo largo del trabajo se implementarán 
+en Haskell definiciones y algoritmos con los que ya se ha tenido una primera 
 aproximación teórica durante el grado.
 
-Los dos primeros capítulos del trabajo sientan la base que me permitirá en los
-dos siguientes aproximarme a la teoría de grafos. En el primero, hago
-una introducción a la teoría de conjuntos y doy dos posibles representaciones
-de conjuntos con las que trabajar en Haskell. En el segundo presento los
+Los dos primeros capítulos del trabajo sientan la base que permitirá en los
+dos siguientes una aproximación a la teoría de grafos. En el primero, se hace
+una introducción a la teoría de conjuntos y se dan dos posibles representaciones
+de conjuntos con las que trabajar en Haskell. En el segundo se presentan los
 conceptos de ``relación'' y de ``función'' que, al igual que los conjuntos, son
-necesarios para definir aplicaciones de los grafos. Para su redacción me he 
-apoyado en la primera parte de la asignatura ``Álgebra Básica'' del grado.
+necesarios para definir aplicaciones de los grafos. Su redacción sigue la línea 
+de la primera parte de la asignatura ``Álgebra Básica'' del grado.
 
-En el tercer capítulo del trabajo hago una introducción a la teoría de grafos.
-En primer lugar doy una representación con la que trabajar en Haskell y un
-generador de grafos que nos servirá para comprobar propiedades con 
-\texttt{QuickCheck}. Seguidamente hago una galería de grafos conocidos y los
-utilizo como ejemplos para las definiciones y los algoritmos que doy en las 
+En el tercer capítulo del trabajo se hace una introducción a la teoría de 
+grafos. En primer lugar se dan una representación con la que trabajar en Haskell
+y un generador de grafos que permitirá comprobar propiedades con 
+\texttt{QuickCheck}. Seguidamente se presenta una galería de grafos conocidos
+que se utilizarán como ejemplos para las definiciones y los algoritmos de las 
 secciones siguientes. Las primeras serán algunas deficiones básicas y después
-trato los conceptos de ``morfismos'', ``caminos'' y ``conectividad'' en 
+se tratarán los conceptos de ``morfismos'', ``caminos'' y ``conectividad'' en 
 grafos.
 
-Por último, en el cuarto capítulo doy una representación de los grafos a través
-de la matriz de adyacencia. Implemento algunos de los resultados que Javier 
-Franco Galvín expuso en su Trabajo Fin de Grado: \textit{Aspectos algebraicos 
-en teoría de grafos} y compruebo que concuerdan con el desarrollo hecho en el 
-capítulo anterior.
+Por último, en el cuarto capítulo se da una representación de los grafos a 
+través de su matriz de adyacencia. Se implementarán algunos de los resultados
+que Javier Franco Galvín expuso en su Trabajo Fin de Grado: 
+\textit{Aspectos algebraicos en teoría de grafos} y se comprueba que concuerdan
+con el desarrollo hecho en el capítulo anterior.
 
-Me gustaría destacar el trabajo con los diferentes sistemas que he realizado
-a lo largo del proyecto y con diferentes programas: 
+Cabe destacar el trabajo con los diferentes sistemas y programas que se han 
+utilizado a lo largo del proyecto: 
 \itemize{
-\item las librerías de Haskell \texttt{Data.List}, \texttt{Data.Matrix} y 
-\texttt{Data.QuickCheck},
-\item el paquete \textit{Tikz} de \LaTeX{}, mediante el que he dado la 
-representación gráfica de los ejemplos de grafos,
-\item \textit{GitHub} como sistema de control de versiones,
-\item y \textit{Hspec} como sistema de validación de módulos.
+\item \textit{Ubuntu} como sistema operativo,
+\item el editor de textos \textit{Emacs} que ha permitido el uso de 
+\textit{Haskell literario} para la redacción del trabajo, 
+\item el paquete de producción de gráficos vectoriales \textit{Tikz} 
+de \LaTeX{}, mediante el que se ha dado la representación gráfica de
+los ejemplos de grafos,
+\item \textit{GitHub} como sistema remoto de control de versiones,
+\item y \textit{DocTest} como sistema de validación de módulos.
 }
+
+Se va a hacer una breve introducción los sistemas más destacados.
+
+\section*{Ubuntu}
  
+Ubuntu es un sistema operativo creado a partir de GNU/Linux con la intención 
+de hacer una versión de este más sencilla de manejar y que permitiera acceso
+al software libre para todo el mundo por igual. La primera distribuión oficial
+de Ubuntu fue la versión 4.10 y tuvo lugar en 2004. Desde entonces el proyecto
+ha captado la atención de miles de entusiastas del software libre que han 
+querido unirse a la comunidad Ubuntu.
+
+Software libre significa que los usuarios tienen la libertad de ejecutar,
+copiar, distribuir, estudiar, modificar y mejorar el software. Es una cuestión
+de libertad, no de precio. Para entender el concepto, debe pensarse en «libre»
+como en «libertad de expresión».
+
+Más precisamente, software libre significa que los usuarios de un programa 
+tienen las cuatro libertades esenciales:
+\begin{itemize}
+\item La libertad de ejecutar el programa como lo desee, con cualquier propósito
+(libertad 0).
+\item La libertad de estudiar el funcionamiento del programa y adaptarlo a sus
+necesidades (libertad 1). El acceso al código fuente es un prerrequisito para 
+esto.
+\item La libertad de redistribuir copias para ayudar a los demás (libertad 2).
+\item La libertad de mejorar el programa y de publicar las mejoras, de modo que
+toda la comunidad se beneficie (libertad 3). El acceso al código fuente es un 
+prerrequisito para esto.
+\end{itemize}
+
+Debido a la evolución de la tecnología y del uso de la red, estas libertades
+son ahora aún más importantes que en el pasado.
+
+Lo que diferencia a Ubuntu de otros sistemas ofrecidos por Linux es que los 
+equipos comercial y comunitario colaboran juntos en el desarrollo de un único
+proyecto. Las novedades y avances están libremente a disposición de todos los
+usuarios y son voluntarios quienes se hacen cargo de los elementos más críticos
+del trabajo.
+
+En la \href{https://www.ubuntu.com}
+  {\textbf{página web de Ubuntu}}\
+  \footnote{\url{https://www.ubuntu.com}}
+se puede obtener más información acerca del sistema y en la 
+\href{https://www.gnu.org}
+  {\textbf{página web de GNU}}\
+  \footnote{\url{https://www.gnu.org}}
+se puede encontrar más información acerca del software libre. 
+
+\section*{Haskell literario con Emacs}
+
+Haskell es un lenguaje de programación puramente funcional basado en 
+\href{https://en.wikipedia.org/wiki/Lambda_calculus}
+  {\textbf{lambda calculus}}\
+  \footnote{\url{https://en.wikipedia.org/wiki/Lambda_calculus}}. Se caracteriza
+por sus programas concisos, un potente sistema de tipos, el trabajo con listas,
+funciones recursivas y de orden superior y por tener evaluación perezosa.
+
+Tener que escribir códigos largos y complicados hace la tarea del programador
+muy costosa. Los lenguajes de programación funcional, como Haskell, lo intentan
+hacen más sencillo. Aunque no se esté en la posición de usar Haskell en un 
+proyecto determinado, aprender su razonamiento puede ayudar a mejorar en 
+cualquier otro lenguaje.
+
+A la hora de elaborar la memoria de un proyecto en el que se está utilizando
+Haskell, la posibilidad de escribir código y texto en un formato de calidad,
+otorga globalidad al trabajo. El editor \textit{Emacs} de GNU permite, en
+particular, trabajar en paralelo con Haskell y con Latex. El trabajar con
+Haskell literario  ha ayudado a detectar y solventar errores más rápido, así
+como a dar una estructura consolidada al trabajo. 
+
+En la 
+\href{http://www.cs.us.es/~jalonso/cursos/i1m-16/temas/tema-1.html}
+  {\textbf{página web del Departamento de Computación}}\
+  \footnote{\url{http://www.cs.us.es/~jalonso/cursos/i1m-16/temas/tema-1.html}}
+se puede encontrar más información acerca de Haskell y Emacs.
+
+\section*{GitHub}
+
+GitHub es una plataforma de desarrollo colaborativo que permite alojar proyectos
+usando el control de versiones de \textit{Git}. El trabajo con un sistema
+como este hace mucho más fácil el trabajo en grupo, pues cada individuo puede
+trabajar desde su ordenador propio en paralelo a los demás y remotamente 
+ir actualizando el proyecto sin perder la posibilidad de restaurarlo a una 
+versión anterior. 
+
+En particular, GitHub ha sido una excelente herramienta de control de este 
+Trabajo Fin de Grado, pues los tutores han podido seguir en cada momento el
+trabajo realizado, detectar fácilmente los errores y hacer modificaciones
+directamente sobre el documento.
+
+El compañero Eduardo Paluzo Hidalgo hace en su Trabajo Fin de Grado una pequeña
+introducción al uso de Github y a la instalación de \textit{magit} en una
+distribución Ubuntu muy recomendable para todos aquellos (especialmente los más 
+principiantes) que tengan interés en trabajar con este sistema.
+
+Se puede encontrar más información acerca de esta plataforma en la 
+\href{https://git-scm.com/}
+  {\textbf{página web de Git}}\
+  \footnote{\url{https://git-scm.com/}}.
+
+\section*{DocTest}
+
+DocTest para Haskell es un programa de verificación dinámica de ejemplos. 
+Si se sigue un determinado formato a la hora de escribir los ejemplos para
+las funciones de un documento en Haskell, Doctest se encarga de comprobar
+que los ejemplos sean correctos. Estas validaciones han resultado claves
+en la realización del trabajo, pues algunas definiciones han sido modificadas 
+de forma casi continua y este proyecto especialmente se basa en lo anterior
+para poder seguir construyendo.
+
+Su uso es muy sencillo: una vez instalado el correspondiente paquete y escrito
+los ejemplos en el formato requerido solo hay que ejecutar el programa desde la
+consola dando como argumento el fichero que se desea validar.
+
+Se puede enontrar más informaión acerca del programa y de cómo descargarlo en
+su \href{https://github.com/sol/doctest}
+  {\textbf{repositorio de GitHub}}\
+  \footnote{\url{https://github.com/sol/doctest}}.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "MD_en_Haskell"
