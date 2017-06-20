@@ -181,7 +181,8 @@ transitiva.
 -- False
 esTransitiva :: Ord a => [(a,a)] -> Bool
 esTransitiva r = 
-  listaAConjunto [(x,z) | (x,y) <- r, (w,z) <- r, y == w] `esSubconjunto` r 
+  listaAConjunto [(x,z) | (x,y) <- r, (w,z) <- r, y == w]
+  `esSubconjunto` r 
 \end{code}
 
 \begin{nota}

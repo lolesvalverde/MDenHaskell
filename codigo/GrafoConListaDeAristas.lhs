@@ -67,8 +67,8 @@ indicadas en el TAD de los grafos.
 \index{\texttt{creaGrafo}} 
 \begin{code}
 -- | Ejemplo
--- >>> creaGrafo [1..5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
--- G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5),(4,5)]
+-- >>> creaGrafo [1..5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5)]
+-- G [1,2,3,4,5] [(1,2),(1,4),(1,5),(2,3),(2,5),(3,4),(3,5)]
 creaGrafo :: Ord a => [a] -> [(a,a)] -> Grafo a
 creaGrafo vs as =
   G (sort vs) (nub (sort [parOrdenado a | a <- as]))
